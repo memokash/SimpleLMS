@@ -6,3 +6,5 @@ node_modules/
 .env.development.local
 .DS_Store
 *.log
+
+.vercel

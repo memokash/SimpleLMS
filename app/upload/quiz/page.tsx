@@ -1,8 +1,22 @@
 'use client'
 import { useEffect, useState } from "react";
-import { db } from "@/firebase/firebaseConfig";
+import { db } from "../../../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { Quiz, Question } from "@/types/quiz";
+
+// Define types inline for now
+interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  correct: number;
+  type?: string;
+  points?: number;
+}
+
+interface Quiz {
+  title: string;
+  questions: Question[];
+}
 
 export default function QuizPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -10,9 +24,13 @@ export default function QuizPage() {
 
   useEffect(() => {
     const loadQuiz = async () => {
-      const snapshot = await getDocs(collection(db, "quizzes"));
-      const quizData = snapshot.docs[0]?.data() as Quiz;
-      setQuiz(quizData);
+      try {
+        const snapshot = await getDocs(collection(db, "courses")); // Changed from "quizzes" to "courses"
+        const quizData = snapshot.docs[0]?.data() as Quiz;
+        setQuiz(quizData);
+      } catch (error) {
+        console.error("Error loading quiz:", error);
+      }
     };
     loadQuiz();
   }, []);
