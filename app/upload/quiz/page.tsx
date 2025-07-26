@@ -2,21 +2,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../../../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
-
-// Define types inline for now
-interface Question {
-  id: string;
-  question: string;
-  options: string[];
-  correct: number;
-  type?: string;
-  points?: number;
-}
-
-interface Quiz {
-  title: string;
-  questions: Question[];
-}
+import { Quiz, Question } from "../../../types/quiz";
 
 export default function QuizPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -25,7 +11,7 @@ export default function QuizPage() {
   useEffect(() => {
     const loadQuiz = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "courses")); // Changed from "quizzes" to "courses"
+        const snapshot = await getDocs(collection(db, "courses"));
         const quizData = snapshot.docs[0]?.data() as Quiz;
         setQuiz(quizData);
       } catch (error) {

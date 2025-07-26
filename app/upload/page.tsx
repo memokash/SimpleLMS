@@ -1,17 +1,8 @@
 'use client'
 import { useState } from "react";
-import { parseExcelToQuestions } from "../../lib/parseExcel";
 import { db } from "../../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
-
-// Define Question type inline for now
-interface Question {
-  id: string;
-  question: string;
-  options: string[];
-  correct: number;
-  points?: number;
-}
+import { Question, Quiz } from "../../types/quiz";
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -23,12 +14,8 @@ export default function UploadPage() {
     setLoading(true);
     
     try {
-      const questions: Question[] = await parseExcelToQuestions(file);
-      await addDoc(collection(db, "courses"), {    
-        title: quizTitle,
-        questions,
-      });
-      alert("Quiz uploaded!");
+      // For now, just show a placeholder - we'll implement parseExcelToQuestions later
+      alert("Upload feature coming soon! Please add quizzes manually to Firebase for now.");
     } catch (error) {
       console.error("Upload error:", error);
       alert("Upload failed!");
@@ -58,7 +45,7 @@ export default function UploadPage() {
         className="bg-blue-600 text-white px-4 py-2"
         disabled={loading}
       >
-        {loading ? "Uploading..." : "Upload"}    
+        {loading ? "Uploading..." : "Upload (Coming Soon)"}    
       </button>
     </div>
   );
