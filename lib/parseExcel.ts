@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { Question } from "@/types/quiz";
+import { Question } from "../types/quiz";
 
 export function parseExcelToQuestions(file: File): Promise<Question[]> {
   return new Promise((resolve, reject) => {
