@@ -1,6 +1,13 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
+import { useAuth } from './components/AuthContext';
+import AuthModal from './components/AuthModal';
 
 const HomePage = () => {
+  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -17,9 +24,24 @@ const HomePage = () => {
                 <a href="#features" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Features</a>
                 <a href="#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pricing</a>
                 <a href="/quiz" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Try Quiz</a>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                  Sign Up
-                </button>
+                {user ? (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
+                    <button 
+                      onClick={logout}
+                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => setShowAuthModal(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -45,8 +67,11 @@ const HomePage = () => {
               >
                 Try Free Quiz Now 🚀
               </a>
-              <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors">
-                Watch Demo
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors"
+              >
+                Sign Up Free
               </button>
             </div>
             <p className="text-sm text-gray-500 mt-4">✅ No credit card required • ✅ Instant access</p>
@@ -62,7 +87,7 @@ const HomePage = () => {
               Why Medical Students Choose MedQuiz Pro
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built by medical professionals for medical students. Every question is carefully crafted to match exam standards.
+              Built by medical professionals for medical students. Over 15,000 expert-crafted questions across all specialties.
             </p>
           </div>
 
@@ -71,9 +96,9 @@ const HomePage = () => {
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
                 🧠
               </div>
-              <h3 className="text-xl font-semibold mb-3">Expert-Crafted Questions</h3>
+              <h3 className="text-xl font-semibold mb-3">15,000+ Expert Questions</h3>
               <p className="text-gray-600">
-                Every quiz question is developed by practicing physicians and medical educators to ensure accuracy and relevance.
+                Massive question bank covering all medical specialties, developed by practicing physicians and medical educators.
               </p>
             </div>
 
@@ -147,7 +172,7 @@ const HomePage = () => {
                 <div className="text-gray-600">Pass Rate Improvement</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-purple-600 mb-2">500+</div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">15,000+</div>
                 <div className="text-gray-600">Practice Questions</div>
               </div>
             </div>
@@ -184,13 +209,13 @@ const HomePage = () => {
               Choose Your Study Plan
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Start free and upgrade when you're ready. All plans include our core features with different levels of access.
+              Access to the most comprehensive medical question bank available. Start free and upgrade when ready.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Free Plan */}
-            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-blue-300 transition-colors">
+            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-blue-300 transition-colors bg-white">
               <h3 className="text-2xl font-bold mb-4">Free</h3>
               <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
               <div className="text-gray-600 mb-6">per month</div>
@@ -209,7 +234,7 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-gray-400 mr-3">❌</span>
-                  <span className="text-gray-400">Detailed explanations</span>
+                  <span className="text-gray-400">Full question bank</span>
                 </li>
               </ul>
               <a 
@@ -221,12 +246,12 @@ const HomePage = () => {
             </div>
 
             {/* Pro Plan */}
-            <div className="border-2 border-blue-500 rounded-xl p-8 text-center relative bg-blue-50">
+            <div className="border-2 border-blue-500 rounded-xl p-8 text-center relative bg-white">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                 Most Popular
               </div>
               <h3 className="text-2xl font-bold mb-4">Pro</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$29</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">$99</div>
               <div className="text-gray-600 mb-6">per month</div>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center">
@@ -235,11 +260,11 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
-                  Advanced progress analytics
+                  All 15,000+ questions
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
-                  All topics & specialties
+                  All medical specialties
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
@@ -247,18 +272,21 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
-                  Performance insights
+                  Performance analytics
                 </li>
               </ul>
-              <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
                 Start Pro Trial
               </button>
             </div>
 
             {/* Premium Plan */}
-            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-purple-300 transition-colors">
+            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-purple-300 transition-colors bg-white">
               <h3 className="text-2xl font-bold mb-4">Premium</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$59</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">$199</div>
               <div className="text-gray-600 mb-6">per month</div>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center">
@@ -282,7 +310,10 @@ const HomePage = () => {
                   Exam prep courses
                 </li>
               </ul>
-              <button className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+              <button 
+                onClick={() => setShowAuthModal(true)}
+                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              >
                 Go Premium
               </button>
             </div>
@@ -294,20 +325,23 @@ const HomePage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Ace Your Medical School Exams?
+            Ready to Access 15,000+ Medical Questions?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of medical students who are already improving their scores with MedQuiz Pro.
+            Join thousands of medical students mastering their exams with the most comprehensive question bank available.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/quiz"
               className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
             >
-              Start Free Quiz Now 🎯
+              Start Free Trial Now 🎯
             </a>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-              View All Features
+            <button 
+              onClick={() => setShowAuthModal(true)}
+              className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+            >
+              Create Account
             </button>
           </div>
         </div>
@@ -352,8 +386,18 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Auth Modal - Single instance at the end */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSignInWithEmail={signInWithEmail}
+        onSignUpWithEmail={signUpWithEmail}
+        onSignInWithGoogle={signInWithGoogle}
+      />
     </div>
   );
 };
 
 export default HomePage;
+ 
