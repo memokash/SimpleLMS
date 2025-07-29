@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
+import { stripePromise } from '../lib/stripe';
 
 const HomePage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
@@ -16,32 +17,35 @@ const HomePage = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="text-2xl font-bold text-blue-600">
-                🏥 MedQuiz Pro
+                ��� MedicalschoolQuizzes
               </div>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <a href="#features" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Features</a>
-                <a href="#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pricing</a>
-                <a href="/quiz" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Try Quiz</a>
-                {user ? (
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
-                    <button 
-                      onClick={logout}
-                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => setShowAuthModal(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                )}
+    <a href="#features" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Features</a>
+    <a href="#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Pricing</a>
+    <a href="/quiz" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Try Quiz</a>
+    {user ? (
+      <div className="flex items-center space-x-4">
+        <a href="/dashboard" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+          Dashboard
+        </a>
+        <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
+        <button 
+          onClick={logout}
+          className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+        >
+          Logout
+        </button>
+      </div>
+    ) : (
+      <button 
+        onClick={() => setShowAuthModal(true)}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+      >
+        Sign Up
+      </button>
+    )}
               </div>
             </div>
           </div>
@@ -57,15 +61,15 @@ const HomePage = () => {
               <span className="text-blue-600 block">With Smart Quizzes</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Practice with expert-crafted questions covering immunology, pathology, and more. 
-              Track your progress and ace your medical school exams with confidence.
+              Practice with expert-crafted questions covering your whole school syllabus, pathology, and more. 
+              Track your progress and pass your medical school exams with confidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
                 href="/quiz" 
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg"
               >
-                Try Free Quiz Now 🚀
+                Try Free Quiz Now ���
               </a>
               <button 
                 onClick={() => setShowAuthModal(true)}
@@ -84,27 +88,27 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Medical Students Choose MedQuiz Pro
+              Why Medical Students Choose MedicalSchoolQuizzes
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built by medical professionals for medical students. Over 15,000 expert-crafted questions across all specialties.
+              Created by physicians, fellows, and actual exam writers, our question bank is designed to support medical students as they progress through their syllabus, not just for boards prep. 
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                🧠
+                ���
               </div>
               <h3 className="text-xl font-semibold mb-3">15,000+ Expert Questions</h3>
               <p className="text-gray-600">
-                Massive question bank covering all medical specialties, developed by practicing physicians and medical educators.
+                Focused quizzes help you stay on track, reinforce core concepts, and help you avoid falling behind — especially during those critical monthly and bimonthly assessments that determine academic standing.
               </p>
             </div>
 
             <div className="text-center p-6 rounded-xl bg-green-50 hover:bg-green-100 transition-colors">
               <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                📊
+                ���
               </div>
               <h3 className="text-xl font-semibold mb-3">Progress Tracking</h3>
               <p className="text-gray-600">
@@ -124,7 +128,7 @@ const HomePage = () => {
 
             <div className="text-center p-6 rounded-xl bg-orange-50 hover:bg-orange-100 transition-colors">
               <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                📱
+                ���
               </div>
               <h3 className="text-xl font-semibold mb-3">Study Anywhere</h3>
               <p className="text-gray-600">
@@ -134,7 +138,7 @@ const HomePage = () => {
 
             <div className="text-center p-6 rounded-xl bg-red-50 hover:bg-red-100 transition-colors">
               <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                🎯
+                ���
               </div>
               <h3 className="text-xl font-semibold mb-3">Exam-Focused</h3>
               <p className="text-gray-600">
@@ -144,7 +148,7 @@ const HomePage = () => {
 
             <div className="text-center p-6 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors">
               <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                👥
+                ���
               </div>
               <h3 className="text-xl font-semibold mb-3">Community Support</h3>
               <p className="text-gray-600">
@@ -251,7 +255,7 @@ const HomePage = () => {
                 Most Popular
               </div>
               <h3 className="text-2xl font-bold mb-4">Pro</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$99</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">$49.99</div>
               <div className="text-gray-600 mb-6">per month</div>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center">
@@ -275,12 +279,51 @@ const HomePage = () => {
                   Performance analytics
                 </li>
               </ul>
-              <button 
-                onClick={() => setShowAuthModal(true)}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                Start Pro Trial
-              </button>
+             <button 
+  onClick={async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: 'price_1RqE1PEbNlb7nCbs0las6NY5', // Your Pro price ID
+          userId: user.uid,
+        }),
+      });
+      
+      const session = await response.json();
+      
+      if (session.sessionId) {
+        const { stripePromise } = await import('../lib/stripe');
+        const stripe = await stripePromise;
+        
+        const result = await stripe.redirectToCheckout({
+          sessionId: session.sessionId,
+        });
+        
+        if (result.error) {
+          console.error(result.error);
+          alert('Payment error: ' + result.error.message);
+        }
+      } else {
+        alert('Error creating checkout session');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment setup error. Please try again.');
+    }
+  }}
+  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+>
+  {user ? 'Subscribe for $99/month' : 'Sign Up to Subscribe'}
+</button>
             </div>
 
             {/* Premium Plan */}
@@ -311,11 +354,43 @@ const HomePage = () => {
                 </li>
               </ul>
               <button 
-                onClick={() => setShowAuthModal(true)}
-                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-              >
-                Go Premium
-              </button>
+  onClick={async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: 'price_1RqE4NEbNlb7nCbsKLwEcd3a', // Your Premium price ID
+          userId: user.uid,
+        }),
+      });
+      
+      const session = await response.json();
+      
+      if (session.sessionId) {
+        const { stripePromise } = await import('../lib/stripe');
+        const stripe = await stripePromise;
+        
+        await stripe.redirectToCheckout({
+          sessionId: session.sessionId,
+        });
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment setup error. Please try again.');
+    }
+  }}
+  className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+>
+  {user ? 'Subscribe for $199/month' : 'Sign Up to Subscribe'}
+</button>
             </div>
           </div>
         </div>
@@ -335,7 +410,7 @@ const HomePage = () => {
               href="/quiz"
               className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
             >
-              Start Free Trial Now 🎯
+              Start Free Trial Now ���
             </a>
             <button 
               onClick={() => setShowAuthModal(true)}
@@ -352,7 +427,7 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="text-2xl font-bold text-white mb-4">🏥 MedQuiz Pro</div>
+              <div className="text-2xl font-bold text-white mb-4">��� MedQuiz Pro</div>
               <p className="text-gray-400">
                 Empowering medical students with smart, effective quiz preparation tools.
               </p>
@@ -400,4 +475,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
- 
