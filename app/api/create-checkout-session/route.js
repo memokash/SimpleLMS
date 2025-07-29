@@ -7,7 +7,6 @@ export async function POST(request) {
   try {
     const { priceId, userId } = await request.json();
 
-    // Create Checkout Sessions from body params
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
@@ -17,8 +16,8 @@ export async function POST(request) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?canceled=true`,
       client_reference_id: userId,
       metadata: {
         userId: userId,
