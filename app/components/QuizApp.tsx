@@ -1,11 +1,9 @@
-//C:\SimpleLMS\app\components\QuizApp.tsx
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { getQuizMetadata, getQuizQuestions } from '../../lib/firebase';
 
-const QuizApp = () => {
+const QuizApp = ({ quizId }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
@@ -14,15 +12,16 @@ const QuizApp = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load quiz data from Firebase
+  // Load quiz data from Firebase using the specific quiz ID
   useEffect(() => {
     const loadQuiz = async () => {
       try {
-        const quizId = 'MSQ Quiz 4';
+        // Use the quizId passed as prop, fallback to default
+        const currentQuizId = quizId || 'MSQ Quiz 4';
         
         const [metadata, questions] = await Promise.all([
-          getQuizMetadata(quizId),
-          getQuizQuestions(quizId)
+          getQuizMetadata(currentQuizId),
+          getQuizQuestions(currentQuizId)
         ]);
 
         if (!metadata || questions.length === 0) {
@@ -44,7 +43,7 @@ const QuizApp = () => {
     };
 
     loadQuiz();
-  }, []);
+  }, [quizId]);
 
   const handleAnswerSelect = (questionIndex, answerIndex) => {
     setSelectedAnswers({
@@ -94,9 +93,9 @@ const QuizApp = () => {
 
   const getScoreMessage = () => {
     const percentage = (score / quizData.questions.length) * 100;
-    if (percentage >= 80) return "Excellent work! ğŸ‰";
-    if (percentage >= 60) return "Good job! ğŸ‘";
-    return "Keep practicing! ğŸ’ª";
+    if (percentage >= 80) return "Excellent work! í¾‰";
+    if (percentage >= 60) return "Good job! í±";
+    return "Keep practicing! í²ª";
   };
 
   // Loading state
@@ -130,7 +129,7 @@ const QuizApp = () => {
     );
   }
 
-  // No quiz data - SAFETY CHECK HAPPENS HERE
+  // Safety check
   if (!quizData || !quizData.questions || quizData.questions.length === 0) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
@@ -141,7 +140,6 @@ const QuizApp = () => {
     );
   }
 
-  // NOW it's safe to access quizData.questions
   const question = quizData.questions[currentQuestion];
   const progress = ((currentQuestion + 1) / quizData.questions.length) * 100;
 
@@ -149,7 +147,7 @@ const QuizApp = () => {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 text-6xl">ğŸ†</div>
+          <div className="w-16 h-16 mx-auto mb-4 text-6xl">í¿†</div>
           <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
           <div className={`text-6xl font-bold mb-4 ${getScoreColor()}`}>
             {score}/{quizData.questions.length}
@@ -180,13 +178,21 @@ const QuizApp = () => {
             ))}
           </div>
 
-          <button
-            onClick={resetQuiz}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center mx-auto transition-colors"
-          >
-            <span className="mr-2">ğŸ”„</span>
-            Take Quiz Again
-          </button>
+          <div className="flex space-x-4 justify-center">
+            <button
+              onClick={resetQuiz}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <span className="mr-2">í´„</span>
+              Take Quiz Again
+            </button>
+            
+              href="/dashboard"
+              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              Back to Dashboard
+            </a>
+          </div>
         </div>
       </div>
     );
