@@ -3,20 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import { getQuizMetadata, getQuizQuestions } from '../../lib/firebase';
 
-const QuizApp = ({ quizId }) => {
+interface QuizAppProps {
+  quizId: string;
+}
+
+const QuizApp = ({ quizId }: QuizAppProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
-  const [quizData, setQuizData] = useState(null);
+  const [quizData, setQuizData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load quiz data from Firebase using the specific quiz ID
   useEffect(() => {
     const loadQuiz = async () => {
       try {
-        // Use the quizId passed as prop, fallback to default
         const currentQuizId = quizId || 'MSQ Quiz 4';
         
         const [metadata, questions] = await Promise.all([
@@ -45,7 +47,7 @@ const QuizApp = ({ quizId }) => {
     loadQuiz();
   }, [quizId]);
 
-  const handleAnswerSelect = (questionIndex, answerIndex) => {
+  const handleAnswerSelect = (questionIndex: number, answerIndex: number) => {
     setSelectedAnswers({
       ...selectedAnswers,
       [questionIndex]: answerIndex
@@ -68,7 +70,7 @@ const QuizApp = ({ quizId }) => {
 
   const calculateScore = () => {
     let correctAnswers = 0;
-    quizData.questions.forEach((question, index) => {
+    quizData.questions.forEach((question: any, index: number) => {
       if (selectedAnswers[index] === question.correct) {
         correctAnswers++;
       }
@@ -84,33 +86,17 @@ const QuizApp = ({ quizId }) => {
     setScore(0);
   };
 
-  const getScoreColor = () => {
-    const percentage = (score / quizData.questions.length) * 100;
-    if (percentage >= 80) return "text-green-600";
-    if (percentage >= 60) return "text-yellow-600";
-    return "text-red-600";
-  };
-
-  const getScoreMessage = () => {
-    const percentage = (score / quizData.questions.length) * 100;
-    if (percentage >= 80) return "Excellent work! Ìæâ";
-    if (percentage >= 60) return "Good job! Ì±ç";
-    return "Keep practicing! Ì≤™";
-  };
-
-  // Loading state
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading quiz...</p>
+          <p className="text-gray-600">Loading quiz: {quizId}</p>
         </div>
       </div>
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
@@ -118,6 +104,7 @@ const QuizApp = ({ quizId }) => {
           <div className="text-red-500 text-6xl mb-4">‚ùå</div>
           <h2 className="text-xl font-bold text-red-600 mb-2">Error Loading Quiz</h2>
           <p className="text-gray-600">{error}</p>
+          <p className="text-sm text-gray-500 mt-2">Quiz ID: {quizId}</p>
           <button 
             onClick={() => window.location.reload()} 
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -129,12 +116,11 @@ const QuizApp = ({ quizId }) => {
     );
   }
 
-  // Safety check
   if (!quizData || !quizData.questions || quizData.questions.length === 0) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
-          <p className="text-gray-600">No quiz data found.</p>
+          <p className="text-gray-600">No quiz data found for: {quizId}</p>
         </div>
       </div>
     );
@@ -147,46 +133,21 @@ const QuizApp = ({ quizId }) => {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 text-6xl">ÌøÜ</div>
+          <div className="w-16 h-16 mx-auto mb-4 text-6xl">üèÜ</div>
           <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
-          <div className={`text-6xl font-bold mb-4 ${getScoreColor()}`}>
+          <div className="text-6xl font-bold mb-4 text-blue-600">
             {score}/{quizData.questions.length}
           </div>
-          <p className="text-xl mb-6 text-gray-600">{getScoreMessage()}</p>
           
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold mb-3">Review Your Answers:</h3>
-            {quizData.questions.map((question, index) => (
-              <div key={question.id} className="mb-3 text-left">
-                <p className="font-medium">{index + 1}. {question.question}</p>
-                <div className="flex items-center mt-1">
-                  {selectedAnswers[index] === question.correct ? (
-                    <span className="text-green-500 mr-2 text-lg">‚úÖ</span>
-                  ) : (
-                    <span className="text-red-500 mr-2 text-lg">‚ùå</span>
-                  )}
-                  <span className={selectedAnswers[index] === question.correct ? "text-green-600" : "text-red-600"}>
-                    Your answer: {question.options[selectedAnswers[index]] || "Not answered"}
-                  </span>
-                  {selectedAnswers[index] !== question.correct && (
-                    <span className="ml-3 text-green-600">
-                      Correct: {question.options[question.correct]}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
           <div className="flex space-x-4 justify-center">
             <button
               onClick={resetQuiz}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              <span className="mr-2">Ì¥Ñ</span>
-              Take Quiz Again
+              üîÑ Take Again
             </button>
             
+            <a
               href="/dashboard"
               className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
@@ -200,13 +161,11 @@ const QuizApp = ({ quizId }) => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">{quizData.title}</h1>
         <p className="text-gray-600">{quizData.description}</p>
       </div>
 
-      {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-600 mb-2">
           <span>Question {currentQuestion + 1} of {quizData.questions.length}</span>
@@ -220,14 +179,13 @@ const QuizApp = ({ quizId }) => {
         </div>
       </div>
 
-      {/* Question */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           {question.question}
         </h2>
 
         <div className="space-y-3">
-          {question.options.map((option, index) => (
+          {question.options.map((option: string, index: number) => (
             <button
               key={index}
               onClick={() => handleAnswerSelect(currentQuestion, index)}
@@ -254,7 +212,6 @@ const QuizApp = ({ quizId }) => {
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex justify-between">
         <button
           onClick={handlePrevious}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { getAllCourses, getSpecialties } from '../../lib/courseService';
+import { getAllCourses } from '../../lib/courseService';
 
 const UserDashboard = () => {
   const [courses, setCourses] = useState([]);
@@ -45,48 +45,6 @@ const UserDashboard = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <div className="text-3xl mr-4">���</div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">Available Quizzes</p>
-                <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <div className="text-3xl mr-4">���</div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">Medical Topics</p>
-                <p className="text-2xl font-bold text-blue-600">Ready</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <div className="text-3xl mr-4">��</div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">Expert Level</p>
-                <p className="text-2xl font-bold text-green-600">Content</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <div className="text-3xl mr-4">⭐</div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">All Access</p>
-                <p className="text-2xl font-bold text-orange-600">Unlocked</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h3 className="text-lg font-semibold mb-4">Your Quiz Library</h3>
           <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -96,8 +54,8 @@ const UserDashboard = () => {
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900">{course.title}</h4>
                     <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                      <span>��� {course.specialty}</span>
-                      <span>��� {course.difficulty}</span>
+                      <span>🏥 {course.specialty}</span>
+                      <span>📝 {course.difficulty}</span>
                     </div>
                     {course.description && (
                       <p className="text-sm text-gray-500 mt-2">{course.description}</p>
@@ -105,7 +63,7 @@ const UserDashboard = () => {
                   </div>
                   <div className="ml-6">
                     <a
-                      href={`/quiz/${course.id}`}
+                      href={`/quiz?id=${encodeURIComponent(course.id)}`}
                       className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                     >
                       Start Quiz
