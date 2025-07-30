@@ -322,14 +322,14 @@ const HomePage = () => {
   }}
   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
 >
-  {user ? 'Subscribe for $99/month' : 'Sign Up to Subscribe'}
+  {user ? 'Subscribe for $49.99/month' : 'Sign Up to Subscribe'}
 </button>
             </div>
 
             {/* Premium Plan */}
             <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-purple-300 transition-colors bg-white">
               <h3 className="text-2xl font-bold mb-4">Premium</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$199</div>
+              <div className="text-4xl font-bold text-gray-900 mb-2">$99</div>
               <div className="text-gray-600 mb-6">per month</div>
               <ul className="text-left space-y-3 mb-8">
                 <li className="flex items-center">
@@ -389,7 +389,7 @@ const HomePage = () => {
   }}
   className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
 >
-  {user ? 'Subscribe for $199/month' : 'Sign Up to Subscribe'}
+  {user ? 'Subscribe for $99.00/month' : 'Sign Up to Subscribe'}
 </button>
             </div>
           </div>

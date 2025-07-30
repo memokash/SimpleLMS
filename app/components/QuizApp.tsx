@@ -129,36 +129,104 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
   const question = quizData.questions[currentQuestion];
   const progress = ((currentQuestion + 1) / quizData.questions.length) * 100;
 
-  if (showResults) {
-    return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 text-6xl">🏆</div>
-          <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
-          <div className="text-6xl font-bold mb-4 text-blue-600">
-            {score}/{quizData.questions.length}
-          </div>
-          
-          <div className="flex space-x-4 justify-center">
-            <button
-              onClick={resetQuiz}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              🔄 Take Again
-            </button>
-            
-            <a
-              href="/dashboard"
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Back to Dashboard
-            </a>
-          </div>
+ if (showResults) {
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 mx-auto mb-4 text-6xl">🏆</div>
+        <h2 className="text-3xl font-bold mb-4">Quiz Complete!</h2>
+        <div className="text-6xl font-bold mb-4 text-blue-600">
+          {score}/{quizData.questions.length}
+        </div>
+        
+        <div className="flex space-x-4 justify-center mb-8">
+          <button
+            onClick={resetQuiz}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            🔄 Take Again
+          </button>
+          <a
+            href="/dashboard"
+            className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+          >
+            Back to Dashboard
+          </a>
         </div>
       </div>
-    );
-  }
 
+      {/* DETAILED REVIEW WITH EXPLANATIONS */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900 mb-6">📚 Review & Learn</h3>
+        
+        {quizData.questions.map((question, index) => {
+          const isCorrect = selectedAnswers[index] === question.correct;
+          const userAnswer = selectedAnswers[index];
+          
+          return (
+            <div key={question.id} className="border border-gray-200 rounded-lg p-6">
+              {/* Question Header */}
+              <div className="flex items-start space-x-3 mb-4">
+                <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
+                  isCorrect ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    {question.question}
+                  </h4>
+                  
+                  {/* Answer Summary */}
+                  <div className="flex items-center space-x-4 text-sm">
+                    <span className={`font-medium ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                      {isCorrect ? '✅ Correct' : '❌ Incorrect'}
+                    </span>
+                    <span className="text-gray-500">
+                      Your answer: {userAnswer !== undefined ? question.options[userAnswer] : 'Not answered'}
+                    </span>
+                    {!isCorrect && (
+                      <span className="text-green-600 font-medium">
+                        Correct: {question.options[question.correct]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Explanations */}
+              <div className="ml-11 space-y-4">
+                {/* Correct Answer Explanation */}
+                {question.correctExplanation && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h5 className="font-semibold text-green-800 mb-2">✅ Why this is correct:</h5>
+                    <p className="text-green-700 text-sm leading-relaxed">{question.correctExplanation}</p>
+                  </div>
+                )}
+
+                {/* Incorrect Answer Explanation */}
+                {question.incorrectExplanation && !isCorrect && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h5 className="font-semibold text-red-800 mb-2">❌ Why other options are incorrect:</h5>
+                    <p className="text-red-700 text-sm leading-relaxed">{question.incorrectExplanation}</p>
+                  </div>
+                )}
+
+                {/* Additional Learning Content */}
+                {question.hintMessage && question.hintMessage !== 'NaN' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h5 className="font-semibold text-blue-800 mb-2">💡 Learning Hint:</h5>
+                    <p className="text-blue-700 text-sm leading-relaxed">{question.hintMessage}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <div className="mb-6">

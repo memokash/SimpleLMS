@@ -10,7 +10,9 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   
   const handleUpload = async () => {
-    if (!file || !quizTitle) return alert("Please select file and title");
+    if (!file || !quizTitle) {
+      return alert("Please select file and title");
+    }
     setLoading(true);
     
     try {

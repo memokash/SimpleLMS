@@ -35,12 +35,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
-
-    return unsubscribe;
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
