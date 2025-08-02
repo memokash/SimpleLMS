@@ -1,3 +1,5 @@
+//C:\SimpleLMS\app\api\ai\analyze-content\study-recommendations\route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 

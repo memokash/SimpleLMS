@@ -1,41 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
-
 export async function POST(request: NextRequest) {
   try {
-    const { content, filename } = await request.json();
+    const { userProgress } = await request.json();
+
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY!,
+    });
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are a medical education expert. Analyze the uploaded medical content and provide a JSON response with these exact fields:
-          {
-            "summary": "A concise 2-3 sentence summary",
-            "keyTopics": ["Topic 1", "Topic 2", "Topic 3"],
-            "difficulty": "Beginner" | "Intermediate" | "Advanced",
-            "specialty": "Medical specialty (Cardiology, Immunology, etc.)",
-            "suggestedQuizCount": 10-50 based on content length
-          }`
+          content: `You are an AI study advisor for medical students. Based on user performance data, provide 3-5 specific, actionable study recommendations. Return as a JSON array of strings.`
         },
         {
           role: "user",
-          content: `Analyze this medical content from file "${filename}":\n\n${content.substring(0, 4000)}`
+          content: `Analyze this medical student's progress and provide study recommendations:\n\n${JSON.stringify(userProgress, null, 2)}`
         }
       ],
-      temperature: 0.3,
+      temperature: 0.6,
     });
 
-    const result = JSON.parse(completion.choices[0].message.content || '{}');
-    
-    return NextResponse.json(result);
+    const recommendations = JSON.parse(completion.choices[0].message.content || '[]');
+
+    return NextResponse.json(recommendations);
   } catch (error) {
-    console.error('Error analyzing content:', error);
-    return NextResponse.json({ error: 'Failed to analyze content' }, { status: 500 });
+    console.error('Error getting recommendations:', error);
+    return NextResponse.json({ error: 'Failed to get recommendations' }, { status: 500 });
   }
 }
+
