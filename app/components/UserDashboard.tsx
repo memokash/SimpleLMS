@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getAllCourses } from '../../lib/courseService';
+import { analyzeContent, generateQuizFromContent } from '../../lib/aiService';
 import { Upload, FileText, Brain, Users, Clock, Target, Calculator, Book, MessageCircle, Calendar, Zap, TrendingUp, Award, Play, Pause, RotateCcw, Settings, Search, Filter, Video, Mic, Share, BarChart3, PieChart, LineChart, Heart, Activity, AlertCircle, CheckCircle, Star, Globe, Camera, Stethoscope, Microscope, FlaskConical, Pill, BookOpen, GraduationCap, UserPlus, Send, Phone, Mail, ThumbsUp, ThumbsDown, Eye, Download, Bookmark, Lightbulb, Rocket } from 'lucide-react';
 
 // Enhanced interfaces for the complete study hub
@@ -25,6 +26,7 @@ interface UploadedContent {
   keyTopics: string[];
   difficulty: string;
   specialty: string;
+  originalContent?: string;
 }
 
 interface StudyGoal {
@@ -65,7 +67,12 @@ const ComprehensiveStudyHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [quizFilter, setQuizFilter] = useState('all');
-
+  
+  // AI Upload States
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   // Enhanced mock data for complete study hub
   const [studySessions] = useState<StudySession[]>([
     { id: '1', date: new Date(), duration: 45, topic: 'Cardiology', questionsAnswered: 25, score: 88 },
@@ -85,7 +92,8 @@ const ComprehensiveStudyHub = () => {
       generatedQuizzes: 3,
       keyTopics: ['Heart Failure', 'Arrhythmias', 'Cardiac Output'],
       difficulty: 'Advanced',
-      specialty: 'Cardiology'
+      specialty: 'Cardiology',
+      originalContent: 'Heart failure is a complex clinical syndrome characterized by the inability of the heart to pump sufficient blood to meet the metabolic demands of the body...'
     },
     {
       id: '2',
@@ -97,9 +105,12 @@ const ComprehensiveStudyHub = () => {
       generatedQuizzes: 2,
       keyTopics: ['T-cells', 'Adaptive Immunity', 'Autoimmune Disorders'],
       difficulty: 'Intermediate',
-      specialty: 'Immunology'
+      specialty: 'Immunology',
+      originalContent: 'Adaptive immunity is characterized by specificity, memory, and the ability to distinguish self from non-self antigens...'
     }
   ]);
+
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedContent[]>(uploadedContent);
 
   const [studyGoals] = useState<StudyGoal[]>([
     { id: '1', title: 'Complete 50 Cardiology Questions', target: 50, current: 32, deadline: new Date(Date.now() + 604800000), type: 'quizzes' },
@@ -244,6 +255,171 @@ const ComprehensiveStudyHub = () => {
     }
     return () => clearInterval(interval);
   }, [pomodoroActive, pomodoroTime]);
+
+  // AI File Upload Handlers
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type) && !file.name.endsWith('.txt') && !file.name.endsWith('.pdf')) {
+      alert('Please upload a PDF, Word document, or text file.');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setUploadProgress(0);
+    setAnalysisResult(null);
+
+    try {
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 80));
+      }, 200);
+
+      // Read file content
+      let content = '';
+      if (file.type === 'application/pdf') {
+        // For PDF files, you might want to use a PDF parsing library
+        // For now, we'll prompt user to copy-paste content
+        clearInterval(progressInterval);
+        setUploadProgress(100);
+        alert('PDF upload detected. For best results, please copy and paste the text content using the "Paste Text Content" button below.');
+        setIsAnalyzing(false);
+        return;
+      } else {
+        content = await file.text();
+      }
+
+      clearInterval(progressInterval);
+      setUploadProgress(90);
+
+      // Analyze with AI
+      const analysis = await analyzeContent(content, file.name);
+      setUploadProgress(100);
+      setAnalysisResult(analysis);
+
+      // Add to uploaded content
+      const newContent = {
+        id: Date.now().toString(),
+        filename: file.name,
+        uploadDate: new Date(),
+        type: file.name.endsWith('.pdf') ? 'pdf' as const : 'notes' as const,
+        size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+        aiSummary: analysis.summary,
+        generatedQuizzes: 0,
+        keyTopics: analysis.keyTopics,
+        difficulty: analysis.difficulty,
+        specialty: analysis.specialty,
+        originalContent: content
+      };
+
+      setUploadedFiles(prev => [newContent, ...prev]);
+      
+      // Success notification
+      alert(`✅ "${file.name}" analyzed successfully!\n\n📋 Summary: ${analysis.summary}\n\n🎯 Specialty: ${analysis.specialty}\n📈 Difficulty: ${analysis.difficulty}\n🔑 Key Topics: ${analysis.keyTopics.join(', ')}`);
+
+    } catch (error) {
+      console.error('Error analyzing file:', error);
+      alert('❌ Failed to analyze file. Please try again or contact support.');
+    } finally {
+      setIsAnalyzing(false);
+      setUploadProgress(0);
+      // Reset file input
+      event.target.value = '';
+    }
+  };
+
+  const handleTextUpload = async (textContent: string) => {
+    if (!textContent.trim()) {
+      alert('Please enter some text content to analyze.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+
+    try {
+      // Analyze with AI
+      const analysis = await analyzeContent(textContent, 'Pasted Content');
+      setAnalysisResult(analysis);
+
+      // Add to uploaded content
+      const newContent = {
+        id: Date.now().toString(),
+        filename: 'Pasted Text Content',
+        uploadDate: new Date(),
+        type: 'notes' as const,
+        size: `${(textContent.length / 1024).toFixed(1)} KB`,
+        aiSummary: analysis.summary,
+        generatedQuizzes: 0,
+        keyTopics: analysis.keyTopics,
+        difficulty: analysis.difficulty,
+        specialty: analysis.specialty,
+        originalContent: textContent
+      };
+
+      setUploadedFiles(prev => [newContent, ...prev]);
+      
+      alert(`✅ Text content analyzed successfully!\n\n📋 Summary: ${analysis.summary}\n\n🎯 Specialty: ${analysis.specialty}\n📈 Difficulty: ${analysis.difficulty}`);
+
+    } catch (error) {
+      console.error('Error analyzing text:', error);
+      alert('❌ Failed to analyze content. Please try again.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleGenerateQuiz = async (content: any, questionCount: number = 10) => {
+    if (!content.originalContent) {
+      alert('No content available to generate quiz from.');
+      return;
+    }
+
+    setIsGeneratingQuiz(true);
+
+    try {
+      const quiz = await generateQuizFromContent(
+        content.originalContent,
+        content.specialty,
+        questionCount,
+        "user-id-placeholder" // Replace with actual userId if available
+      );
+
+      // Update the content with new quiz count
+      setUploadedFiles(prev => prev.map(item => 
+        item.id === content.id 
+          ? { ...item, generatedQuizzes: item.generatedQuizzes + 1 }
+          : item
+      ));
+
+      // Here you could save the quiz to your database
+      console.log('Generated Quiz:', quiz);
+      
+      alert(`✅ Generated ${quiz.questions.length} questions successfully!\n\nQuiz includes topics: ${quiz.questions.map(q => q.topic).join(', ')}`);
+
+    } catch (error) {
+      console.error('Error generating quiz:', error);
+      alert('❌ Failed to generate quiz. Please try again.');
+    } finally {
+      setIsGeneratingQuiz(false);
+    }
+  };
+
+  const showTextUploadDialog = () => {
+    const textContent = prompt('Paste your text content here (lecture notes, textbook excerpts, etc.):');
+    if (textContent) {
+      handleTextUpload(textContent);
+    }
+  };
 
   const loadCourses = async () => {
     try {
@@ -477,30 +653,69 @@ const ComprehensiveStudyHub = () => {
         {/* AI Content Upload Tab */}
         {activeTab === 'ai-upload' && (
           <div className="space-y-6">
+            {/* Upload Section */}
             <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100/30 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
                 <Brain className="w-6 h-6 mr-3 text-purple-500" />
                 AI-Powered Content Upload & Quiz Generation
               </h3>
               
-              <div className="border-2 border-dashed border-blue-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-                <Upload className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-                <h4 className="text-lg font-medium text-gray-900 mb-2">Upload Your Study Materials</h4>
-                <p className="text-gray-600 mb-4">Drop PDFs, lecture notes, or textbook chapters. Our AI will analyze and create custom quizzes!</p>
+              <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                isAnalyzing ? 'border-blue-500 bg-blue-50' : 'border-blue-300 hover:border-blue-400'
+              }`}>
+                <Upload className={`w-12 h-12 mx-auto mb-4 ${isAnalyzing ? 'text-blue-600 animate-pulse' : 'text-blue-500'}`} />
+                
+                {isAnalyzing ? (
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-medium text-blue-900">Analyzing Your Content...</h4>
+                    <div className="w-full bg-blue-200 rounded-full h-3">
+                      <div 
+                        className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-blue-700">AI is extracting key concepts and analyzing difficulty level...</p>
+                  </div>
+                ) : (
+                  <div>
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">Upload Your Study Materials</h4>
+                    <p className="text-gray-600 mb-4">Drop PDFs, lecture notes, or textbook chapters. Our AI will analyze and create custom quizzes!</p>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                    Upload Files
-                  </button>
-                  <button className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                  <label className={`bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer ${
+                    isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}>
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept=".pdf,.txt,.doc,.docx"
+                      className="hidden"
+                      disabled={isAnalyzing}
+                    />
+                    {isAnalyzing ? 'Processing...' : 'Upload Files'}
+                  </label>
+                  <button 
+                    onClick={showTextUploadDialog}
+                    disabled={isAnalyzing}
+                    className={`border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors ${
+                      isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
                     Paste Text Content
                   </button>
+                </div>
+
+                <div className="mt-4 text-sm text-gray-500">
+                  Supported formats: PDF, Word documents, text files (max 10MB)
                 </div>
               </div>
 
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200/50">
                   <div className="text-2xl mb-2">📄</div>
-                  <div className="font-medium text-green-800">PDF Analysis</div>
+                  <div className="font-medium text-green-800">Smart Analysis</div>
                   <div className="text-sm text-green-600">Extract key concepts automatically</div>
                 </div>
                 <div className="p-4 bg-purple-50 rounded-lg border border-purple-200/50">
@@ -510,53 +725,115 @@ const ComprehensiveStudyHub = () => {
                 </div>
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200/50">
                   <div className="text-2xl mb-2">📊</div>
-                  <div className="font-medium text-blue-800">Smart Difficulty</div>
-                  <div className="text-sm text-blue-600">Adaptive to your level</div>
+                  <div className="font-medium text-blue-800">Adaptive Difficulty</div>
+                  <div className="text-sm text-blue-600">Questions tailored to your level</div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100/30 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Uploaded Content</h3>
-              <div className="space-y-4">
-                {uploadedContent.map(content => (
-                  <div key={content.id} className="border border-blue-200/50 rounded-lg p-4 hover:border-blue-300 transition-colors bg-blue-50/20">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <FileText className="w-5 h-5 text-blue-500" />
-                          <h4 className="font-medium text-gray-900">{content.filename}</h4>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{content.type}</span>
-                          <span className="text-xs text-gray-500">{content.size}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-3">{content.aiSummary}</p>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                          {content.keyTopics.map(topic => (
-                            <span key={topic} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                              {topic}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span>📅 {content.uploadDate.toLocaleDateString()}</span>
-                          <span>📝 {content.generatedQuizzes} quizzes generated</span>
-                          <span>🎓 {content.difficulty}</span>
-                          <span>🏥 {content.specialty}</span>
-                        </div>
-                      </div>
-                      <div className="ml-4 flex space-x-2">
-                        <button className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
-                          Generate More Quizzes
-                        </button>
-                        <button className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">
-                          Practice
-                        </button>
-                      </div>
+              {/* Analysis Result Display */}
+              {analysisResult && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200/50">
+                  <h4 className="font-semibold text-green-800 mb-2">✅ Analysis Complete!</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium text-green-700">Specialty:</span>
+                      <span className="ml-2 text-green-600">{analysisResult.specialty}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium text-green-700">Difficulty:</span>
+                      <span className="ml-2 text-green-600">{analysisResult.difficulty}</span>
+                    </div>
+                    <div className="md:col-span-2">
+                      <span className="font-medium text-green-700">Key Topics:</span>
+                      <span className="ml-2 text-green-600">{analysisResult.keyTopics.join(', ')}</span>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="mt-3">
+                    <span className="font-medium text-green-700">Summary:</span>
+                    <p className="text-green-600 mt-1">{analysisResult.summary}</p>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Uploaded Content */}
+            <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100/30 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Uploaded Content ({uploadedFiles.length})</h3>
+              
+              {uploadedFiles.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                  <p>No content uploaded yet. Upload some study materials to get started!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {uploadedFiles.map(content => (
+                    <div key={content.id} className="border border-blue-200/50 rounded-lg p-4 hover:border-blue-300 transition-colors bg-blue-50/20">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <FileText className="w-5 h-5 text-blue-500" />
+                            <h4 className="font-medium text-gray-900">{content.filename}</h4>
+                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{content.type}</span>
+                            <span className="text-xs text-gray-500">{content.size}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">{content.aiSummary}</p>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {content.keyTopics.map((topic, index) => (
+                              <span key={index} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                                {topic}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>📅 {content.uploadDate.toLocaleDateString()}</span>
+                            <span>📝 {content.generatedQuizzes} quizzes generated</span>
+                            <span>🎓 {content.difficulty}</span>
+                            <span>🏥 {content.specialty}</span>
+                          </div>
+                        </div>
+                        <div className="ml-4 flex flex-col space-y-2">
+                          <button 
+                            onClick={() => handleGenerateQuiz(content, 10)}
+                            disabled={isGeneratingQuiz}
+                            className={`bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors ${
+                              isGeneratingQuiz ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {isGeneratingQuiz ? 'Generating...' : 'Generate Quiz'}
+                          </button>
+                          <button 
+                            onClick={() => handleGenerateQuiz(content, 25)}
+                            disabled={isGeneratingQuiz}
+                            className={`bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors ${
+                              isGeneratingQuiz ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {isGeneratingQuiz ? 'Generating...' : 'Generate 25Q'}
+                          </button>
+                          <button className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition-colors">
+                            Practice
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* AI Generation Status */}
+            {isGeneratingQuiz && (
+              <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-6">
+                <div className="flex items-center space-x-3">
+                  <Brain className="w-6 h-6 text-purple-600 animate-pulse" />
+                  <div>
+                    <h4 className="font-medium text-purple-800">Generating Quiz Questions...</h4>
+                    <p className="text-sm text-purple-600">AI is creating custom questions based on your content</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
