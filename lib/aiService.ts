@@ -1,5 +1,6 @@
 // lib/aiService.ts
-import { saveQuestionsToBank, generateQuizFromBank } from './questionBankService';
+// Note: Remove the import line until questionBankService is created
+// import { saveQuestionsToBank, generateQuizFromBank } from './questionBankService';
 
 interface AIAnalysisResult {
   summary: string;
@@ -9,6 +10,7 @@ interface AIAnalysisResult {
   suggestedQuizCount: number;
 }
 
+// Fixed interface with all required properties
 interface GeneratedQuiz {
   questions: {
     question: string;
@@ -17,6 +19,10 @@ interface GeneratedQuiz {
     explanation: string;
     topic: string;
   }[];
+  // API response properties
+  savedToBank?: boolean;
+  bankMessage?: string;
+  // Optional enhanced properties
   metadata?: any;
   title?: string;
   description?: string;
@@ -53,57 +59,36 @@ export const generateQuizFromContent = async (
   content: string, 
   specialty: string, 
   questionCount: number = 10,
-  userId: string,
-  filename: string = 'Unknown Source'
+  userId?: string,  // Optional for backward compatibility
+  filename?: string // Optional for backward compatibility
 ): Promise<GeneratedQuiz> => {
   try {
     const response = await fetch('/api/ai/generate-quiz', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, specialty, questionCount })
+      body: JSON.stringify({ 
+        content, 
+        specialty, 
+        questionCount,
+        userId,    // Pass userId to API
+        filename   // Pass filename to API
+      })
     });
     
     if (!response.ok) {
       throw new Error('Failed to generate quiz');
     }
     
-    const quiz = await response.json();
+    const result = await response.json();
     
-    // Save questions to the question bank
-    if (quiz.questions && quiz.questions.length > 0) {
-      try {
-        const metadata = {
-          specialty: specialty,
-          difficulty: 'Intermediate', // You could analyze this from content
-          filename: filename
-        };
-        
-        await saveQuestionsToBank(quiz.questions, metadata, userId);
-        console.log(`Saved ${quiz.questions.length} questions to question bank`);
-      } catch (saveError) {
-        console.error('Error saving questions to bank:', saveError);
-        // Don't throw here - quiz generation succeeded, saving is bonus
-      }
+    // Show success message if questions were saved to bank
+    if (result.savedToBank) {
+      console.log('✅ Questions saved to community question bank!');
     }
     
-    return quiz;
+    return result;
   } catch (error) {
     console.error('Error generating quiz:', error);
-    throw error;
-  }
-};
-
-export const generateQuizFromQuestionBank = async (preferences: QuizPreferences): Promise<GeneratedQuiz> => {
-  try {
-    const quiz = await generateQuizFromBank(preferences);
-    return {
-      questions: quiz.questions,
-      metadata: quiz.metadata,
-      title: quiz.title,
-      description: quiz.description
-    };
-  } catch (error) {
-    console.error('Error generating quiz from question bank:', error);
     throw error;
   }
 };
@@ -141,6 +126,18 @@ export const getAIQuizSuggestions = async (userId: string, userStats: any): Prom
     return await response.json();
   } catch (error) {
     console.error('Error getting quiz suggestions:', error);
+    throw error;
+  }
+};
+
+// Placeholder function until questionBankService is created
+export const generateQuizFromQuestionBank = async (preferences: QuizPreferences): Promise<GeneratedQuiz> => {
+  try {
+    // This will work once questionBankService is implemented
+    // For now, return a basic response
+    throw new Error('Question bank service not yet implemented. Please create questionBankService.js first.');
+  } catch (error) {
+    console.error('Error generating quiz from question bank:', error);
     throw error;
   }
 };

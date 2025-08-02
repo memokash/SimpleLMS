@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuth } from './AuthContext';
 import React, { useState, useEffect } from 'react';
 import { getAllCourses } from '../../lib/courseService';
 import { analyzeContent, generateQuizFromContent } from '../../lib/aiService';
@@ -380,42 +380,57 @@ const ComprehensiveStudyHub = () => {
     }
   };
 
-  const handleGenerateQuiz = async (content: any, questionCount: number = 10) => {
-    if (!content.originalContent) {
-      alert('No content available to generate quiz from.');
-      return;
+  // In your UserDashboard.tsx - just replace the handleGenerateQuiz function
+
+// Replace your handleGenerateQuiz function with this:
+const handleGenerateQuiz = async (content: any, questionCount: number = 10) => {
+  if (!content.originalContent) {
+    alert('No content available to generate quiz from.');
+    return;
+  }
+
+  setIsGeneratingQuiz(true);
+
+  try {
+    // Get the current authenticated user
+    const { user } = useAuth();
+    const currentUserId = user?.uid || 'anonymous-user';
+    
+    const quiz = await generateQuizFromContent(
+      content.originalContent,
+      content.specialty,
+      questionCount,
+      currentUserId,      // Real Firebase user ID
+      content.filename
+    );
+
+    // Update the content with new quiz count
+    setUploadedFiles(prev => prev.map(item => 
+      item.id === content.id 
+        ? { ...item, generatedQuizzes: item.generatedQuizzes + 1 }
+        : item
+    ));
+
+    console.log('Generated Quiz:', quiz);
+    
+    // Success message with bank status
+    let successMessage = `✅ Generated ${quiz.questions.length} questions successfully!\n\nQuiz includes topics: ${quiz.questions.map(q => q.topic).join(', ')}`;
+    
+    if (quiz.savedToBank) {
+      successMessage += '\n\n💾 Questions saved to community question bank!';
+    } else if (quiz.bankMessage) {
+      successMessage += `\n\n⚠️ ${quiz.bankMessage}`;
     }
+    
+    alert(successMessage);
 
-    setIsGeneratingQuiz(true);
-
-    try {
-      const quiz = await generateQuizFromContent(
-        content.originalContent,
-        content.specialty,
-        questionCount,
-        "user-id-placeholder" // Replace with actual userId if available
-      );
-
-      // Update the content with new quiz count
-      setUploadedFiles(prev => prev.map(item => 
-        item.id === content.id 
-          ? { ...item, generatedQuizzes: item.generatedQuizzes + 1 }
-          : item
-      ));
-
-      // Here you could save the quiz to your database
-      console.log('Generated Quiz:', quiz);
-      
-      alert(`✅ Generated ${quiz.questions.length} questions successfully!\n\nQuiz includes topics: ${quiz.questions.map(q => q.topic).join(', ')}`);
-
-    } catch (error) {
-      console.error('Error generating quiz:', error);
-      alert('❌ Failed to generate quiz. Please try again.');
-    } finally {
-      setIsGeneratingQuiz(false);
-    }
-  };
-
+  } catch (error) {
+    console.error('Error generating quiz:', error);
+    alert('❌ Failed to generate quiz. Please try again.');
+  } finally {
+    setIsGeneratingQuiz(false);
+  }
+};
   const showTextUploadDialog = () => {
     const textContent = prompt('Paste your text content here (lecture notes, textbook excerpts, etc.):');
     if (textContent) {
