@@ -39,12 +39,20 @@ const Header = () => {
                     </button>
                   </div>
                 ) : (
-                  <button 
-                    onClick={() => setShowAuthModal(true)}
-                    className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all shadow-lg"
-                  >
-                    Sign Up
-                  </button>
+                  <div className="flex items-center space-x-3">
+                    <button 
+                      onClick={() => setShowAuthModal(true)}
+                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+                    >
+                      Sign In
+                    </button>
+                    <button 
+                      onClick={() => setShowAuthModal(true)}
+                      className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all shadow-lg"
+                    >
+                      Sign Up
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -56,12 +64,20 @@ const Header = () => {
                   Dashboard
                 </a>
               ) : (
-                <button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
-                >
-                  Sign Up
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button 
+                    onClick={() => setShowAuthModal(true)}
+                    className="text-gray-600 px-2 py-1 text-sm font-medium"
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    onClick={() => setShowAuthModal(true)}
+                    className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               )}
             </div>
           </div>
