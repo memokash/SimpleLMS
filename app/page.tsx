@@ -20,109 +20,69 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Enhanced Navigation */}
-      <nav className="bg-white/95 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                🩺 MedicalSchoolQuizzes
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <a href="#features" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Features</a>
-                <a href="#specialties" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Specialties</a>
-                <a href="#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Pricing</a>
-                <a href="/quiz" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Try Quiz</a>
-                {user ? (
-                  <div className="flex items-center space-x-4">
-                    <a href="/dashboard" className="bg-blue-100 text-blue-700 px-3 py-2 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors">
-                      Dashboard
-                    </a>
-                    <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
-                    <button 
-                      onClick={logout}
-                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <button 
-                    onClick={() => setShowAuthModal(true)}
-                    className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all shadow-lg"
-                  >
-                    Sign Up
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+  
 
       {/* Enhanced Hero Section with Books Background */}
-      <section className="relative overflow-hidden min-h-screen flex items-center">
+      <section className="relative overflow-hidden min-h-screen lg:min-h-screen flex items-center">
         {/* Books Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(/books.png)',
+            backgroundImage: 'url(/books.webp)',
           }}
         ></div>
         
         {/* Lighter Gradient Overlay for Better Image Visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-blue-800/50 to-green-800/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 via-blue-800/30 to-green-800/40"></div>
+        
+        {/* Floating badges - Centered horizontally */}
+        <div className="hidden lg:block absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-bold text-base shadow-2xl z-10">
+          🏆 #1 Medical Quiz Platform
+        </div>
+        <div className="hidden lg:block absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-lg text-blue-900 px-6 py-3 rounded-full font-semibold text-base shadow-2xl z-10">
+          💡 AI-Powered Learning
+        </div>
         
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center text-white">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center text-white">
+          <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
+            <div className="space-y-4 lg:space-y-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-white drop-shadow-2xl">
                 Master Medical School
-                <span className="block text-yellow-300">With Smart Quizzes</span>
+                <span className="block text-yellow-300 drop-shadow-2xl">With Smart Quizzes</span>
               </h1>
-              <p className="text-xl lg:text-2xl text-blue-100 leading-relaxed max-w-3xl mx-auto drop-shadow-md">
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 leading-relaxed max-w-3xl mx-auto drop-shadow-xl">
                 Practice with expert-crafted questions covering your whole school syllabus, pathology, and more. 
                 Track your progress and pass your medical school exams with confidence.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center">
               <a 
                 href="/quiz" 
-                className="px-10 py-5 bg-yellow-400 text-blue-900 font-bold rounded-lg text-xl hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3"
+                className="px-8 py-4 lg:px-10 lg:py-5 bg-yellow-400 text-blue-900 font-bold rounded-lg text-lg lg:text-xl hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3 min-h-[48px]"
               >
                 Try Free Quiz Now 🧠
-                <ArrowRight className="w-6 h-6" />
+                <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6" />
               </a>
               <button 
                 onClick={() => setShowAuthModal(true)}
-                className="px-10 py-5 border-2 border-white text-white font-semibold rounded-lg text-xl hover:bg-white hover:text-blue-700 transition-colors shadow-2xl"
+                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-white text-white font-semibold rounded-lg text-lg lg:text-xl hover:bg-white hover:text-blue-700 transition-colors shadow-2xl min-h-[48px]"
               >
                 Sign Up Free
               </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8 text-base lg:text-lg">
               <div className="flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-green-300" />
-                <span className="drop-shadow-md">No credit card required</span>
+                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
+                <span className="drop-shadow-xl text-gray-100">No credit card required</span>
               </div>
               <div className="flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-green-300" />
-                <span className="drop-shadow-md">15,000+ Questions</span>
+                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
+                <span className="drop-shadow-xl text-gray-100">15,000+ Questions</span>
               </div>
             </div>
-          </div>
-
-          {/* Floating badges - Fixed positioning */}
-          <div className="absolute top-10 right-4 lg:right-10 bg-yellow-400 text-blue-900 px-4 py-2 lg:px-6 lg:py-3 rounded-full font-bold text-sm lg:text-lg shadow-2xl">
-            🏆 #1 Medical Quiz Platform
-          </div>
-          <div className="absolute bottom-10 left-4 lg:left-10 bg-white/90 backdrop-blur-lg text-blue-900 px-4 py-2 lg:px-6 lg:py-3 rounded-full font-semibold text-sm lg:text-lg shadow-2xl">
-            💡 AI-Powered Learning
           </div>
         </div>
       </section>
@@ -534,47 +494,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Enhanced Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="text-2xl font-bold text-white mb-4">🩺 MedicalSchoolQuizzes</div>
-              <p className="text-gray-400">
-                Empowering medical students with smart, effective quiz preparation tools designed by medical professionals.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Product</h3>
-              <ul className="space-y-2">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#specialties" className="hover:text-white transition-colors">Specialties</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/quiz" className="hover:text-white transition-colors">Try Quiz</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Support</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-            <p>&copy; 2025 MedicalSchoolQuizzes. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-
+      
       {/* Auth Modal - Single instance at the end */}
       <AuthModal
         isOpen={showAuthModal}
