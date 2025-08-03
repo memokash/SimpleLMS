@@ -4,29 +4,26 @@ import { useAuth } from '../components/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import UserDashboard from '../components/UserDashboard';
+import DashboardNavigation from '../components/DashboardNavigation'; // ADD THIS
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // FIRST useEffect - Auth check
   useEffect(() => {
     if (!loading && !user) {
       router.push('/');
     }
   }, [user, loading, router]);
 
-  // SECOND useEffect - Success message (move this up!)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success')) {
       alert('🎉 Payment successful! Welcome to MedQuiz Pro!');
-      // Clean up URL
       window.history.replaceState({}, document.title, '/dashboard');
     }
   }, []);
 
-  // Early returns AFTER all hooks
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -39,8 +36,13 @@ export default function DashboardPage() {
   }
 
   if (!user) {
-    return null; // Will redirect to home
+    return null;
   }
 
-  return <UserDashboard />;
+  return (
+    <>
+      <DashboardNavigation />
+      <UserDashboard />
+    </>
+  );
 }

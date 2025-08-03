@@ -3,6 +3,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { 
   User, 
   signInWithEmailAndPassword, 
@@ -35,28 +36,61 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    // ✅ SIMPLIFIED - Only handle auth state, no automatic redirects
+    return onAuthStateChanged(auth, (currentUser) => {
+      console.log('🔍 Auth state changed:', {
+        userExists: !!currentUser,
+        currentPath: pathname
+      });
+      
+      setUser(currentUser);
       setLoading(false);
     });
-  }, []);
+  }, [pathname]);
 
   const signInWithEmail = async (email: string, password: string) => {
+    console.log('🔐 Signing in with email:', email);
     await signInWithEmailAndPassword(auth, email, password);
+    
+    // ✅ Only redirect to dashboard if signing in from homepage
+    if (pathname === '/' || pathname === '/home') {
+      console.log('✅ Redirecting to dashboard after sign in');
+      router.push('/dashboard');
+    }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
+    console.log('📝 Signing up with email:', email);
     await createUserWithEmailAndPassword(auth, email, password);
+    
+    // ✅ Only redirect to dashboard if signing up from homepage
+    if (pathname === '/' || pathname === '/home') {
+      console.log('✅ Redirecting to dashboard after sign up');
+      router.push('/dashboard');
+    }
   };
 
   const signInWithGoogle = async () => {
+    console.log('🔍 Signing in with Google');
     await signInWithPopup(auth, googleProvider);
+    
+    // ✅ Only redirect to dashboard if signing in from homepage
+    if (pathname === '/' || pathname === '/home') {
+      console.log('✅ Redirecting to dashboard after Google sign in');
+      router.push('/dashboard');
+    }
   };
 
   const logout = async () => {
+    console.log('👋 Signing out');
     await signOut(auth);
+    
+    // ✅ Always redirect to home on logout
+    router.push('/');
   };
 
   const value: AuthContextType = {

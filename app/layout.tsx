@@ -1,6 +1,6 @@
 import './globals.css'
 import { AuthProvider } from './components/AuthContext'
-import Header from './components/Header'
+
 import Footer from './components/Footer'
 
 export const metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <Header />
+          
           <main>{children}</main>
           <Footer />
         </AuthProvider>
