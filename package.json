@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "pnpm approve-builds || true"
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.7.0",
