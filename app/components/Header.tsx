@@ -4,7 +4,13 @@ import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import AuthModal from './AuthModal';
 
-const Header = () => {
+interface HeaderProps {
+  onSignInClick: () => void;
+  onSignUpClick: () => void;
+}
+const Header: React.FC<HeaderProps> = ({ onSignInClick, onSignUpClick }) => {
+  
+ 
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -25,35 +31,35 @@ const Header = () => {
                 <a href="/#specialties" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Specialties</a>
                 <a href="/#pricing" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Pricing</a>
                 <a href="/quiz" className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">Try Quiz</a>
-                {user ? (
-                  <div className="flex items-center space-x-4">
-                    <a href="/dashboard" className="bg-blue-100 text-blue-700 px-3 py-2 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors">
-                      Dashboard
-                    </a>
-                    <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
-                    <button 
-                      onClick={logout}
-                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-3">
-                    <button 
-                      onClick={() => setShowAuthModal(true)}
-                      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-                    >
-                      Sign In
-                    </button>
-                    <button 
-                      onClick={() => setShowAuthModal(true)}
-                      className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all shadow-lg"
-                    >
-                      Sign Up
-                    </button>
-                  </div>
-                )}
+{user ? (
+  <div className="flex items-center space-x-4">
+    <a href="/dashboard" className="bg-blue-100 text-blue-700 px-3 py-2 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors">
+      Dashboard
+    </a>
+    <span className="text-sm text-gray-600">Hi, {user.displayName || user.email}</span>
+    <button 
+      onClick={logout}
+      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+    >
+      Logout
+    </button>
+  </div>
+) : (
+  <div className="flex items-center space-x-3">
+    <button
+      onClick={onSignInClick}
+      className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
+    >
+      Sign In
+    </button>
+    <button
+      onClick={onSignUpClick}
+      className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-green-700 transition-all shadow-lg"
+    >
+      Sign Up
+    </button>
+  </div>
+)}
               </div>
             </div>
             

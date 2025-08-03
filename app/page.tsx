@@ -4,10 +4,20 @@ import React, { useState } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
 import { ArrowRight, Users, TrendingUp, Star, CheckCircle } from 'lucide-react';
+import Header from './components/Header'; // ✅ CHANGED: Replace Header with HomepageHeader
 
 const HomePage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // ✅ ADDED: Header click handlers
+  const handleSignInClick = () => {
+    setShowAuthModal(true);
+  };
+
+  const handleSignUpClick = () => {
+    setShowAuthModal(true);
+  };
 
   const specialties = [
     { name: 'Cardiology', count: 250, color: 'bg-red-100 text-red-700', icon: '❤️' },
@@ -20,7 +30,12 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-  
+      
+      {/* ✅ ADDED: Homepage Header */}
+      <Header 
+        onSignInClick={handleSignInClick}
+        onSignUpClick={handleSignUpClick}
+      />
 
       {/* Enhanced Hero Section with Books Background */}
       <section className="relative overflow-hidden min-h-screen lg:min-h-screen flex items-center">
