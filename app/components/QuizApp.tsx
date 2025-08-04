@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { getQuizMetadata, getQuizQuestions } from '../../lib/firebase';
+// Import the EnhancedQuizDisplay component when you create it
+// import EnhancedQuizDisplay from './EnhancedQuizDisplay';
 
 interface QuizAppProps {
   quizId: string;
@@ -16,6 +18,13 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [questionCount, setQuestionCount] = useState<number | 'full'>('full');
+
+  // ✅ NEW: AI Enhancement State
+  const [useAIEnhancements, setUseAIEnhancements] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | undefined>();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showExplanations, setShowExplanations] = useState(false);
 
   useEffect(() => {
     // Get question count from URL parameters
@@ -71,16 +80,73 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
     }
   }, [quizId, questionCount]);
 
+  // ✅ NEW: Function to enhance explanations with AI
+  const enhanceCurrentQuestion = async () => {
+    if (isEnhancing) {
+      return;
+    }
+    
+    setIsEnhancing(true);
+    try {
+      const currentQuestionData = quizData.questions[currentQuestion];
+      
+      const response = await fetch('/api/ai/enhance-quiz-explanations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: currentQuestionData.question,
+          options: currentQuestionData.options,
+          correctAnswer: currentQuestionData.correct,
+          category: currentQuestionData.category || 'Medical Knowledge'
+        })
+      });
+      
+      if (response.ok) {
+        const enhanced = await response.json();
+        
+        // Update the current question with AI enhancements
+        const updatedQuestions = [...quizData.questions];
+        updatedQuestions[currentQuestion] = {
+          ...currentQuestionData,
+          correctExplanation: enhanced.correctExplanation,
+          incorrectExplanation: enhanced.incorrectExplanation,
+          teachingElements: enhanced.teachingElements,
+          explanationEnhancedBy: 'openai',
+          explanationVersion: '2.0'
+        };
+        
+        setQuizData({
+          ...quizData,
+          questions: updatedQuestions
+        });
+        setUseAIEnhancements(true);
+      }
+    } catch (error) {
+      console.error('Failed to enhance question:', error);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
   const handleAnswerSelect = (questionIndex: number, answerIndex: number) => {
     setSelectedAnswers({
       ...selectedAnswers,
       [questionIndex]: answerIndex
     });
+    
+    // ✅ NEW: Update selectedAnswer for AI components
+    if (questionIndex === currentQuestion) {
+      setSelectedAnswer(answerIndex);
+    }
   };
 
   const handleNext = () => {
     if (currentQuestion < quizData.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
+      // ✅ NEW: Reset AI states for new question
+      setSelectedAnswer(selectedAnswers[currentQuestion + 1]);
+      setIsSubmitted(false);
+      setShowExplanations(false);
     } else {
       calculateScore();
     }
@@ -89,6 +155,18 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
   const handlePrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      // ✅ NEW: Reset AI states for previous question
+      setSelectedAnswer(selectedAnswers[currentQuestion - 1]);
+      setIsSubmitted(false);
+      setShowExplanations(false);
+    }
+  };
+
+  // ✅ NEW: Handle submit for AI-enhanced questions
+  const handleSubmit = () => {
+    if (selectedAnswer !== undefined) {
+      setIsSubmitted(true);
+      setShowExplanations(true);
     }
   };
 
@@ -108,6 +186,11 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
     setSelectedAnswers({});
     setShowResults(false);
     setScore(0);
+    // ✅ NEW: Reset AI states
+    setSelectedAnswer(undefined);
+    setIsSubmitted(false);
+    setShowExplanations(false);
+    setUseAIEnhancements(false);
   };
 
   if (loading) {
@@ -218,7 +301,7 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
           </div>
         </div>
 
-        {/* DETAILED REVIEW WITH EXPLANATIONS */}
+        {/* DETAILED REVIEW WITH EXPLANATIONS - Enhanced with AI content */}
         <div className="space-y-6">
           <h3 className="text-2xl font-bold text-gray-900 mb-6">📚 Review & Learn</h3>
           
@@ -257,17 +340,24 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
                   </div>
                 </div>
 
-                {/* Explanations */}
+                {/* ✅ ENHANCED: AI-Generated Explanations */}
                 <div className="ml-11 space-y-4">
-                  {/* Correct Answer Explanation */}
+                  {/* AI-Enhanced Correct Answer Explanation */}
                   {question.correctExplanation && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                      <h5 className="font-semibold text-green-800 mb-2">✅ Why this is correct:</h5>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h5 className="font-semibold text-green-800">✅ Why this is correct:</h5>
+                        {question.explanationEnhancedBy && (
+                          <span className="text-xs bg-green-200 text-green-700 px-2 py-1 rounded-full">
+                            AI Enhanced
+                          </span>
+                        )}
+                      </div>
                       <p className="text-green-700 text-sm leading-relaxed">{question.correctExplanation}</p>
                     </div>
                   )}
 
-                  {/* Incorrect Answer Explanation */}
+                  {/* AI-Enhanced Incorrect Answer Explanation */}
                   {question.incorrectExplanation && !isCorrect && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                       <h5 className="font-semibold text-red-800 mb-2">❌ Why other options are incorrect:</h5>
@@ -275,8 +365,48 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
                     </div>
                   )}
 
-                  {/* Additional Learning Content */}
-                  {question.hintMessage && question.hintMessage !== 'NaN' && (
+                  {/* ✅ NEW: AI Teaching Elements */}
+                  {question.teachingElements && (
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                      <h5 className="font-semibold text-purple-800 mb-3">🧠 Learning Aids:</h5>
+                      
+                      {question.teachingElements.analogies && question.teachingElements.analogies.length > 0 && (
+                        <div className="mb-3">
+                          <span className="text-sm font-medium text-purple-700">💡 Analogies:</span>
+                          <ul className="list-disc list-inside text-sm text-purple-600 ml-4">
+                            {question.teachingElements.analogies.map((analogy, i) => (
+                              <li key={i}>{analogy}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {question.teachingElements.mnemonics && question.teachingElements.mnemonics.length > 0 && (
+                        <div className="mb-3">
+                          <span className="text-sm font-medium text-purple-700">🎯 Mnemonics:</span>
+                          <ul className="list-disc list-inside text-sm text-purple-600 ml-4">
+                            {question.teachingElements.mnemonics.map((mnemonic, i) => (
+                              <li key={i}>{mnemonic}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {question.teachingElements.examples && question.teachingElements.examples.length > 0 && (
+                        <div>
+                          <span className="text-sm font-medium text-purple-700">🏥 Clinical Examples:</span>
+                          <ul className="list-disc list-inside text-sm text-purple-600 ml-4">
+                            {question.teachingElements.examples.map((example, i) => (
+                              <li key={i}>{example}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Fallback to original explanation */}
+                  {question.hintMessage && question.hintMessage !== 'NaN' && !question.correctExplanation && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <h5 className="font-semibold text-blue-800 mb-2">💡 Learning Hint:</h5>
                       <p className="text-blue-700 text-sm leading-relaxed">{question.hintMessage}</p>
@@ -293,6 +423,27 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      {/* ✅ NEW: AI Enhancement Toggle */}
+      {!useAIEnhancements && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-blue-900">🤖 AI-Enhanced Learning</h3>
+              <p className="text-blue-700 text-sm">
+                Get comprehensive explanations with analogies, mnemonics, and clinical examples
+              </p>
+            </div>
+            <button
+              onClick={enhanceCurrentQuestion}
+              disabled={isEnhancing}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {isEnhancing ? 'Enhancing...' : '✨ Enhance with AI'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Quiz Header with Count Info */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
@@ -360,6 +511,42 @@ const QuizApp = ({ quizId }: QuizAppProps) => {
           ))}
         </div>
       </div>
+
+      {/* ✅ NEW: Submit button for AI-enhanced questions */}
+      {useAIEnhancements && !isSubmitted && selectedAnswer !== undefined && (
+        <div className="mb-6 text-center">
+          <button
+            onClick={handleSubmit}
+            className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Submit Answer
+          </button>
+        </div>
+      )}
+
+      {/* ✅ NEW: AI-Enhanced Explanations Preview (shown after submit) */}
+      {useAIEnhancements && showExplanations && selectedAnswer !== undefined && (
+        <div className="mb-6 space-y-4">
+          {selectedAnswer === question.correct ? (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h3 className="font-semibold text-green-800 mb-2">✅ Correct!</h3>
+              {question.correctExplanation && (
+                <p className="text-green-700 text-sm">{question.correctExplanation}</p>
+              )}
+            </div>
+          ) : (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <h3 className="font-semibold text-red-800 mb-2">❌ Incorrect</h3>
+              <p className="text-red-700 text-sm mb-2">
+                Correct answer: {question.options[question.correct]}
+              </p>
+              {question.incorrectExplanation && (
+                <p className="text-red-700 text-sm">{question.incorrectExplanation}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between">
