@@ -15,20 +15,19 @@
     "firebase": "^12.0.0",
     "lucide-react": "^0.525.0",
     "next": "^14.2.0",
-    "openai": "^5.11.0",
+    "openai": "^5.10.2",
     "react": "^18",
     "react-dom": "^18",
     "stripe": "^18.3.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@types/next": "^8.0.7",
-    "@types/node": "^24.2.0",
+    "@types/node": "^20",
     "autoprefixer": "^10.4.21",
     "eslint": "^8",
-    "eslint-config-next": "^14.2.0",
+    "eslint-config-next": "^14.2.31",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.9.2"
+    "typescript": "^5"
   }
 }
