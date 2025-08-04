@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
     }
 
-    // Parse request body (same structure as analyze)
+    // Parse request body (enhanced with category support)
     let requestData;
     try {
       requestData = await request.json();
@@ -27,6 +27,9 @@ export async function POST(request: NextRequest) {
         hasContent: !!requestData.content,
         contentLength: requestData.content?.length,
         specialty: requestData.specialty,
+        difficulty: requestData.difficulty, // 🔥 NEW: Log difficulty
+        category: requestData.category, // 🔥 NEW: Log category
+        topic: requestData.topic, // 🔥 NEW: Log topic
         questionCount: requestData.questionCount,
         userId: requestData.userId,
         filename: requestData.filename
@@ -36,7 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON in request' }, { status: 400 });
     }
 
-    const { content, specialty, questionCount, userId, filename } = requestData;
+    // 🔥 ENHANCED: Extract all parameters including category
+    const { 
+      content, 
+      specialty, 
+      difficulty, 
+      category, 
+      topic, 
+      questionCount, 
+      userId, 
+      filename 
+    } = requestData;
 
     // Validate required fields
     if (!content) {
@@ -60,37 +73,55 @@ export async function POST(request: NextRequest) {
     console.log('📊 Generation parameters:', {
       model: 'gpt-4',
       specialty: specialty || 'General Medicine',
+      difficulty: difficulty || 'Intermediate',
+      category: category || 'Medical Knowledge', // 🔥 NEW: Log category
+      topic: topic || 'General',
       questionCount: questionCount,
       contentPreview: content.substring(0, 100) + '...'
     });
+    
+    // 🔥 ENHANCED: Include category and difficulty in AI prompt
+    const systemPrompt = `You are a medical education expert creating USMLE-style questions. Create exactly ${questionCount} multiple choice questions and return ONLY valid JSON in this exact format:
+    {
+      "questions": [
+        {
+          "question": "Question text here?",
+          "options": ["A. Option 1", "B. Option 2", "C. Option 3", "D. Option 4"],
+          "correctAnswer": 0,
+          "explanation": "Detailed explanation of why the answer is correct.",
+          "topic": "Specific medical topic"
+        }
+      ]
+    }
+    
+    Important rules:
+    - correctAnswer should be the index (0, 1, 2, or 3) of the correct option
+    - Each question must be high-quality and clinically relevant for ${difficulty || 'Intermediate'} level
+    - Questions should focus on ${category || 'Medical Knowledge'} aspects
+    - Options should be plausible distractors
+    - Explanations should be educational and detailed`;
+
+    const userPrompt = `Create ${questionCount} high-quality ${specialty || 'medical'} questions from this content.
+    
+    Specifications:
+    - Specialty: ${specialty || 'General Medicine'}
+    - Difficulty Level: ${difficulty || 'Intermediate'}
+    - Category Focus: ${category || 'Medical Knowledge'}
+    ${topic ? `- Specific Topic: ${topic}` : ''}
+    
+    Content to base questions on:
+    ${content.substring(0, 3000)}`;
     
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are a medical education expert creating USMLE-style questions. Create exactly ${questionCount} multiple choice questions and return ONLY valid JSON in this exact format:
-          {
-            "questions": [
-              {
-                "question": "Question text here?",
-                "options": ["A. Option 1", "B. Option 2", "C. Option 3", "D. Option 4"],
-                "correctAnswer": 0,
-                "explanation": "Detailed explanation of why the answer is correct.",
-                "topic": "Specific medical topic"
-              }
-            ]
-          }
-          
-          Important rules:
-          - correctAnswer should be the index (0, 1, 2, or 3) of the correct option
-          - Each question must be high-quality and clinically relevant
-          - Options should be plausible distractors
-          - Explanations should be educational and detailed`
+          content: systemPrompt
         },
         {
           role: "user",
-          content: `Create ${questionCount} high-quality ${specialty || 'medical'} questions from this content:\n\n${content.substring(0, 3000)}`
+          content: userPrompt
         }
       ],
       temperature: 0.7,
@@ -146,41 +177,54 @@ export async function POST(request: NextRequest) {
     result.savedToBank = false;
     result.bankMessage = 'Questions generated successfully';
 
-    // Save questions to Firestore if userId is provided
+    // 🔥 ENHANCED: Save questions to Firestore with category support
     if (userId && result.questions && result.questions.length > 0) {
       try {
         console.log('💾 Attempting to save questions to Firestore...');
         console.log('🔍 Firebase db object exists:', !!db);
         console.log('🔍 User ID:', userId);
         console.log('🔍 Questions to save:', result.questions.length);
+        console.log('🔍 Category:', category || 'Medical Knowledge'); // 🔥 NEW: Log category
 
         // Save each question to the questionBank collection
         const savePromises = result.questions.map(async (question: any, index: number) => {
           console.log(`📝 Saving question ${index + 1}/${result.questions.length}`);
           
+          // 🔥 ENHANCED: Question document with category support
           const questionDoc = {
             // Question content
             question: question.question,
             options: question.options,
             correctAnswer: question.correctAnswer,
             explanation: question.explanation,
-            topic: question.topic,
+            topic: question.topic || topic || 'General',
             
-            // Metadata
+            // 🔥 ENHANCED: Metadata with category
             specialty: specialty || 'General Medicine',
-            difficulty: 'Intermediate',
+            difficulty: difficulty || 'Intermediate', // 🔥 NEW: Use provided difficulty
+            category: category || 'Medical Knowledge', // 🔥 NEW: Category field
             sourceContent: filename || 'AI Generated',
             
             // Tracking
             createdBy: userId,
             createdAt: serverTimestamp(),
             timesUsed: 0,
+            qualityScore: 8.0, // 🔥 NEW: Default quality score
+            lastUsed: null, // 🔥 NEW: Usage tracking
             
-            // Tags for searching
+            // 🔥 ENHANCED: Tags with category
             tags: [
               specialty?.toLowerCase(),
-              question.topic?.toLowerCase()
+              difficulty?.toLowerCase(),
+              category?.toLowerCase(),
+              question.topic?.toLowerCase(),
+              topic?.toLowerCase()
             ].filter(Boolean),
+            
+            // 🔥 NEW: Additional metadata
+            verified: false,
+            upvotes: 0,
+            downvotes: 0,
             
             // AI generation info
             aiGenerated: true,
@@ -194,8 +238,10 @@ export async function POST(request: NextRequest) {
         await Promise.all(savePromises);
         
         console.log(`✅ Successfully saved ${result.questions.length} questions to question bank`);
+        console.log(`📂 Category: ${category || 'Medical Knowledge'}, Specialty: ${specialty || 'General Medicine'}`); // 🔥 NEW: Enhanced logging
+        
         result.savedToBank = true;
-        result.bankMessage = `${result.questions.length} questions saved to community question bank!`;
+        result.bankMessage = `${result.questions.length} questions saved to community question bank in ${category || 'Medical Knowledge'} category!`; // 🔥 ENHANCED: Include category in message
         
       } catch (saveError) {
         console.error('❌ Error saving questions to bank:', saveError);
@@ -223,7 +269,18 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // 🔥 ENHANCED: Include category and other metadata in response
+    result.metadata = {
+      specialty: specialty || 'General Medicine',
+      difficulty: difficulty || 'Intermediate',
+      category: category || 'Medical Knowledge',
+      topic: topic || 'General',
+      questionCount: result.questions.length
+    };
+    
     console.log('🎉 Returning quiz response with', result.questions.length, 'questions');
+    console.log('📊 Response metadata:', result.metadata); // 🔥 NEW: Log metadata
+    
     return NextResponse.json(result);
     
   } catch (error) {

@@ -25,6 +25,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/next": "^8.0.7",
     "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "^14.2.0",

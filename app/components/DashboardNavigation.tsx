@@ -56,7 +56,7 @@ const DashboardNavigation = () => {
           {/* Logo/Brand */}
           <div className="flex items-center space-x-4">
             <div className="text-2xl font-bold text-gray-900">
-              🩺 <span className="text-blue-600">IMEC International Medical Education Centers</span>
+              🩺 <span className="text-Red-600">Medicine Training Centers</span>
             </div>
           </div>
 
@@ -151,36 +151,5 @@ export default function UserDashboard() {
     </>
   );
 }
-*/
-
-// CREATE PAGE FILES FOR NAVIGATION:
-
-// 1. app/courses/page.tsx
-/*
-import CoursesDashboard from '../components/CoursesDashboard';
-import DashboardNavigation from '../components/DashboardNavigation';
-
-export default function CoursesPage() {
-  return (
-    <>
-      <DashboardNavigation />
-      <CoursesDashboard />
-    </>
-  );
-}
-*/
-
-// 2. app/question-bank/page.tsx
-/*
-import QuestionBankDashboard from '../components/QuestionBankDashboard';
-import DashboardNavigation from '../components/DashboardNavigation';
-
-export default function QuestionBankPage() {
-  return (
-    <>
-      <DashboardNavigation />
-      <QuestionBankDashboard />
-    </>
-  );
-}
-*/
+  
+  */
