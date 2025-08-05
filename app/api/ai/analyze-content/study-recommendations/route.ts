@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `You are an AI study advisor for medical students. Based on user performance data, provide 3-5 specific, actionable study recommendations. Return as a JSON array of strings.`
+          content: `You are an AI study advisor for medical students. Based on user performance data, provide 3-5 specific, actionable study recommendations. Return as a JSON array of strings. Each recommendation should be practical and tailored to the user's performance patterns.`
         },
         {
           role: "user",
@@ -74,6 +74,12 @@ export async function POST(request: NextRequest) {
     try {
       result = JSON.parse(completion.choices[0].message.content || '[]');
       console.log('✅ AI response parsed successfully');
+      
+      // Ensure it's an array
+      if (!Array.isArray(result)) {
+        console.warn('⚠️ AI response is not an array, wrapping in array');
+        result = [result.toString()];
+      }
     } catch (aiParseError) {
       console.error('❌ AI response parsing error:', aiParseError);
       console.log('Raw AI response:', completion.choices[0].message.content);
@@ -83,7 +89,8 @@ export async function POST(request: NextRequest) {
         "Review your weakest performing topics with focused study sessions",
         "Practice more questions in areas where you scored below 70%",
         "Create flashcards for key concepts you missed",
-        "Schedule regular review sessions for previously studied material"
+        "Schedule regular review sessions for previously studied material",
+        "Focus extra time on high-yield topics that appear frequently in exams"
       ];
     }
     
