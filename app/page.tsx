@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
-import { ArrowRight, Users, TrendingUp, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, Users, TrendingUp, Star, CheckCircle, Target, Brain, Award, Zap, Heart, Shield, Microscope, Pill, Bone, BookOpen } from 'lucide-react';
 import Header from './components/Header';  
 
 const HomePage = () => {
@@ -20,16 +20,88 @@ const HomePage = () => {
   };
 
   const specialties = [
-    { name: 'Cardiology', count: 250, color: 'bg-red-100 text-red-700', icon: '❤️' },
-    { name: 'Neurology', count: 180, color: 'bg-purple-100 text-purple-700', icon: '🧠' },
-    { name: 'Immunology', count: 220, color: 'bg-blue-100 text-blue-700', icon: '🛡️' },
-    { name: 'Pathology', count: 190, color: 'bg-green-100 text-green-700', icon: '🔬' },
-    { name: 'Pharmacology', count: 160, color: 'bg-yellow-100 text-yellow-700', icon: '💊' },
-    { name: 'Anatomy', count: 200, color: 'bg-pink-100 text-pink-700', icon: '🦴' }
+    { name: 'Cardiology', count: 250, color: 'red', icon: Heart, description: 'Heart diseases, ECG interpretation, and cardiac procedures' },
+    { name: 'Neurology', count: 180, color: 'purple', icon: Brain, description: 'Brain disorders, neurological examinations, and treatments' },
+    { name: 'Immunology', count: 220, color: 'blue', icon: Shield, description: 'Immune system, autoimmune diseases, and immunotherapy' },
+    { name: 'Pathology', count: 190, color: 'green', icon: Microscope, description: 'Disease diagnosis, laboratory tests, and pathophysiology' },
+    { name: 'Pharmacology', count: 160, color: 'yellow', icon: Pill, description: 'Drug mechanisms, interactions, and therapeutic applications' },
+    { name: 'Anatomy', count: 200, color: 'pink', icon: Bone, description: 'Human body structure, systems, and anatomical relationships' }
   ];
 
+  const features = [
+    {
+      icon: BookOpen,
+      title: '15,000+ Expert Questions',
+      description: 'Focused quizzes help you stay on track, reinforce core concepts, and help you avoid falling behind — especially during those critical monthly and bimonthly assessments that determine academic standing.',
+      color: 'blue'
+    },
+    {
+      icon: TrendingUp,
+      title: 'AI-Powered Analytics',
+      description: 'Monitor your performance across different topics and identify areas that need more focus before your exams with smart recommendations.',
+      color: 'green'
+    },
+    {
+      icon: Zap,
+      title: 'Instant Feedback',
+      description: 'Get immediate explanations for correct and incorrect answers to reinforce learning and improve retention.',
+      color: 'purple'
+    },
+    {
+      icon: Target,
+      title: 'Study Anywhere',
+      description: 'Access your quizzes on any device - phone, tablet, or computer. Study during commutes or breaks.',
+      color: 'orange'
+    },
+    {
+      icon: Award,
+      title: 'Exam-Focused',
+      description: 'Questions mirror the style and difficulty of actual medical school exams and board certifications.',
+      color: 'red'
+    },
+    {
+      icon: Users,
+      title: 'Community Support',
+      description: 'Connect with other medical students, share study tips, and collaborate on challenging topics.',
+      color: 'indigo'
+    }
+  ];
+
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+      red: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30',
+      purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
+      blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+      green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
+      yellow: 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30',
+      pink: 'text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/30',
+      orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30',
+      indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30'
+    };
+    return colorMap[color] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
+  };
+
+  // Section Separator Component
+  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
+    <div className="relative my-16">
+      <div className="absolute inset-0 flex items-center">
+        <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
+      </div>
+      <div className="relative flex justify-center">
+        <div className={`px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-white/40 dark:border-yellow-500/30 shadow-xl dark:shadow-yellow-500/20`}>
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${getColorClasses(color)}`}>
+              <Icon className="h-7 w-7" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
       
       {/* ✅ ADDED: Homepage Header */}
       <Header 
@@ -103,65 +175,77 @@ const HomePage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white border-b">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">15,000+</div>
-              <div className="text-gray-600 font-medium">Practice Questions</div>
+            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">15,000+</div>
+              <div className="text-gray-600 dark:text-gray-300 font-medium">Practice Questions</div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 mb-2">95%</div>
-              <div className="text-gray-600 font-medium">Pass Rate Improvement</div>
+            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">95%</div>
+              <div className="text-gray-600 dark:text-gray-300 font-medium">Pass Rate Improvement</div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 mb-2">10,000+</div>
-              <div className="text-gray-600 font-medium">Students Enrolled</div>
+            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">10,000+</div>
+              <div className="text-gray-600 dark:text-gray-300 font-medium">Students Enrolled</div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
-              <div className="text-gray-600 font-medium">Study Support</div>
+            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">24/7</div>
+              <div className="text-gray-600 dark:text-gray-300 font-medium">Study Support</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Browse by Medical Specialty Section */}
-      <section id="specialties" className="py-20 bg-gray-50">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <SectionSeparator title="Medical Specialties" icon={Microscope} color="purple" />
+
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Browse by Medical Specialty</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Choose from our comprehensive collection of specialty-focused quizzes designed by medical experts
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {specialties.map((specialty, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{specialty.icon}</span>
-                    <h3 className="text-xl font-bold text-gray-900">{specialty.name}</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {specialties.map((specialty, index) => {
+              const IconComponent = specialty.icon;
+              return (
+                <div key={index} className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 min-h-[280px]">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-4 rounded-2xl ${getColorClasses(specialty.color)}`}>
+                        <IconComponent className="h-8 w-8" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{specialty.name}</h3>
+                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${getColorClasses(specialty.color)}`}>
+                          {specialty.count} questions
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${specialty.color}`}>
-                    {specialty.count} questions
-                  </span>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">
+                    {specialty.description}
+                  </p>
+                  <a 
+                    href="/quiz"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 block text-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    Start Quiz
+                  </a>
                 </div>
-                <a 
-                  href="/quiz"
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors block text-center"
-                >
-                  Start Quiz
-                </a>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-16">
             <a 
               href="/quiz"
-              className="px-8 py-4 bg-blue-600 text-white font-bold rounded-lg text-lg hover:bg-blue-700 transition-colors shadow-lg"
+              className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               View All Specialties
             </a>
@@ -170,77 +254,34 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <SectionSeparator title="Why Choose Us" icon={Award} color="blue" />
+
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Medical Students Choose MedicalSchoolQuizzes
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
               Created by physicians, fellows, and actual exam writers, our question bank is designed to support medical students as they progress through their syllabus, not just for boards prep.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="text-center p-6 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-full mb-4 text-2xl">
-                📚
-              </div>
-              <h3 className="text-xl font-semibold mb-3">15,000+ Expert Questions</h3>
-              <p className="text-gray-600">
-                Focused quizzes help you stay on track, reinforce core concepts, and help you avoid falling behind — especially during those critical monthly and bimonthly assessments that determine academic standing.
-              </p>
-            </div>
-
-            <div className="text-center p-6 rounded-xl bg-green-50 hover:bg-green-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 text-white rounded-full mb-4">
-                <TrendingUp className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">AI-Powered Analytics</h3>
-              <p className="text-gray-600">
-                Monitor your performance across different topics and identify areas that need more focus before your exams with smart recommendations.
-              </p>
-            </div>
-
-            <div className="text-center p-6 rounded-xl bg-purple-50 hover:bg-purple-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-600 text-white rounded-full mb-4 text-2xl">
-                ⚡
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Instant Feedback</h3>
-              <p className="text-gray-600">
-                Get immediate explanations for correct and incorrect answers to reinforce learning and improve retention.
-              </p>
-            </div>
-
-            <div className="text-center p-6 rounded-xl bg-orange-50 hover:bg-orange-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-600 text-white rounded-full mb-4 text-2xl">
-                📱
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Study Anywhere</h3>
-              <p className="text-gray-600">
-                Access your quizzes on any device - phone, tablet, or computer. Study during commutes or breaks.
-              </p>
-            </div>
-
-            <div className="text-center p-6 rounded-xl bg-red-50 hover:bg-red-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 text-white rounded-full mb-4 text-2xl">
-                🎯
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Exam-Focused</h3>
-              <p className="text-gray-600">
-                Questions mirror the style and difficulty of actual medical school exams and board certifications.
-              </p>
-            </div>
-
-            <div className="text-center p-6 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-full mb-4">
-                <Users className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Community Support</h3>
-              <p className="text-gray-600">
-                Connect with other medical students, share study tips, and collaborate on challenging topics.
-              </p>
-            </div>
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <div key={index} className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 min-h-[300px]">
+                  <div className="text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 ${getColorClasses(feature.color)}`}>
+                      <IconComponent className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{feature.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -256,32 +297,36 @@ const HomePage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-white/90 mb-4 italic">
-                "MedQuiz Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
-              </p>
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 min-h-[250px] flex flex-col justify-between">
               <div>
-                <div className="font-semibold text-white">Sarah M.</div>
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-white/90 mb-6 italic text-lg leading-relaxed">
+                  "MedQuiz Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-white text-lg">Sarah M.</div>
                 <div className="text-blue-200 text-sm">3rd Year Medical Student</div>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-white/90 mb-4 italic">
-                "The progress tracking feature is amazing. I can see exactly which topics I need to focus on before my board exams."
-              </p>
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 min-h-[250px] flex flex-col justify-between">
               <div>
-                <div className="font-semibold text-white">Alex R.</div>
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-white/90 mb-6 italic text-lg leading-relaxed">
+                  "The progress tracking feature is amazing. I can see exactly which topics I need to focus on before my board exams."
+                </p>
+              </div>
+              <div>
+                <div className="font-semibold text-white text-lg">Alex R.</div>
                 <div className="text-blue-200 text-sm">4th Year Medical Student</div>
               </div>
             </div>
@@ -290,24 +335,24 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced Pricing Section */}
-      <section id="pricing" className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <SectionSeparator title="Choose Your Plan" icon={Target} color="green" />
+
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Choose Your Study Plan
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Access to the most comprehensive medical question bank available. Start free and upgrade when ready.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-blue-300 transition-all hover:shadow-lg bg-white">
-              <h3 className="text-2xl font-bold mb-4">Free</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
-              <div className="text-gray-600 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8">
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 text-center min-h-[500px] flex flex-col">
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Free</h3>
+              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$0</div>
+              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
+              <ul className="text-left space-y-3 mb-8 flex-1">
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
                   5 quiz attempts per day
@@ -327,21 +372,21 @@ const HomePage = () => {
               </ul>
               <a 
                 href="/quiz"
-                className="w-full bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors block text-center"
+                className="w-full bg-gray-600 text-white py-3 rounded-xl font-semibold hover:bg-gray-700 transition-colors block text-center"
               >
                 Try Free Quiz
               </a>
             </div>
 
             {/* Pro Plan */}
-            <div className="border-2 border-blue-500 rounded-xl p-8 text-center relative bg-white transform scale-105 shadow-xl">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border-2 border-blue-500 dark:border-blue-400 shadow-2xl dark:shadow-yellow-500/40 transform scale-105 relative min-h-[500px] flex flex-col">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-semibold">
                 Most Popular
               </div>
-              <h3 className="text-2xl font-bold mb-4">Pro</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$49.99</div>
-              <div className="text-gray-600 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8">
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Pro</h3>
+              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$49.99</div>
+              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
+              <ul className="text-left space-y-3 mb-8 flex-1">
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
                   Unlimited quiz attempts
@@ -404,18 +449,18 @@ const HomePage = () => {
                     alert('Payment setup error. Please try again.');
                   }
                 }}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $49.99/month' : 'Sign Up to Subscribe'}
               </button>
             </div>
 
             {/* Premium Plan */}
-            <div className="border-2 border-gray-200 rounded-xl p-8 text-center hover:border-purple-300 transition-all hover:shadow-lg bg-white">
-              <h3 className="text-2xl font-bold mb-4">Premium</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-2">$99</div>
-              <div className="text-gray-600 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8">
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 text-center min-h-[500px] flex flex-col">
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Premium</h3>
+              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$99</div>
+              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
+              <ul className="text-left space-y-3 mb-8 flex-1">
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
                   Everything in Pro
@@ -471,7 +516,7 @@ const HomePage = () => {
                     alert('Payment setup error. Please try again.');
                   }
                 }}
-                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $99.00/month' : 'Sign Up to Subscribe'}
               </button>
@@ -492,13 +537,13 @@ const HomePage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/quiz"
-              className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-lg text-lg font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg"
+              className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-2xl text-lg font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg"
             >
               Start Free Trial Now 🧠
             </a>
             <button 
               onClick={() => setShowAuthModal(true)}
-              className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+              className="border-2 border-white text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
             >
               Create Account
             </button>

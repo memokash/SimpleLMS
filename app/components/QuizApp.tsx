@@ -26,7 +26,10 @@ import {
   PlayCircle,
   PauseCircle,
   RotateCcw,
-  NotebookText
+  NotebookText,
+  Timer,
+  BarChart3,
+  Sparkles,
 } from 'lucide-react';
 
 type Mode = 'study' | 'test' | 'flashcard';
@@ -234,13 +237,13 @@ export default function QuizApp({ quizId }: Props) {
   const showExplanations = mode !== 'test' || isSubmitted;
 
   const getOptionClassName = (optionIndex: number) => {
-    let baseClass = "p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ";
+    let baseClass = "p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ";
     
     if (!isSubmitted) {
       if (isSelectedAnswer(optionIndex)) {
-        baseClass += "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100";
+        baseClass += "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 transform scale-[1.02]";
       } else {
-        baseClass += "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700";
+        baseClass += "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:scale-[1.01]";
       }
     } else if (isCorrectAnswer(optionIndex)) {
       baseClass += "border-green-500 bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100";
@@ -259,12 +262,41 @@ export default function QuizApp({ quizId }: Props) {
     }
     
     if (isCorrectAnswer(optionIndex)) {
-      return <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />;
+      return <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />;
     } else if (isSelectedAnswer(optionIndex)) {
-      return <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />;
+      return <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />;
     }
     return null;
   };
+
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+      blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+      green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
+      purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
+      orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30'
+    };
+    return colorMap[color] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
+  };
+
+  // Section Separator Component
+  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
+    <div className="relative my-12">
+      <div className="absolute inset-0 flex items-center">
+        <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
+      </div>
+      <div className="relative flex justify-center">
+        <div className={`px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-white/40 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl ${getColorClasses(color)}`}>
+              <Icon className="h-6 w-6" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -290,19 +322,19 @@ export default function QuizApp({ quizId }: Props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 transition-all duration-500">
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         
         {/* Header Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 shadow-lg">
-          <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg mb-8">
+          <div className="flex flex-wrap gap-4">
             {(['study', 'test', 'flashcard'] as Mode[]).map((m) => (
               <button
                 key={m}
                 onClick={() => switchMode(m)}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`px-8 py-4 rounded-2xl font-bold transition-all duration-300 text-lg ${
                   mode === m
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 hover:shadow-md'
+                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600 hover:shadow-md'
                 }`}
               >
                 {m.charAt(0).toUpperCase() + m.slice(1)} Mode
@@ -310,80 +342,80 @@ export default function QuizApp({ quizId }: Props) {
             ))}
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {mode === 'test' && (
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 font-mono bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 px-4 py-2 rounded-xl">
-                <Clock className="h-4 w-4 mr-2 text-red-500" />
-                <span className="font-bold text-red-600 dark:text-red-400">{formatTime(timeLeft)}</span>
+              <div className="flex items-center text-base font-mono bg-red-50 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-700 px-6 py-3 rounded-2xl">
+                <Timer className="h-5 w-5 mr-3 text-red-500" />
+                <span className="font-bold text-red-600 dark:text-red-400 text-xl">{formatTime(timeLeft)}</span>
               </div>
             )}
             <button
               onClick={toggleTheme}
-              className="p-3 bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm rounded-xl border border-white/30 dark:border-gray-600/50 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="p-4 bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-yellow-500/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl dark:shadow-yellow-500/20"
               aria-label="Toggle theme"
             >
               {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
+                <Sun className="h-6 w-6 text-yellow-500" />
               ) : (
-                <Moon className="h-5 w-5 text-gray-700" />
+                <Moon className="h-6 w-6 text-gray-700" />
               )}
             </button>
           </div>
         </div>
 
-        {/* Quiz Content */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-          
-          {/* Question Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                  <Brain className="h-7 w-7" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">
-                    Question {currentQuestionIndex + 1} of {questions.length}
-                  </h2>
-                  {currentQuestion.category && (
-                    <div className="flex items-center space-x-4 text-sm text-blue-100">
-                      <span className="bg-white/20 px-2 py-1 rounded-full">{currentQuestion.category}</span>
-                      {hasEnhancedExplanations && (
-                        <span className="flex items-center bg-yellow-400/20 px-3 py-1 rounded-full">
-                          <Zap className="h-4 w-4 mr-1" />
-                          AI Enhanced
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
+        {/* Quiz Progress Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl p-8 mb-8 shadow-xl">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                <Brain className="h-10 w-10" />
               </div>
-              
-              <div className="text-right">
-                <div className="text-sm text-blue-100 mb-2">Progress</div>
-                <div className="w-40 bg-white/20 rounded-full h-3 overflow-hidden">
-                  <div 
-                    className="bg-white h-full rounded-full transition-all duration-500 shadow-sm"
-                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
-                  />
-                </div>
-                <div className="text-xs text-blue-200 mt-1">
-                  {Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}% complete
-                </div>
+              <div>
+                <h1 className="text-3xl font-bold mb-2">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </h1>
+                {currentQuestion.category && (
+                  <div className="flex items-center gap-4 text-lg text-blue-100">
+                    <span className="bg-white/20 px-4 py-2 rounded-full">{currentQuestion.category}</span>
+                    {hasEnhancedExplanations && (
+                      <span className="flex items-center bg-yellow-400/20 px-4 py-2 rounded-full">
+                        <Zap className="h-5 w-5 mr-2" />
+                        AI Enhanced
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-lg text-blue-100 mb-3 font-semibold">Progress</div>
+              <div className="w-48 bg-white/20 rounded-full h-4 overflow-hidden mb-2">
+                <div 
+                  className="bg-white h-full rounded-full transition-all duration-500 shadow-sm"
+                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                />
+              </div>
+              <div className="text-sm text-blue-200 font-medium">
+                {Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}% complete
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Question Content */}
-          <div className="p-6">
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white leading-relaxed">
+        {/* Question Section */}
+        <SectionSeparator title="Question" icon={Target} color="blue" />
+        
+        <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 overflow-hidden shadow-lg mb-8">
+          <div className="p-8">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-relaxed">
                 {currentQuestion.question}
               </h3>
             </div>
 
             {/* Answer Options */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-4 mb-8">
               {currentQuestion.options.map((option, index) => (
                 <div
                   key={index}
@@ -391,11 +423,11 @@ export default function QuizApp({ quizId }: Props) {
                   onClick={() => !isSubmitted && handleAnswerSelect(index)}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center text-lg font-bold text-gray-700 dark:text-gray-300">
                         {String.fromCharCode(65 + index)}
                       </div>
-                      <span className="text-sm font-medium">{option}</span>
+                      <span className="text-lg font-medium">{option}</span>
                     </div>
                     {getOptionIcon(index)}
                   </div>
@@ -403,209 +435,215 @@ export default function QuizApp({ quizId }: Props) {
               ))}
             </div>
 
-            {/* Enhanced Explanations */}
-            {showExplanations && isSubmitted && (
-              <div className="space-y-4">
-                {/* Correct Answer Explanation */}
-                {currentQuestion.correctExplanation && (
-                  <div className="border border-green-200 dark:border-green-700 rounded-lg overflow-hidden">
-                    <div 
-                      className="bg-green-50 dark:bg-green-900/30 p-4 cursor-pointer flex items-center justify-between"
-                      onClick={() => setExpandedExplanation(expandedExplanation === 'correct' ? null : 'correct')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        <h4 className="font-semibold text-green-900 dark:text-green-100">Why This Answer is Correct</h4>
-                        {hasEnhancedExplanations && (
-                          <span className="text-xs bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
-                            AI Enhanced
-                          </span>
-                        )}
-                      </div>
-                      {expandedExplanation === 'correct' ? 
-                        <ChevronUp className="h-5 w-5 text-green-600 dark:text-green-400" /> : 
-                        <ChevronDown className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      }
-                    </div>
-                    
-                    {expandedExplanation === 'correct' && (
-                      <div className="p-4 bg-white dark:bg-gray-800 border-t border-green-200 dark:border-green-700">
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                          {currentQuestion.correctExplanation}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Incorrect Answer Explanation */}
-                {currentQuestion.incorrectExplanation && (
-                  <div className="border border-red-200 dark:border-red-700 rounded-lg overflow-hidden">
-                    <div 
-                      className="bg-red-50 dark:bg-red-900/30 p-4 cursor-pointer flex items-center justify-between"
-                      onClick={() => setExpandedExplanation(expandedExplanation === 'incorrect' ? null : 'incorrect')}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                        <h4 className="font-semibold text-red-900 dark:text-red-100">Why Other Options are Incorrect</h4>
-                        {hasEnhancedExplanations && (
-                          <span className="text-xs bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 px-2 py-1 rounded-full">
-                            AI Enhanced
-                          </span>
-                        )}
-                      </div>
-                      {expandedExplanation === 'incorrect' ? 
-                        <ChevronUp className="h-5 w-5 text-red-600 dark:text-red-400" /> : 
-                        <ChevronDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-                      }
-                    </div>
-                    
-                    {expandedExplanation === 'incorrect' && (
-                      <div className="p-4 bg-white dark:bg-gray-800 border-t border-red-200 dark:border-red-700">
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                          {currentQuestion.incorrectExplanation}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Teaching Elements */}
-                {hasEnhancedExplanations && currentQuestion.teachingElements && (
-                  <div className="border border-purple-200 dark:border-purple-700 rounded-lg overflow-hidden">
-                    <div 
-                      className="bg-purple-50 dark:bg-purple-900/30 p-4 cursor-pointer flex items-center justify-between"
-                      onClick={() => setShowTeachingElements(!showTeachingElements)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <GraduationCap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                        <h4 className="font-semibold text-purple-900 dark:text-purple-100">Advanced Teaching Material</h4>
-                        <span className="text-xs bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full">
-                          AI Generated
-                        </span>
-                      </div>
-                      {showTeachingElements ? 
-                        <ChevronUp className="h-5 w-5 text-purple-600 dark:text-purple-400" /> : 
-                        <ChevronDown className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                      }
-                    </div>
-                    
-                    {showTeachingElements && (
-                      <div className="p-4 bg-white dark:bg-gray-800 border-t border-purple-200 dark:border-purple-700">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {/* Analogies */}
-                          {currentQuestion.teachingElements.analogies && (
-                            <div className="space-y-2">
-                              <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                <Lightbulb className="h-4 w-4 mr-1 text-yellow-500" />
-                                Analogies
-                              </h5>
-                              <ul className="space-y-1">
-                                {currentQuestion.teachingElements.analogies.map((analogy, index) => (
-                                  <li key={index} className="text-sm text-gray-700 dark:text-gray-300 bg-yellow-50 dark:bg-yellow-900/30 p-2 rounded">
-                                    {analogy}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Mnemonics */}
-                          {currentQuestion.teachingElements.mnemonics && (
-                            <div className="space-y-2">
-                              <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                <Brain className="h-4 w-4 mr-1 text-blue-500" />
-                                Memory Aids
-                              </h5>
-                              <ul className="space-y-1">
-                                {currentQuestion.teachingElements.mnemonics.map((mnemonic, index) => (
-                                  <li key={index} className="text-sm text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/30 p-2 rounded font-mono">
-                                    {mnemonic}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {/* Clinical Examples */}
-                          {currentQuestion.teachingElements.examples && (
-                            <div className="space-y-2">
-                              <h5 className="font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                                <BookOpen className="h-4 w-4 mr-1 text-green-500" />
-                                Clinical Examples
-                              </h5>
-                              <ul className="space-y-1">
-                                {currentQuestion.teachingElements.examples.map((example, index) => (
-                                  <li key={index} className="text-sm text-gray-700 dark:text-gray-300 bg-green-50 dark:bg-green-900/30 p-2 rounded">
-                                    {example}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Enhancement Information */}
-                {hasEnhancedExplanations && (
-                  <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <Award className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                      <div>
-                        <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-1">AI-Enhanced Learning Experience</h5>
-                        <p className="text-sm text-blue-700 dark:text-blue-300">
-                          This explanation has been enhanced using advanced AI to provide comprehensive teaching material.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handlePrevious}
                 disabled={currentQuestionIndex === 0}
-                className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold"
               >
-                <ArrowLeft className="h-4 w-4 mr-1" />
+                <ArrowLeft className="h-5 w-5 mr-2" />
                 Previous
               </button>
               
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                <Clock className="h-4 w-4" />
-                <span>Take your time to review the explanations</span>
+              <div className="flex items-center space-x-3 text-base text-gray-500 dark:text-gray-400">
+                <Clock className="h-5 w-5" />
+                <span>Take your time to review</span>
               </div>
               
               <button
                 onClick={handleNext}
                 disabled={currentQuestionIndex === questions.length - 1}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next'}
-                <ArrowRight className="h-4 w-4 ml-1" />
+                <ArrowRight className="h-5 w-5 ml-2" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Notes Section */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-700/50 p-6 shadow-lg">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <NotebookText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        {/* Enhanced Explanations */}
+        {showExplanations && isSubmitted && (
+          <>
+            <SectionSeparator title="Explanations" icon={Lightbulb} color="green" />
+            
+            <div className="space-y-6 mb-8">
+              {/* Correct Answer Explanation */}
+              {currentQuestion.correctExplanation && (
+                <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-green-200 dark:border-green-700 overflow-hidden shadow-lg">
+                  <div 
+                    className="bg-green-50 dark:bg-green-900/30 p-6 cursor-pointer flex items-center justify-between"
+                    onClick={() => setExpandedExplanation(expandedExplanation === 'correct' ? null : 'correct')}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+                      <h4 className="font-bold text-green-900 dark:text-green-100 text-lg">Why This Answer is Correct</h4>
+                      {hasEnhancedExplanations && (
+                        <span className="text-sm bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200 px-3 py-1 rounded-full font-medium">
+                          AI Enhanced
+                        </span>
+                      )}
+                    </div>
+                    {expandedExplanation === 'correct' ? 
+                      <ChevronUp className="h-6 w-6 text-green-600 dark:text-green-400" /> : 
+                      <ChevronDown className="h-6 w-6 text-green-600 dark:text-green-400" />
+                    }
+                  </div>
+                  
+                  {expandedExplanation === 'correct' && (
+                    <div className="p-6 bg-white dark:bg-gray-800 border-t border-green-200 dark:border-green-700">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg whitespace-pre-wrap">
+                        {currentQuestion.correctExplanation}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Incorrect Answer Explanation */}
+              {currentQuestion.incorrectExplanation && (
+                <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-red-200 dark:border-red-700 overflow-hidden shadow-lg">
+                  <div 
+                    className="bg-red-50 dark:bg-red-900/30 p-6 cursor-pointer flex items-center justify-between"
+                    onClick={() => setExpandedExplanation(expandedExplanation === 'incorrect' ? null : 'incorrect')}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                      <h4 className="font-bold text-red-900 dark:text-red-100 text-lg">Why Other Options are Incorrect</h4>
+                      {hasEnhancedExplanations && (
+                        <span className="text-sm bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200 px-3 py-1 rounded-full font-medium">
+                          AI Enhanced
+                        </span>
+                      )}
+                    </div>
+                    {expandedExplanation === 'incorrect' ? 
+                      <ChevronUp className="h-6 w-6 text-red-600 dark:text-red-400" /> : 
+                      <ChevronDown className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    }
+                  </div>
+                  
+                  {expandedExplanation === 'incorrect' && (
+                    <div className="p-6 bg-white dark:bg-gray-800 border-t border-red-200 dark:border-red-700">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg whitespace-pre-wrap">
+                        {currentQuestion.incorrectExplanation}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Teaching Elements */}
+              {hasEnhancedExplanations && currentQuestion.teachingElements && (
+                <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-purple-200 dark:border-purple-700 overflow-hidden shadow-lg">
+                  <div 
+                    className="bg-purple-50 dark:bg-purple-900/30 p-6 cursor-pointer flex items-center justify-between"
+                    onClick={() => setShowTeachingElements(!showTeachingElements)}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <GraduationCap className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                      <h4 className="font-bold text-purple-900 dark:text-purple-100 text-lg">Advanced Teaching Material</h4>
+                      <span className="text-sm bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full font-medium">
+                        AI Generated
+                      </span>
+                    </div>
+                    {showTeachingElements ? 
+                      <ChevronUp className="h-6 w-6 text-purple-600 dark:text-purple-400" /> : 
+                      <ChevronDown className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                    }
+                  </div>
+                  
+                  {showTeachingElements && (
+                    <div className="p-6 bg-white dark:bg-gray-800 border-t border-purple-200 dark:border-purple-700">
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Analogies */}
+                        {currentQuestion.teachingElements.analogies && (
+                          <div className="space-y-4">
+                            <h5 className="font-bold text-gray-900 dark:text-gray-100 flex items-center text-lg">
+                              <Lightbulb className="h-5 w-5 mr-2 text-yellow-500" />
+                              Analogies
+                            </h5>
+                            <ul className="space-y-3">
+                              {currentQuestion.teachingElements.analogies.map((analogy, index) => (
+                                <li key={index} className="text-gray-700 dark:text-gray-300 bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                                  {analogy}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Mnemonics */}
+                        {currentQuestion.teachingElements.mnemonics && (
+                          <div className="space-y-4">
+                            <h5 className="font-bold text-gray-900 dark:text-gray-100 flex items-center text-lg">
+                              <Brain className="h-5 w-5 mr-2 text-blue-500" />
+                              Memory Aids
+                            </h5>
+                            <ul className="space-y-3">
+                              {currentQuestion.teachingElements.mnemonics.map((mnemonic, index) => (
+                                <li key={index} className="text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl border border-blue-200 dark:border-blue-700 font-mono">
+                                  {mnemonic}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Clinical Examples */}
+                        {currentQuestion.teachingElements.examples && (
+                          <div className="space-y-4">
+                            <h5 className="font-bold text-gray-900 dark:text-gray-100 flex items-center text-lg">
+                              <BookOpen className="h-5 w-5 mr-2 text-green-500" />
+                              Clinical Examples
+                            </h5>
+                            <ul className="space-y-3">
+                              {currentQuestion.teachingElements.examples.map((example, index) => (
+                                <li key={index} className="text-gray-700 dark:text-gray-300 bg-green-50 dark:bg-green-900/30 p-4 rounded-xl border border-green-200 dark:border-green-700">
+                                  {example}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Enhancement Information */}
+              {hasEnhancedExplanations && (
+                <div className="bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-3xl p-6">
+                  <div className="flex items-start space-x-4">
+                    <Award className="h-6 w-6 text-blue-600 dark:text-blue-400 mt-1" />
+                    <div>
+                      <h5 className="font-bold text-blue-900 dark:text-blue-100 mb-2 text-lg">AI-Enhanced Learning Experience</h5>
+                      <p className="text-blue-700 dark:text-blue-300 leading-relaxed">
+                        This explanation has been enhanced using advanced AI to provide comprehensive teaching material.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Notes for this question</h3>
+          </>
+        )}
+
+        {/* Notes Section */}
+        <SectionSeparator title="Your Notes" icon={NotebookText} color="purple" />
+        
+        <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 p-8 shadow-lg mb-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`p-3 rounded-xl ${getColorClasses('purple')}`}>
+              <NotebookText className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Notes for this question</h3>
           </div>
           <textarea
             placeholder="Write your notes and thoughts about this question..."
-            className="w-full p-4 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-            rows={4}
+            className="w-full p-6 border border-gray-200 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md text-lg"
+            rows={5}
             value={notes[currentQuestion.id] || ''}
             onChange={(e) => handleNoteChange(e.target.value)}
           />
@@ -616,7 +654,7 @@ export default function QuizApp({ quizId }: Props) {
           <div className="text-center">
             <button
               onClick={handleSubmit}
-              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl font-bold text-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="px-12 py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-3xl font-bold text-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               🎯 Submit Quiz
             </button>

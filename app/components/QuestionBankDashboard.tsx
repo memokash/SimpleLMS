@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { 
   getQuestionBankStats, 
   searchQuestions, 
@@ -33,7 +34,11 @@ import {
   Upload,
   FileText,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Sun,
+  Moon,
+  Sparkles,
+  BarChart3
 } from 'lucide-react';
 
 interface QuestionBankStats {
@@ -41,7 +46,7 @@ interface QuestionBankStats {
   bySpecialty: Record<string, number>;
   byDifficulty: Record<string, number>;
   byTopic: Record<string, number>;
-  byCategory: Record<string, number>; // 🔥 NEW: Category statistics
+  byCategory: Record<string, number>;
   recentlyAdded: number;
 }
 
@@ -54,7 +59,7 @@ interface Question {
   topic: string;
   specialty: string;
   difficulty: string;
-  category: string; // 🔥 NEW: Category field
+  category: string;
   createdBy: string;
   createdAt: any;
   timesUsed: number;
@@ -64,6 +69,7 @@ interface Question {
 
 const QuestionBankDashboard = () => {
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [stats, setStats] = useState<QuestionBankStats | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +77,7 @@ const QuestionBankDashboard = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(''); // 🔥 NEW: Category filter
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [viewMode, setViewMode] = useState<'browse' | 'generate' | 'upload'>('browse');
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   
@@ -93,7 +99,7 @@ const QuestionBankDashboard = () => {
   const [quizPrefs, setQuizPrefs] = useState({
     specialty: 'all',
     difficulty: 'all',
-    category: 'all', // 🔥 NEW: Category preference
+    category: 'all',
     topics: [] as string[],
     questionCount: 20
   });
@@ -123,7 +129,7 @@ const QuestionBankDashboard = () => {
         specialty: selectedSpecialty || undefined,
         difficulty: selectedDifficulty || undefined,
         topic: selectedTopic || undefined,
-        category: selectedCategory || undefined // 🔥 NEW: Include category in filters
+        category: selectedCategory || undefined
       };
       
       const results = await searchQuestions(searchTerm, filters);
@@ -135,7 +141,6 @@ const QuestionBankDashboard = () => {
     }
   };
 
-  // 🔥 NEW: Generate questions from content and save to bank
   const handleGenerateFromContent = async () => {
     if (!uploadedContent.trim()) {
       alert('Please enter some content first');
@@ -228,115 +233,162 @@ const QuestionBankDashboard = () => {
     handleSearch();
   }, [selectedSpecialty, selectedDifficulty, selectedTopic, selectedCategory]);
 
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+      purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
+      green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
+      blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
+      orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30',
+      red: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30',
+      yellow: 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30',
+      indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30'
+    };
+    return colorMap[color] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
+  };
+
+  // Section Separator Component
+  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
+    <div className="relative my-12">
+      <div className="absolute inset-0 flex items-center">
+        <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
+      </div>
+      <div className="relative flex justify-center">
+        <div className={`px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-white/40 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-xl ${getColorClasses(color)}`}>
+              <Icon className="h-6 w-6" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (loading && !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-slate-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading question bank...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
+        <div className="flex items-center text-gray-600 dark:text-gray-400 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+          <Brain className="animate-pulse h-6 w-6 mr-3 text-purple-500" />
+          <span className="text-lg font-medium">Loading question bank...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-slate-50 to-purple-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 transition-all duration-500">
+      
+      {/* Enhanced Header */}
       <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">Community Question Bank 🏦</h1>
-                <p className="text-purple-100 mt-2">User-generated questions powered by AI</p>
+          <div className="py-12">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl lg:text-5xl font-bold mb-4">Community Question Bank 🏦</h1>
+                <p className="text-purple-100 text-xl">User-generated questions powered by AI</p>
               </div>
-              <div className="flex items-center space-x-6">
-                <div className="text-right">
-                  <div className="text-2xl font-bold">{stats?.totalQuestions || 0}</div>
+              <div className="flex items-center gap-8">
+                <div className="text-center bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold">{stats?.totalQuestions || 0}</div>
                   <p className="text-purple-100 text-sm">Total Questions</p>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold">{stats?.recentlyAdded || 0}</div>
+                <div className="text-center bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+                  <div className="text-3xl font-bold">{stats?.recentlyAdded || 0}</div>
                   <p className="text-purple-100 text-sm">Added This Week</p>
                 </div>
+                <button
+                  onClick={toggleTheme}
+                  className="p-3 bg-white/20 backdrop-blur-sm rounded-xl hover:bg-white/30 transition-all duration-200"
+                  aria-label="Toggle theme"
+                >
+                  {isDark ? (
+                    <Sun className="h-6 w-6 text-yellow-300" />
+                  ) : (
+                    <Moon className="h-6 w-6 text-white" />
+                  )}
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Mode Toggle */}
-        <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-4 mb-6">
-          <div className="flex items-center justify-center space-x-4">
+        <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => setViewMode('browse')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+              className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
                 viewMode === 'browse'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
-              <Database className="w-5 h-5" />
+              <Database className="w-6 h-6" />
               <span>Browse Questions</span>
             </button>
             <button
               onClick={() => setViewMode('upload')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+              className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
                 viewMode === 'upload'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
-              <Upload className="w-5 h-5" />
+              <Upload className="w-6 h-6" />
               <span>Generate Questions</span>
             </button>
             <button
               onClick={() => setViewMode('generate')}
-              className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+              className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
                 viewMode === 'generate'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
-              <Shuffle className="w-5 h-5" />
+              <Shuffle className="w-6 h-6" />
               <span>Generate Quiz</span>
             </button>
           </div>
         </div>
 
         {viewMode === 'upload' ? (
-          // 🔥 NEW: Upload and Generate Mode
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-8">
+          // Generate Questions Mode
+          <div className="max-w-5xl mx-auto">
+            <SectionSeparator title="Generate Questions from Content" icon={Upload} color="purple" />
+            
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-8">
               <div className="text-center mb-8">
-                <Upload className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Generate Questions from Content</h2>
-                <p className="text-gray-600">Upload your study material and AI will generate questions for the community bank</p>
+                <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 ${getColorClasses('purple')}`}>
+                  <Upload className="w-10 h-10" />
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 text-lg">Upload your study material and AI will generate questions for the community bank</p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-3">
                     Paste your content here
                   </label>
                   <textarea
                     value={uploadedContent}
                     onChange={(e) => setUploadedContent(e.target.value)}
                     placeholder="Paste your study material, lecture notes, textbook content, etc..."
-                    className="w-full h-64 p-4 border border-purple-200/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                    className="w-full h-64 p-6 border border-purple-200/50 dark:border-yellow-500/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-base"
                   />
                 </div>
 
                 {/* Generation Settings */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6 bg-purple-50/50 rounded-lg border border-purple-200/30">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8 bg-purple-50/50 dark:bg-purple-900/20 rounded-2xl border border-purple-200/30 dark:border-purple-700/30">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Category</label>
                     <select
                       value={generationSettings.category}
                       onChange={(e) => setGenerationSettings({...generationSettings, category: e.target.value})}
-                      className="w-full border border-purple-200/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                      className="w-full border border-purple-200/50 dark:border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="Medical Knowledge">Medical Knowledge</option>
                       <option value="Clinical Skills">Clinical Skills</option>
@@ -354,11 +406,11 @@ const QuestionBankDashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Specialty</label>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Specialty</label>
                     <select
                       value={generationSettings.specialty}
                       onChange={(e) => setGenerationSettings({...generationSettings, specialty: e.target.value})}
-                      className="w-full border border-purple-200/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                      className="w-full border border-purple-200/50 dark:border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="General Medicine">General Medicine</option>
                       <option value="Internal Medicine">Internal Medicine</option>
@@ -379,11 +431,11 @@ const QuestionBankDashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Difficulty</label>
                     <select
                       value={generationSettings.difficulty}
                       onChange={(e) => setGenerationSettings({...generationSettings, difficulty: e.target.value})}
-                      className="w-full border border-purple-200/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                      className="w-full border border-purple-200/50 dark:border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="Beginner">Beginner</option>
                       <option value="Intermediate">Intermediate</option>
@@ -392,25 +444,25 @@ const QuestionBankDashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Number of Questions</label>
                     <input
                       type="number"
                       min="5"
                       max="25"
                       value={generationSettings.questionCount}
                       onChange={(e) => setGenerationSettings({...generationSettings, questionCount: Number(e.target.value)})}
-                      className="w-full border border-purple-200/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                      className="w-full border border-purple-200/50 dark:border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Specific Topic (Optional)</label>
+                    <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">Specific Topic (Optional)</label>
                     <input
                       type="text"
                       value={generationSettings.topic}
                       onChange={(e) => setGenerationSettings({...generationSettings, topic: e.target.value})}
                       placeholder="e.g., Myocardial Infarction, Diabetes Management, etc."
-                      className="w-full border border-purple-200/50 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                      className="w-full border border-purple-200/50 dark:border-gray-600 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                     />
                   </div>
                 </div>
@@ -419,16 +471,16 @@ const QuestionBankDashboard = () => {
                   <button
                     onClick={handleGenerateFromContent}
                     disabled={isGenerating || !uploadedContent.trim()}
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:from-purple-700 hover:to-indigo-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto shadow-lg hover:shadow-xl"
                   >
                     {isGenerating ? (
                       <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
                         Generating Questions...
                       </>
                     ) : (
                       <>
-                        <Brain className="w-5 h-5 mr-3" />
+                        <Brain className="w-6 h-6 mr-3" />
                         Generate & Save Questions
                       </>
                     )}
@@ -437,37 +489,37 @@ const QuestionBankDashboard = () => {
 
                 {/* Generation Results */}
                 {generationResult && (
-                  <div className={`p-4 rounded-lg border ${
+                  <div className={`p-6 rounded-2xl border-2 ${
                     generationResult.success 
-                      ? 'bg-green-50 border-green-200' 
-                      : 'bg-red-50 border-red-200'
+                      ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700' 
+                      : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
                   }`}>
-                    <div className="flex items-center mb-2">
+                    <div className="flex items-center mb-4">
                       {generationResult.success ? (
-                        <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                        <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
                       ) : (
-                        <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                        <AlertCircle className="w-6 h-6 text-red-500 mr-3" />
                       )}
-                      <span className={`font-medium ${
-                        generationResult.success ? 'text-green-800' : 'text-red-800'
+                      <span className={`font-semibold text-lg ${
+                        generationResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
                       }`}>
                         {generationResult.message}
                       </span>
                     </div>
                     
                     {generationResult.success && generationResult.questions && (
-                      <div className="mt-4">
-                        <p className="text-sm text-green-700 mb-2">
+                      <div className="mt-6">
+                        <p className="text-sm text-green-700 dark:text-green-300 mb-4 font-medium">
                           Generated {generationResult.questions.length} questions:
                         </p>
-                        <div className="max-h-40 overflow-y-auto space-y-2">
+                        <div className="max-h-48 overflow-y-auto space-y-3">
                           {generationResult.questions.slice(0, 3).map((q, index) => (
-                            <div key={index} className="text-xs text-green-600 bg-green-100 p-2 rounded">
+                            <div key={index} className="text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 p-4 rounded-xl">
                               {q.question}
                             </div>
                           ))}
                           {generationResult.questions.length > 3 && (
-                            <div className="text-xs text-green-600">
+                            <div className="text-sm text-green-600 dark:text-green-400 font-medium">
                               ...and {generationResult.questions.length - 3} more questions
                             </div>
                           )}
@@ -481,57 +533,71 @@ const QuestionBankDashboard = () => {
           </div>
 
         ) : viewMode === 'browse' ? (
-          // Browse Questions Mode (existing code)
+          // Browse Questions Mode
           <>
             {/* Stats Overview */}
             {stats && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-6 text-center">
-                  <Database className="w-8 h-8 text-purple-500 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-gray-900">{stats.totalQuestions}</div>
-                  <div className="text-sm text-gray-600">Total Questions</div>
-                </div>
+              <>
+                <SectionSeparator title="Question Bank Overview" icon={BarChart3} color="blue" />
                 
-                <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-green-100/50 border border-green-100/30 p-6 text-center">
-                  <TrendingUp className="w-8 h-8 text-green-500 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-gray-900">{Object.keys(stats.bySpecialty).length}</div>
-                  <div className="text-sm text-gray-600">Specialties</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-8 text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 ${getColorClasses('purple')}`}>
+                      <Database className="w-8 h-8" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stats.totalQuestions}</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Total Questions</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-8 text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 ${getColorClasses('green')}`}>
+                      <TrendingUp className="w-8 h-8" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{Object.keys(stats.bySpecialty).length}</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Specialties</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-8 text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 ${getColorClasses('blue')}`}>
+                      <Brain className="w-8 h-8" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{Object.keys(stats.byCategory || {}).length}</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Categories</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-8 text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 ${getColorClasses('orange')}`}>
+                      <Zap className="w-8 h-8" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stats.recentlyAdded}</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-medium">Added This Week</div>
+                  </div>
                 </div>
-                
-                <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-blue-100/50 border border-blue-100/30 p-6 text-center">
-                  <Brain className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-gray-900">{Object.keys(stats.byCategory || {}).length}</div>
-                  <div className="text-sm text-gray-600">Categories</div>
-                </div>
-                
-                <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-orange-100/50 border border-orange-100/30 p-6 text-center">
-                  <Zap className="w-8 h-8 text-orange-500 mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-gray-900">{stats.recentlyAdded}</div>
-                  <div className="text-sm text-gray-600">Added This Week</div>
-                </div>
-              </div>
+              </>
             )}
 
+            <SectionSeparator title="Search & Browse Questions" icon={Search} color="indigo" />
+
             {/* Search and Filters */}
-            <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-6 mb-8">
-              <div className="flex flex-col lg:flex-row gap-4">
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-8 mb-8">
+              <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Search className="absolute left-4 top-4 h-6 w-6 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search questions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full pl-10 pr-4 py-3 border border-purple-200/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                    className="w-full pl-12 pr-6 py-4 border border-purple-200/50 dark:border-yellow-500/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg"
                   />
                 </div>
                 
-                <div className="flex space-x-3">
+                <div className="flex flex-wrap gap-4">
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                    className="border border-purple-200/50 dark:border-yellow-500/30 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white min-w-[150px]"
                   >
                     <option value="">All Categories</option>
                     {stats && Object.keys(stats.byCategory || {}).map(category => (
@@ -544,7 +610,7 @@ const QuestionBankDashboard = () => {
                   <select
                     value={selectedSpecialty}
                     onChange={(e) => setSelectedSpecialty(e.target.value)}
-                    className="border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                    className="border border-purple-200/50 dark:border-yellow-500/30 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white min-w-[150px]"
                   >
                     <option value="">All Specialties</option>
                     {stats && Object.keys(stats.bySpecialty).map(specialty => (
@@ -557,7 +623,7 @@ const QuestionBankDashboard = () => {
                   <select
                     value={selectedDifficulty}
                     onChange={(e) => setSelectedDifficulty(e.target.value)}
-                    className="border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80"
+                    className="border border-purple-200/50 dark:border-yellow-500/30 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700/80 text-gray-900 dark:text-white min-w-[150px]"
                   >
                     <option value="">All Difficulties</option>
                     {stats && Object.keys(stats.byDifficulty).map(difficulty => (
@@ -569,7 +635,7 @@ const QuestionBankDashboard = () => {
 
                   <button
                     onClick={handleSearch}
-                    className="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     Search
                   </button>
@@ -578,54 +644,56 @@ const QuestionBankDashboard = () => {
             </div>
 
             {/* Questions List */}
-            <div className="space-y-4">
+            <div className="space-y-6">
               {questions.length === 0 ? (
-                <div className="text-center py-12">
-                  <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No questions found</h3>
-                  <p className="text-gray-600">Try adjusting your search criteria or generate some questions!</p>
+                <div className="text-center py-20">
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-12 max-w-md mx-auto">
+                    <Database className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">No questions found</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Try adjusting your search criteria or generate some questions!</p>
+                  </div>
                 </div>
               ) : (
                 questions.map(question => (
-                  <div key={question.id} className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-6 hover:shadow-xl transition-all">
-                    <div className="flex items-start justify-between mb-4">
+                  <div key={question.id} className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-[1.01] p-8">
+                    <div className="flex items-start justify-between mb-6">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            question.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
-                            question.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-red-100 text-red-700'
+                        <div className="flex items-center flex-wrap gap-3 mb-4">
+                          <span className={`text-sm px-3 py-1 rounded-full font-medium ${
+                            question.difficulty === 'Beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            question.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                            'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                           }`}>
                             {question.difficulty}
                           </span>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full font-medium">
                             {question.specialty}
                           </span>
-                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                          <span className="text-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full font-medium">
                             {question.topic}
                           </span>
                           {question.category && (
-                            <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">
+                            <span className="text-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-1 rounded-full font-medium flex items-center">
                               📂 {question.category}
                             </span>
                           )}
                           {question.aiGenerated && (
-                            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full flex items-center">
-                              <Brain className="w-3 h-3 mr-1" />
+                            <span className="text-sm bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full font-medium flex items-center">
+                              <Brain className="w-4 h-4 mr-1" />
                               AI Generated
                             </span>
                           )}
                         </div>
-                        <h3 className="font-medium text-gray-900 mb-3">{question.question}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-lg leading-relaxed">{question.question}</h3>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                           {question.options.map((option, index) => (
                             <div
                               key={index}
-                              className={`p-2 rounded border text-sm ${
+                              className={`p-4 rounded-xl border text-sm font-medium ${
                                 index === question.correctAnswer
-                                  ? 'bg-green-50 border-green-200 text-green-800'
-                                  : 'bg-gray-50 border-gray-200 text-gray-700'
+                                  ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
+                                  : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300'
                               }`}
                             >
                               {option}
@@ -634,29 +702,29 @@ const QuestionBankDashboard = () => {
                         </div>
 
                         {question.explanation && (
-                          <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-3">
-                            <p className="text-sm text-blue-800">
+                          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 p-4 rounded-xl mb-4">
+                            <p className="text-sm text-blue-800 dark:text-blue-200">
                               <strong>Explanation:</strong> {question.explanation}
                             </p>
                           </div>
                         )}
 
-                        <div className="flex items-center text-sm text-gray-500 space-x-4">
-                          <span>📊 Used {question.timesUsed} times</span>
-                          <span>⭐ Quality: {question.qualityScore}/10</span>
-                          <span>📅 {question.createdAt?.toDate?.()?.toLocaleDateString()}</span>
+                        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-6">
+                          <span className="flex items-center">📊 Used {question.timesUsed} times</span>
+                          <span className="flex items-center">⭐ Quality: {question.qualityScore}/10</span>
+                          <span className="flex items-center">📅 {question.createdAt?.toDate?.()?.toLocaleDateString()}</span>
                         </div>
                       </div>
 
-                      <div className="ml-4 flex flex-col space-y-2">
-                        <button className="bg-purple-600 text-white p-2 rounded hover:bg-purple-700 transition-colors">
-                          <Eye className="w-4 h-4" />
+                      <div className="ml-6 flex flex-col gap-3">
+                        <button className="bg-purple-600 text-white p-3 rounded-xl hover:bg-purple-700 transition-colors shadow-lg">
+                          <Eye className="w-5 h-5" />
                         </button>
-                        <button className="bg-green-600 text-white p-2 rounded hover:bg-green-700 transition-colors">
-                          <ThumbsUp className="w-4 h-4" />
+                        <button className="bg-green-600 text-white p-3 rounded-xl hover:bg-green-700 transition-colors shadow-lg">
+                          <ThumbsUp className="w-5 h-5" />
                         </button>
-                        <button className="bg-gray-200 text-gray-600 p-2 rounded hover:bg-gray-300 transition-colors">
-                          <Bookmark className="w-4 h-4" />
+                        <button className="bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 p-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors shadow-lg">
+                          <Bookmark className="w-5 h-5" />
                         </button>
                       </div>
                     </div>
@@ -666,22 +734,25 @@ const QuestionBankDashboard = () => {
             </div>
           </>
         ) : (
-          // Generate Quiz Mode (existing code)
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/90 backdrop-blur-lg rounded-xl shadow-lg shadow-purple-100/50 border border-purple-100/30 p-8">
+          // Generate Quiz Mode
+          <div className="max-w-5xl mx-auto">
+            <SectionSeparator title="Generate Custom Quiz" icon={Shuffle} color="green" />
+            
+            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-8">
               <div className="text-center mb-8">
-                <Shuffle className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Generate Custom Quiz</h2>
-                <p className="text-gray-600">Create a personalized quiz from the community question bank</p>
+                <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 ${getColorClasses('green')}`}>
+                  <Shuffle className="w-10 h-10" />
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 text-lg">Create a personalized quiz from the community question bank</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                  <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-3">Category</label>
                   <select
                     value={quizPrefs.category}
                     onChange={(e) => setQuizPrefs({...quizPrefs, category: e.target.value})}
-                    className="w-full border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-purple-200/50 dark:border-yellow-500/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white text-base"
                   >
                     <option value="all">All Categories</option>
                     {stats && Object.keys(stats.byCategory || {}).map(category => (
@@ -691,11 +762,11 @@ const QuestionBankDashboard = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Specialty</label>
+                  <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-3">Specialty</label>
                   <select
                     value={quizPrefs.specialty}
                     onChange={(e) => setQuizPrefs({...quizPrefs, specialty: e.target.value})}
-                    className="w-full border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-purple-200/50 dark:border-yellow-500/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white text-base"
                   >
                     <option value="all">All Specialties</option>
                     {stats && Object.keys(stats.bySpecialty).map(specialty => (
@@ -705,11 +776,11 @@ const QuestionBankDashboard = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+                  <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-3">Difficulty</label>
                   <select
                     value={quizPrefs.difficulty}
                     onChange={(e) => setQuizPrefs({...quizPrefs, difficulty: e.target.value})}
-                    className="w-full border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-purple-200/50 dark:border-yellow-500/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white text-base"
                   >
                     <option value="all">All Difficulties</option>
                     {stats && Object.keys(stats.byDifficulty).map(difficulty => (
@@ -719,14 +790,14 @@ const QuestionBankDashboard = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+                  <label className="block text-lg font-semibold text-gray-900 dark:text-white mb-3">Number of Questions</label>
                   <input
                     type="number"
                     min="5"
                     max="50"
                     value={quizPrefs.questionCount}
                     onChange={(e) => setQuizPrefs({...quizPrefs, questionCount: Number(e.target.value)})}
-                    className="w-full border border-purple-200/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-purple-200/50 dark:border-yellow-500/30 rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white/80 dark:bg-gray-700 text-gray-900 dark:text-white text-base"
                   />
                 </div>
               </div>
@@ -735,16 +806,16 @@ const QuestionBankDashboard = () => {
                 <button
                   onClick={handleGenerateQuiz}
                   disabled={isGeneratingQuiz}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-indigo-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-5 rounded-2xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto shadow-lg hover:shadow-xl"
                 >
                   {isGeneratingQuiz ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
                       Generating Quiz...
                     </>
                   ) : (
                     <>
-                      <Lightbulb className="w-5 h-5 mr-3" />
+                      <Lightbulb className="w-6 h-6 mr-3" />
                       Generate Smart Quiz
                     </>
                   )}
@@ -752,24 +823,24 @@ const QuestionBankDashboard = () => {
               </div>
 
               {stats && (
-                <div className="mt-8 p-4 bg-purple-50 rounded-lg border border-purple-200/50">
-                  <h3 className="font-medium text-purple-800 mb-2">Available Questions</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="text-purple-600">Total:</span>
-                      <span className="ml-2 font-medium">{stats.totalQuestions}</span>
+                <div className="mt-8 p-6 bg-purple-50/50 dark:bg-purple-900/20 rounded-2xl border border-purple-200/50 dark:border-purple-700/30">
+                  <h3 className="font-semibold text-purple-800 dark:text-purple-200 mb-4 text-lg">Available Questions</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-medium">Total:</span>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalQuestions}</div>
                     </div>
-                    <div>
-                      <span className="text-purple-600">Categories:</span>
-                      <span className="ml-2 font-medium">{Object.keys(stats.byCategory || {}).length}</span>
+                    <div className="text-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-medium">Categories:</span>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(stats.byCategory || {}).length}</div>
                     </div>
-                    <div>
-                      <span className="text-purple-600">Specialties:</span>
-                      <span className="ml-2 font-medium">{Object.keys(stats.bySpecialty).length}</span>
+                    <div className="text-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-medium">Specialties:</span>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(stats.bySpecialty).length}</div>
                     </div>
-                    <div>
-                      <span className="text-purple-600">Topics:</span>
-                      <span className="ml-2 font-medium">{Object.keys(stats.byTopic).length}</span>
+                    <div className="text-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-medium">Topics:</span>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(stats.byTopic).length}</div>
                     </div>
                   </div>
                 </div>
