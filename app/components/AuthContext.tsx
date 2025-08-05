@@ -53,37 +53,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [pathname]);
 
   const signInWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Signing in with email:', email);
-    await signInWithEmailAndPassword(auth, email, password);
-    
-    // ✅ Only redirect to dashboard if signing in from homepage
-    if (pathname === '/' || pathname === '/home') {
-      console.log('✅ Redirecting to dashboard after sign in');
-      router.push('/dashboard');
-    }
-  };
+  console.log('🔐 Signing in with email:', email);
+  await signInWithEmailAndPassword(auth, email, password);
+  router.push('/dashboard');
+};
 
-  const signUpWithEmail = async (email: string, password: string) => {
-    console.log('📝 Signing up with email:', email);
-    await createUserWithEmailAndPassword(auth, email, password);
-    
-    // ✅ Only redirect to dashboard if signing up from homepage
-    if (pathname === '/' || pathname === '/home') {
-      console.log('✅ Redirecting to dashboard after sign up');
-      router.push('/dashboard');
-    }
-  };
+const signUpWithEmail = async (email: string, password: string) => {
+  console.log('📝 Signing up with email:', email);
+  await createUserWithEmailAndPassword(auth, email, password);
+  router.push('/dashboard');
+};
 
-  const signInWithGoogle = async () => {
-    console.log('🔍 Signing in with Google');
-    await signInWithPopup(auth, googleProvider);
-    
-    // ✅ Only redirect to dashboard if signing in from homepage
-    if (pathname === '/' || pathname === '/home') {
-      console.log('✅ Redirecting to dashboard after Google sign in');
-      router.push('/dashboard');
-    }
-  };
+const signInWithGoogle = async () => {
+  console.log('🔍 Signing in with Google');
+  await signInWithPopup(auth, googleProvider);
+  router.push('/dashboard');
+};
 
   const logout = async () => {
     console.log('👋 Signing out');

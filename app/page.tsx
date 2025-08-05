@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
 import { ArrowRight, Users, TrendingUp, Star, CheckCircle } from 'lucide-react';
-import Header from './components/Header'; // ✅ CHANGED: Replace Header with HomepageHeader
+import Header from './components/Header';  
 
 const HomePage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
