@@ -1,107 +1,102 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../../lib/firebase';
 import { useAuth } from '../../../components/AuthContext';
 import Image from 'next/image';
-import banner from './public/courses-banner.jpg';
+import { useParams, useRouter } from 'next/navigation';
+import { Loader2, ArrowLeft } from 'lucide-react';
 
 
-export default function ETutorPage() {
+export default function EtutorViewerPage() {
   const { quizId } = useParams();
+  const router = useRouter();
   const { user } = useAuth();
-  const [content, setContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [content, setContent] = useState('');
+  const [meta, setMeta] = useState({
+    title: '',
+    createdAt: '',
+    userName: '',
+  });
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !quizId) {
       return;
     }
 
-    const fetchData = async () => {
+    const fetchEtutor = async () => {
       try {
-        const statsRef = doc(db, 'userStats', user.uid, 'quizzes', quizId as string);
-        const statsSnap = await getDoc(statsRef);
+        const docRef = doc(db, `users/${user.uid}/etutors/${quizId}`);
+        const snap = await getDoc(docRef);
 
-        if (!statsSnap.exists()) {
-          setError('No data found for this quiz.');
+        if (!snap.exists()) {
+          console.warn('No tutor summary found.');
           return;
         }
 
-        const data = statsSnap.data();
-        const { notes, incorrectAnswers, quizTitle } = data;
-
-        const response = await fetch('/api/generate-etutor', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userName: user.displayName || 'Student',
-            quizTitle: quizTitle || quizId,
-            notes,
-            incorrectAnswers,
-          }),
+        const data = snap.data();
+        setMeta({
+          title: data.title || 'Untitled Course',
+          createdAt: new Date(data.createdAt.seconds * 1000).toLocaleDateString(),
+          userName: data.userName || 'Student',
         });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || 'Failed to generate eTutor');
-        }
-
-        setContent(result.content);
-      } catch (err: any) {
-        console.error('Error:', err);
-        setError('Failed to load eTutor content.');
+        setContent(data.content || '');
+      } catch (err) {
+        console.error('Error fetching tutor summary:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchEtutor();
   }, [user, quizId]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center text-blue-600">📘 Generating your eTutor…</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-red-100 text-red-800">
-        {error}
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        <Loader2 className="animate-spin h-6 w-6 mr-2" />
+        Loading your smart tutor...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 px-6 py-10 max-w-4xl mx-auto prose">
-      {/* 🖼 Cover */}
-      <div className="text-center mb-12">
+    <div className="bg-white min-h-screen">
+      {/* Cover Page */}
+      <div className="relative w-full h-64 md:h-96">
         <Image
-          src={banner}
+          src="/courses-banner.jpg"
           alt="eTutor Cover"
-          width={640}
-          height={400}
-          className="rounded-xl mx-auto mb-4"
+          fill
+          priority
+          className="object-cover"
         />
-        <h1 className="text-4xl font-bold">eTutor on {quizId}</h1>
-        <p className="text-lg text-gray-600">For {user?.displayName || 'You'} | {new Date().toLocaleDateString()}</p>
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white text-center px-6">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2">
+            eTutor on {meta.title}
+          </h1>
+          <p className="text-lg md:text-xl mb-2">Prepared for {meta.userName}</p>
+          <p className="text-sm">🗓️ {meta.createdAt}</p>
+        </div>
+        <button
+          onClick={() => router.back()}
+          className="absolute top-4 left-4 bg-white text-gray-700 px-3 py-1 rounded-lg text-sm shadow hover:bg-gray-100"
+        >
+          <ArrowLeft className="inline w-4 h-4 mr-1" />
+          Back
+        </button>
       </div>
 
-      {/* 🧠 Tutor Content */}
-      {content && (
-        <div className="prose lg:prose-lg max-w-none">
-          {content.split('\n').map((para, index) => (
-            <p key={index}>{para}</p>
-          ))}
+      {/* Tutoring Content */}
+      <div className="prose prose-lg max-w-3xl mx-auto px-4 py-10">
+        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="mt-10 text-sm text-center text-gray-500">
+          <p>With guidance from</p>
+          <p className="font-bold text-blue-600">Dr. MemoKash 🧠</p>
         </div>
-      )}
+      </div>
     </div>
   );
 }

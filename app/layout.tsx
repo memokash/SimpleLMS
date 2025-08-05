@@ -1,7 +1,9 @@
 import './globals.css'
 import { AuthProvider } from './components/AuthContext'
-
+import AppLayout from './components/AppLayout';
 import Footer from './components/Footer'
+
+
 
 export const metadata = {
   title: 'MedicalSchoolQuizzes - Master Medical School With Smart Quizzes',
@@ -21,11 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <AppLayout>
         <AuthProvider>
           
           <main>{children}</main>
           <Footer />
-        </AuthProvider>
+          </AuthProvider>
+        </AppLayout>
       </body>
     </html>
   )

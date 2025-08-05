@@ -1,6 +1,4 @@
 ignoredBuiltDependencies:
   - unrs-resolver
 
-onlyBuiltDependencies:
-  - '@firebase/util'
-  - protobufjs
+

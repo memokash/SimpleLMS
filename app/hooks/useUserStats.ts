@@ -1,18 +1,26 @@
+// app/hooks/useUserStats.ts
+
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../components/AuthContext';
 
-export interface UserStats {
-  averageScore: number;
-  quizzesCompleted: number;
-  questionsContributed: number;
-  tier: 'free' | 'pro' | 'premium';
+interface UserStats {
+  totalCourses: number;
+  completed: number;
+  inProgress: number;
+  avgScore: number;
+  // Add more fields if needed
 }
 
-export function useUserStats() {
+export const useUserStats = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<UserStats | null>(null);
+  const [stats, setStats] = useState<UserStats>({
+    totalCourses: 0,
+    completed: 0,
+    inProgress: 0,
+    avgScore: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,16 +29,45 @@ export function useUserStats() {
     }
 
     const fetchStats = async () => {
-      const docRef = doc(db, 'userStats', user.uid);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        setStats(snap.data() as UserStats);
+      setLoading(true);
+
+      try {
+        const quizRef = collection(db, 'quizAttempts');
+        const q = query(quizRef, where('userId', '==', user.uid));
+        const snapshot = await getDocs(q);
+
+        let completed = 0;
+        let inProgress = 0;
+        let totalScore = 0;
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.completed) {
+            completed++;
+            totalScore += data.score || 0;
+          } else {
+            inProgress++;
+          }
+        });
+
+        const totalCourses = completed + inProgress;
+        const avgScore = completed > 0 ? totalScore / completed : 0;
+
+        setStats({
+          totalCourses,
+          completed,
+          inProgress,
+          avgScore,
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchStats();
   }, [user]);
 
-  return stats; 
-}
+  return { stats, loading };
+};
