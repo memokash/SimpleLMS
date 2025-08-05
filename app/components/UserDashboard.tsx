@@ -1,396 +1,712 @@
-// components/DashboardNavigation.tsx - Enhanced with better spacing and signout
 'use client';
 
-import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  BookOpen, 
-  Users, 
-  BarChart3, 
-  Settings, 
-  Brain,
+import React, { useState } from 'react';
+import { useUserStats } from '../hooks/useUserStats';
+import { useTheme } from './ThemeContext';
+import {
+  BookOpenCheck,
+  FileText,
   GraduationCap,
-  Zap,
-  MessageSquare,
-  Calendar,
+  Sparkles,
+  Lightbulb,
   Stethoscope,
+  BrainCircuit,
+  NotebookText,
+  BookOpen,
+  Gauge,
+  UserCog,
+  Loader2,
+  Sun,
+  Moon,
+  TrendingUp,
+  Award,
+  Target,
+  Zap,
+  Calendar,
+  Activity,
+  Brain,
+  BarChart3,
+  MessageSquare,
+  Users,
   Library,
   UserCheck,
-  FileText,
-  Award,
-  LogOut,
-  Crown,
-  ChevronDown,
-  User
+  MapPin,
+  Clipboard
 } from 'lucide-react';
 
-const DashboardNavigation = () => {
-  const pathname = usePathname();
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  
-  const navigationItems = [
+export default function UserDashboard() {
+  const { stats, loading } = useUserStats();
+  const { isDark, toggleTheme } = useTheme();
+
+  // Section ordering state - Split into two columns
+  const [leftColumnSections] = useState([
+    'msq-platform',
+    'study-tools',
+    'clinical-tools',
+    'performance-settings'
+  ]);
+
+  const [rightColumnSections] = useState([
+    'quick-actions', 
+    'community-tools',
+    'discussion-forums'
+  ]);
+
+  const [showSectionControls, setShowSectionControls] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+        <div className="flex items-center text-gray-600 dark:text-gray-200 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+          <Loader2 className="animate-spin h-6 w-6 mr-3" />
+          <span className="text-lg font-medium">Loading your dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const moveSectionUp = (index: number) => {
+    // Disabled for two-column layout
+  };
+
+  const moveSectionDown = (index: number) => {
+    // Disabled for two-column layout
+  };
+
+  const quickActions = [
     {
-      name: 'Dashboard',
-      href: '/dashboard',
-      icon: Home,
-      description: 'Overview and analytics'
-    },
-    {
-      name: 'MedicalSchoolQuizzes',
-      href: '/courses',
-      icon: BookOpen,
-      description: 'Take quizzes and track progress',
-    },
-    // NEW: Community & Educational Tools
-    {
-      name: 'Question Bank',
-      href: '/dashboard/question-bank',
-      icon: BookOpen,
-      description: 'Community question repository',
-      badge: 'Community'
-    },
-    {
-      name: 'Study Groups',
-      href: '/dashboard/study-groups',
-      icon: Users,
-      description: 'Join or create study groups'
-    },
-    {
-      name: 'Messages',
-      href: '/dashboard/messages',
-      icon: MessageSquare,
-      description: 'Internal messaging system',
-      badge: '3'
-    },
-    // NEW: Clinical & Professional Tools
-    {
-      name: 'Calendar & Rotations',
-      href: '/dashboard/calendar',
-      icon: Calendar,
-      description: 'Rotation schedules and calendar'
-    },
-    {
-      name: 'Rounding Tools',
-      href: '/dashboard/rounding',
-      icon: Stethoscope,
-      description: 'H&P, Progress Notes, Procedures'
-    },
-    {
-      name: 'Reading & Resources',
-      href: '/dashboard/reading',
-      icon: Library,
-      description: 'Save and annotate articles'
-    },
-    // NEW: Discussion Forums
-    {
-      name: 'Student Rotations',
-      href: '/dashboard/student-rotations',
+      href: '/dashboard/courses',
       icon: GraduationCap,
-      description: 'Student rotation discussions'
+      title: 'Continue Learning',
+      description: 'Pick up where you left off with your medical studies',
+      color: 'indigo',
+      stats: '4 active courses',
+      badge: 'Continue'
     },
     {
-      name: 'Residency Rotations',
-      href: '/dashboard/residency-rotations',
-      icon: UserCheck,
-      description: 'Residency rotation discussions'
+      href: '/dashboard/generator',
+      icon: Lightbulb,
+      title: 'Generate Questions',
+      description: 'Create custom practice questions using AI',
+      color: 'yellow',
+      stats: 'AI powered',
+      badge: 'Create'
     },
     {
-      name: 'General Residency',
-      href: '/dashboard/general-residency',
-      icon: FileText,
-      description: 'General residency discussions'
-    },
-    // Existing items
-    {
-      name: 'Students',
-      href: '/students',
-      icon: Users,
-      description: 'Student management'
-    },
-    {
-      name: 'Analytics',
-      href: '/analytics',
-      icon: BarChart3,
-      description: 'Performance insights'
-    },
-    {
-      name: 'AI Operations',
-      href: '/ai/categorize-course',
-      icon: Brain,
-      description: 'AI-powered enhancements',
-      badge: 'New',
-      submenu: [
-        {
-          name: 'Course Categorization',
-          description: 'Auto-categorize medical courses',
-          icon: BookOpen
-        },
-        {
-          name: 'Explanation Enhancement',
-          description: 'Generate teaching explanations',
-          icon: GraduationCap
-        }
-      ]
-    },
-    // NEW: CEUs
-    {
-      name: 'CEUs',
-      href: '/dashboard/ceus',
-      icon: Award,
-      description: 'Continuing Education Units',
-      badge: 'Soon'
-    },
-    {
-      name: 'Settings',
-      href: '/settings',
-      icon: Settings,
-      description: 'System configuration'
+      href: '/dashboard/flashcards',
+      icon: BrainCircuit,
+      title: 'Quick Review',
+      description: 'Smart flashcard session with spaced repetition',
+      color: 'purple',
+      stats: '156 cards ready',
+      badge: 'Study'
     }
   ];
 
-  const isActive = (href: string) => {
-    return pathname === href || pathname.startsWith(href);
+  const studyTools = [
+    {
+      href: '/dashboard/etutor',
+      icon: Sparkles,
+      title: 'AI Tutor',
+      description: 'Personalized explanations and comprehensive study guides tailored to your learning',
+      stats: '12 summaries available',
+      isNew: true,
+      color: 'pink'
+    },
+    {
+      href: '/dashboard/rounding',
+      icon: Stethoscope,
+      title: 'Medical Rounding',
+      description: 'Simulate real-world clinical scenarios and patient case studies',
+      stats: '8 cases available',
+      color: 'red'
+    },
+    {
+      href: '/dashboard/notes',
+      icon: NotebookText,
+      title: 'Smart Notes',
+      description: 'AI-enhanced note taking with automatic summarization and organization',
+      stats: '24 notes created',
+      color: 'green'
+    },
+    {
+      href: '/dashboard/quickreview',
+      icon: BookOpen,
+      title: 'Rapid Review',
+      description: 'High-yield facts and rapid recall sessions for exam preparation',
+      stats: '156 facts mastered',
+      color: 'blue'
+    }
+  ];
+
+  // NEW: Enhanced Educational & Community Tools
+  const communityTools = [
+    {
+      href: '/dashboard/question-bank',
+      icon: BookOpen,
+      title: 'Community Question Bank',
+      description: 'Collaborative repository of medical education questions shared by peers',
+      stats: '1,247 questions available',
+      color: 'green',
+      badge: 'Community'
+    },
+    {
+      href: '/dashboard/study-groups',
+      icon: Users,
+      title: 'Study Groups',
+      description: 'Join or create study groups with fellow medical students and residents',
+      stats: '23 active groups',
+      color: 'purple',
+      badge: 'Collaborate'
+    },
+    {
+      href: '/dashboard/messages',
+      icon: MessageSquare,
+      title: 'Messages & Chat',
+      description: 'Internal messaging system for peer communication and collaboration',
+      stats: '3 new messages',
+      color: 'indigo',
+      badge: 'Chat',
+      isNew: true
+    }
+  ];
+
+  // NEW: Clinical & Professional Tools
+  const clinicalTools = [
+    {
+      href: '/dashboard/calendar',
+      icon: Calendar,
+      title: 'Calendar & Rotations',
+      description: 'Manage rotation schedules, upload rotation lists, and track clinical requirements',
+      stats: 'Internal Medicine - Week 3',
+      color: 'orange',
+      subItems: ['Rotation Schedule', 'Upload Documents', 'Team Calendar']
+    },
+    {
+      href: '/dashboard/reading',
+      icon: Library,
+      title: 'Reading & Resources',
+      description: 'Save articles, studies, books, and PDFs with highlighting and annotation features',
+      stats: '45 saved articles',
+      color: 'teal'
+    }
+  ];
+
+  // NEW: Discussion Forums
+  const discussionForums = [
+    {
+      href: '/dashboard/student-rotations',
+      icon: GraduationCap,
+      title: 'Student Rotations',
+      description: 'Discuss rotations nationally and internationally, find opportunities',
+      stats: '89 active discussions',
+      color: 'pink'
+    },
+    {
+      href: '/dashboard/residency-rotations',
+      icon: UserCheck,
+      title: 'Residency Rotations',
+      description: 'Residency rotation discussions and experiences sharing',
+      stats: '156 posts this week',
+      color: 'cyan'
+    },
+    {
+      href: '/dashboard/general-residency',
+      icon: FileText,
+      title: 'General Residency',
+      description: 'General residency discussions organized in a Kardex-like manner',
+      stats: '203 ongoing threads',
+      color: 'amber'
+    }
+  ];
+
+  const performanceData = [
+    {
+      href: '/dashboard/results',
+      icon: BarChart3,
+      title: 'Performance Analytics',
+      description: 'Detailed insights into your learning progress and quiz performance with trends',
+      value: `${stats.completed} quizzes completed`,
+      trend: '+12% this week',
+      color: 'green',
+      badge: 'Trending Up'
+    },
+    {
+      href: '/dashboard/profile',
+      icon: UserCog,
+      title: 'Account & Subscription',
+      description: 'Manage your subscription plan, billing, and personal account settings',
+      value: 'Pro Member',
+      color: 'blue',
+      badge: 'Pro'
+    },
+    {
+      href: '/dashboard/ceus',
+      icon: Award,
+      title: 'CEUs',
+      description: 'Continuing Education Units tracking and certification management',
+      value: 'Coming Soon',
+      color: 'purple',
+      badge: 'Soon',
+      comingSoon: true
+    }
+  ];
+
+  const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+      indigo: 'text-indigo-600 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/40',
+      yellow: 'text-yellow-600 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900/40',
+      purple: 'text-purple-600 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/40',
+      green: 'text-green-600 dark:text-green-300 bg-green-100 dark:bg-green-900/40',
+      blue: 'text-blue-600 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40',
+      red: 'text-red-600 dark:text-red-300 bg-red-100 dark:bg-red-900/40',
+      pink: 'text-pink-600 dark:text-pink-300 bg-pink-100 dark:bg-pink-900/40',
+      teal: 'text-teal-600 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/40',
+      cyan: 'text-cyan-600 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-900/40',
+      amber: 'text-amber-600 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40',
+      orange: 'text-orange-600 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/40'
+    };
+    return colorMap[color] || 'text-gray-600 dark:text-gray-200 bg-gray-100 dark:bg-gray-900/40';
   };
 
-  const handleSignOut = () => {
-    // Add your signout logic here
-    console.log('Signing out...');
-  };
-
-  return (
-    <nav className="bg-white shadow-lg border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <GraduationCap className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-bold text-xl text-gray-900">MedEd LMS</span>
+  // Section Separator Component - Simplified for two-column layout
+  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => {
+    return (
+      <div className="relative my-2">
+        <div className="absolute inset-0 flex items-center">
+          <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
+        </div>
+        <div className="relative flex justify-center">
+          <div className={`px-2 py-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-md border border-white/40 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20`}>
+            <div className="flex items-center gap-2">
+              <div className={`p-0.5 rounded-sm ${getColorClasses(color)}`}>
+                <Icon className="h-3 w-3" />
               </div>
-            </div>
-            
-            {/* Navigation Links - Scrollable for mobile */}
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-1 overflow-x-auto">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                
-                return (
-                  <div key={item.name} className="relative group flex-shrink-0">
-                    <Link
-                      href={item.href}
-                      className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
-                        active
-                          ? 'bg-purple-100 text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4 mr-2" />
-                      {item.name}
-                      {item.badge && (
-                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          item.badge === 'New' || item.badge === 'Community'
-                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                            : item.badge === 'Soon' 
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                            : /^\d+$/.test(item.badge) 
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                    
-                    {/* Dropdown for AI Operations */}
-                    {item.submenu && (
-                      <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <div className="p-4">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-                            <Zap className="h-4 w-4 mr-2 text-purple-600" />
-                            AI-Powered Features
-                          </h3>
-                          <div className="space-y-3">
-                            {item.submenu.map((subItem) => {
-                              const SubIcon = subItem.icon;
-                              return (
-                                <div
-                                  key={subItem.name}
-                                  className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <SubIcon className="h-5 w-5 text-gray-400" />
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-900">
-                                      {subItem.name}
-                                    </h4>
-                                    <p className="text-xs text-gray-500">
-                                      {subItem.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-gray-100">
-                            <p className="text-xs text-gray-500">
-                              Transform your medical quizzes with AI-generated explanations and automatic categorization.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Right side - User menu, notifications, unread messages indicator */}
-          <div className="flex items-center space-x-4">
-            {/* Messages indicator */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-blue-50 rounded-full">
-              <MessageSquare className="w-4 h-4 text-blue-600" />
-              <span className="text-xs font-medium text-blue-700">3 unread</span>
-            </div>
-            
-            {/* Status indicator for AI operations */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-green-50 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium text-green-700">AI Ready</span>
-            </div>
-            
-            {/* User Menu Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">U</span>
-                </div>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </button>
-              
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                  <div className="p-4 border-b border-gray-100">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                        <User className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Dr. Sarah Johnson</p>
-                        <div className="flex items-center space-x-2">
-                          <p className="text-xs text-gray-500">Medical Student</p>
-                          <Link 
-                            href="/dashboard/subscription"
-                            className="flex items-center space-x-1 px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-medium rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all"
-                          >
-                            <Crown className="h-3 w-3" />
-                            <span>Pro</span>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="py-2">
-                    <Link
-                      href="/dashboard/profile"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <User className="h-4 w-4 mr-3" />
-                      Profile Settings
-                    </Link>
-                    
-                    <Link
-                      href="/dashboard/subscription"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Crown className="h-4 w-4 mr-3" />
-                      Upgrade Subscription
-                    </Link>
-                    
-                    <Link
-                      href="/settings"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Settings className="h-4 w-4 mr-3" />
-                      Settings
-                    </Link>
-                    
-                    <div className="border-t border-gray-100 mt-2 pt-2">
-                      <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          handleSignOut();
-                        }}
-                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <LogOut className="h-4 w-4 mr-3" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <h2 className="text-base font-bold text-gray-900 dark:text-white">{title}</h2>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Mobile navigation */}
-      <div className="sm:hidden max-h-96 overflow-y-auto">
-        <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            
+    );
+  };
+
+  const sections = {
+    'msq-platform': (
+      <div key="msq-platform">
+        <SectionSeparator title="MSQ Platform" icon={Brain} color="purple" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+          <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-1.5 rounded-md ${getColorClasses('blue')}`}>
+                <BookOpen className="h-4 w-4" />
+              </div>
+              <TrendingUp className="h-3 w-3 text-green-500" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{stats.totalCourses}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-200 font-medium">Quizzes Started</p>
+          </div>
+
+          <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-1.5 rounded-md ${getColorClasses('green')}`}>
+                <Award className="h-4 w-4" />
+              </div>
+              <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded-full font-medium">+5</span>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{stats.completed}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-200 font-medium">Completed</p>
+          </div>
+
+          <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-1.5 rounded-md ${getColorClasses('purple')}`}>
+                <Target className="h-4 w-4" />
+              </div>
+              <Activity className="h-3 w-3 text-blue-500" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{stats.inProgress}</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-200 font-medium">In Progress</p>
+          </div>
+
+          <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
+            <div className="flex items-center justify-between mb-2">
+              <div className={`p-1.5 rounded-md ${getColorClasses('yellow')}`}>
+                <Gauge className="h-4 w-4" />
+              </div>
+              <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium">↗ 8%</span>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{Math.round(stats.avgScore)}%</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-200 font-medium">Avg Score</p>
+          </div>
+        </div>
+      </div>
+    ),
+
+    'quick-actions': (
+      <div key="quick-actions">
+        <SectionSeparator title="Quick Actions" icon={Zap} color="blue" />
+        <div className="grid grid-cols-1 gap-2 mb-3">
+          {quickActions.map((action) => {
+            const IconComponent = action.icon;
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`block px-3 py-3 text-base font-medium rounded-lg ${
-                  active
-                    ? 'bg-purple-100 text-purple-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center justify-center mb-2">
-                  <Icon className="h-5 w-5 mr-3" />
-                  <span className="flex-1 text-center">{item.name}</span>
-                  {item.badge && (
-                    <span className={`ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                      item.badge === 'New' || item.badge === 'Community'
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                        : item.badge === 'Soon' 
-                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                        : /^\d+$/.test(item.badge) 
-                        ? 'bg-red-500 text-white'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {item.badge}
-                    </span>
-                  )}
+              <Link key={action.href} href={action.href}>
+                <div className="group relative bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden min-h-[80px]">
+                  <div className="relative z-10 h-full flex">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className={`p-1.5 rounded-md ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300`}>
+                        <IconComponent className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
+                          {action.title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed">
+                          {action.description}
+                        </p>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium bg-gradient-to-r from-blue-500 to-indigo-600 text-white whitespace-nowrap`}>
+                        {action.badge}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500 text-center px-2">{item.description}</p>
               </Link>
             );
           })}
         </div>
       </div>
-    </nav>
-  );
-};
+    ),
 
-export default DashboardNavigation;
+    'study-tools': (
+      <div key="study-tools">
+        <SectionSeparator title="Study Tools" icon={Brain} color="purple" />
+        <div className="grid grid-cols-1 gap-2 mb-3">
+          {studyTools.map((tool) => {
+            const IconComponent = tool.icon;
+            return (
+              <Link key={tool.href} href={tool.href}>
+                <div className="group bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-102 cursor-pointer min-h-[70px]">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${getColorClasses(tool.color)} group-hover:scale-110 transition-all duration-300`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                          {tool.title}
+                        </h3>
+                        {tool.isNew && (
+                          <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded-full font-medium">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed">
+                        {tool.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    ),
+
+    'community-tools': (
+      <div key="community-tools">
+        <SectionSeparator title="Community Tools" icon={Users} color="green" />
+        <div className="grid grid-cols-1 gap-2 mb-3">
+          {communityTools.map((tool) => {
+            const IconComponent = tool.icon;
+            return (
+              <Link key={tool.href} href={tool.href}>
+                <div className="group bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 cursor-pointer min-h-[70px]">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-300 transition-colors duration-300">
+                          {tool.title}
+                        </h3>
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium bg-gradient-to-r from-green-500 to-emerald-600 text-white`}>
+                          {tool.badge}
+                        </span>
+                        {tool.isNew && (
+                          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-1.5 py-0.5 rounded-full font-medium">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed">
+                        {tool.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    ),
+
+    'clinical-tools': (
+      <div key="clinical-tools">
+        <SectionSeparator title="Clinical Tools" icon={Stethoscope} color="red" />
+        <div className="grid grid-cols-1 gap-2 mb-3">
+          {clinicalTools.map((tool) => {
+            const IconComponent = tool.icon;
+            return (
+              <Link key={tool.href} href={tool.href}>
+                <div className="group bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-102 cursor-pointer min-h-[70px]">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${getColorClasses(tool.color)} group-hover:scale-110 transition-all duration-300`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+                        {tool.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed mb-1">
+                        {tool.description}
+                      </p>
+                      {tool.subItems && (
+                        <div className="text-xs text-gray-500 dark:text-gray-300">
+                          {tool.subItems.join(' • ')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    ),
+
+    'discussion-forums': (
+      <div key="discussion-forums">
+        <SectionSeparator title="Discussion Forums" icon={MessageSquare} color="indigo" />
+        <div className="grid grid-cols-1 gap-2 mb-3">
+          {discussionForums.map((forum) => {
+            const IconComponent = forum.icon;
+            return (
+              <Link key={forum.href} href={forum.href}>
+                <div className="group bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 cursor-pointer min-h-[70px]">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${getColorClasses(forum.color)} group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors duration-300">
+                        {forum.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed">
+                        {forum.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    ),
+
+    'performance-settings': (
+      <div key="performance-settings">
+        <SectionSeparator title="Performance & Settings" icon={Activity} color="green" />
+        <div className="grid grid-cols-1 gap-2">
+          {performanceData.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <Link key={item.href} href={item.href}>
+                <div className={`group bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-102 cursor-pointer min-h-[70px] ${item.comingSoon ? 'opacity-75' : ''}`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${getColorClasses(item.color)}`}>
+                      <IconComponent className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                          {item.title}
+                        </h3>
+                        {item.badge && (
+                          <span className={`text-xs font-medium text-white px-1.5 py-0.5 rounded-full ${
+                            item.badge === 'Soon' 
+                              ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
+                              : item.badge === 'Trending Up'
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600'
+                              : 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                          }`}>
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-200 text-xs leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    )
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 transition-all duration-500">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        
+        {/* Header Section - REMOVED DUPLICATE NAVIGATION ELEMENTS */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Welcome back! 👋
+            </h1>
+            <p className="text-base text-gray-600 dark:text-gray-200">
+              Ready to continue your medicine education journey?
+            </p>
+          </div>
+          
+          {/* Simple controls - removed section controls */}
+          <div className="flex items-center gap-3">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg px-3 py-1.5 border border-white/20 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20">
+              <div className="flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                <span className="text-gray-700 dark:text-gray-200 font-medium">Today: 3 sessions</span>
+              </div>
+            </div>
+            
+            <button
+              onClick={toggleTheme}
+              className="p-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 dark:border-yellow-500/30 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200 shadow-lg hover:shadow-xl dark:shadow-yellow-500/20"
+              aria-label="Toggle theme"
+            >
+              {isDark ? (
+                <Sun className="h-4 w-4 text-yellow-500" />
+              ) : (
+                <Moon className="h-4 w-4 text-gray-700" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Personalized Quick Access Widget */}
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/20 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20">
+          {/* Daily AI Motivation */}
+          <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-100 dark:border-purple-700/30">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg">
+                <Brain className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-sm font-semibold text-purple-800 dark:text-purple-200">Daily AI Insight</h3>
+                  <span className="text-xs bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-full">
+                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                <p className="text-sm text-purple-700 dark:text-purple-200 leading-relaxed">
+                  "Today's medical knowledge builds tomorrow's healing hands. Every question you answer brings you closer to saving lives. Keep going, future doctor! 🩺"
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Access Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {/* My Groups */}
+            <Link href="/dashboard/my-groups" className="group">
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 p-3 rounded-lg border border-emerald-100 dark:border-emerald-700/30 hover:shadow-md transition-all duration-200 hover:scale-105">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <h4 className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">My Groups</h4>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-emerald-700 dark:text-emerald-300">Study Group Alpha</div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400">Class of 2025</div>
+                  <div className="text-xs text-emerald-500 dark:text-emerald-500">+2 more</div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Inbox */}
+            <Link href="/dashboard/inbox" className="group">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-700/30 hover:shadow-md transition-all duration-200 hover:scale-105">
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquare className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <h4 className="text-xs font-semibold text-blue-800 dark:text-blue-200">Inbox</h4>
+                  <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">3</span>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-blue-700 dark:text-blue-300">Dr. Smith: Rotation feedback</div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400">Quiz results available</div>
+                  <div className="text-xs text-blue-500 dark:text-blue-500">Group chat mention</div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Today's Schedule */}
+            <Link href="/dashboard/calendar" className="group">
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-3 rounded-lg border border-amber-100 dark:border-amber-700/30 hover:shadow-md transition-all duration-200 hover:scale-105">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  <h4 className="text-xs font-semibold text-amber-800 dark:text-amber-200">Today</h4>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-amber-700 dark:text-amber-300">9:00 AM - Morning rounds</div>
+                  <div className="text-xs text-amber-600 dark:text-amber-400">2:00 PM - Case study</div>
+                  <div className="text-xs text-amber-500 dark:text-amber-500">6:00 PM - Study group</div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Quick Actions */}
+            <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 p-3 rounded-lg border border-rose-100 dark:border-rose-700/30">
+              <div className="flex items-center gap-2 mb-2">
+                <Zap className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                <h4 className="text-xs font-semibold text-rose-800 dark:text-rose-200">Quick Actions</h4>
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                <Link href="/dashboard/flashcards" className="text-xs text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 p-1 rounded hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors">
+                  📚 Review
+                </Link>
+                <Link href="/dashboard/generator" className="text-xs text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 p-1 rounded hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors">
+                  ⚡ Generate
+                </Link>
+                <Link href="/dashboard/notes" className="text-xs text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 p-1 rounded hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors">
+                  📝 Notes
+                </Link>
+                <Link href="/dashboard/ai-chat" className="text-xs text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200 p-1 rounded hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors">
+                  🤖 AI Chat
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            {leftColumnSections.map(sectionId => sections[sectionId])}
+          </div>
+          
+          {/* Right Column */}
+          <div className="space-y-4">
+            {rightColumnSections.map(sectionId => sections[sectionId])}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
