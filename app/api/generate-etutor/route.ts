@@ -6,9 +6,10 @@ function buildETutorPrompt(
   userName: string,
   quizTitle: string,
   notes: Record<string, string>,
-  incorrectAnswers: { question: string; explanation?: string }[]
+  incorrectAnswers: { question: string; explanation?: string }[],
+  questionId?: string
 ): string {
-  let prompt = `Create a personalized tutoring session titled "eTutor on ${quizTitle}" for the student ${userName}. The session should:
+  let prompt = `Create a personalized tutoring session titled "eTutor on ${quizTitle}" for the student ${userName}${questionId ? ` (Session ID: ${questionId})` : ''}. The session should:
 
 1. Start with a friendly welcome, normalize making mistakes, and give general study tips.
 2. Summarize each incorrect question and teach the correct answer using analogies, humor, and memory tricks.
@@ -17,8 +18,8 @@ function buildETutorPrompt(
 
 Here are the student's notes per question:\n`;
 
-  Object.entries(notes).forEach(([questionId, note], index) => {
-    prompt += `\nNote ${index + 1}:\n${note}`;
+  Object.entries(notes).forEach(([noteQuestionId, note], index) => {
+    prompt += `\nNote ${index + 1} ${questionId && noteQuestionId === questionId ? '(Current Question)' : ''}:\n${note}`;
   });
 
   if (incorrectAnswers?.length > 0) {
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
         hasUserName: !!requestData.userName,
         hasQuizTitle: !!requestData.quizTitle,
         hasNotes: !!requestData.notes,
+        hasQuestionId: !!requestData.questionId,
         incorrectAnswersCount: requestData.incorrectAnswers?.length || 0
       });
     } catch (parseError) {
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid JSON in request' }, { status: 400 });
     }
 
-    const { userName, quizTitle, notes, incorrectAnswers } = requestData;
+    const { userName, quizTitle, notes, incorrectAnswers, questionId } = requestData;
 
     // Validate required fields
     if (!userName || !quizTitle || !notes) {
@@ -79,7 +81,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to initialize OpenAI client' }, { status: 500 });
     }
 
-    const prompt = buildETutorPrompt(userName, quizTitle, notes, incorrectAnswers);
+    const prompt = buildETutorPrompt(userName, quizTitle, notes, incorrectAnswers, questionId);
 
     console.log('🤖 Making OpenAI API call...');
 
@@ -108,8 +110,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No content generated' }, { status: 500 });
     }
 
-    console.log('🎉 Returning successful eTutor content');
-    return NextResponse.json({ content: tutoringContent });
+    console.log('🎉 Returning successful eTutor content', {
+      questionId: questionId || 'not provided',
+      contentLength: tutoringContent.length
+    });
+    return NextResponse.json({ 
+      content: tutoringContent,
+      questionId: questionId || null,
+      generatedAt: new Date().toISOString()
+    });
     
   } catch (error) {
     console.error('💥 Generate eTutor error:', error);

@@ -1,7 +1,5 @@
 // pages/api/ai/enhance-quiz-explanations.ts
 
-// pages/api/ai/enhance-quiz-explanations.ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 
@@ -225,13 +223,13 @@ FORMAT YOUR RESPONSE AS JSON:
       throw new Error('Missing required explanations in response');
     }
 
-    // Ensure minimum quality standards
-    if (parsedResponse.correctExplanation.length < 100) {
-      console.warn('⚠️ Correct explanation shorter than expected');
+    // Ensure minimum quality standards using validateMedicalContent
+    if (!validateMedicalContent(parsedResponse.correctExplanation)) {
+      console.warn('⚠️ Correct explanation may not meet medical quality standards');
     }
 
-    if (parsedResponse.incorrectExplanation.length < 100) {
-      console.warn('⚠️ Incorrect explanation shorter than expected');
+    if (!validateMedicalContent(parsedResponse.incorrectExplanation)) {
+      console.warn('⚠️ Incorrect explanation may not meet medical quality standards');
     }
 
     // Sanitize explanations
