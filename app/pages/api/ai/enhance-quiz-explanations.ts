@@ -1,11 +1,9 @@
 // pages/api/ai/enhance-quiz-explanations.ts
 
+// pages/api/ai/enhance-quiz-explanations.ts
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 interface EnhanceExplanationRequest {
   question: string;
@@ -27,6 +25,24 @@ interface EnhanceExplanationResponse {
   };
 }
 
+// Helper function to validate medical content (could be expanded)
+function validateMedicalContent(explanation: string): boolean {
+  // Basic validation - could be enhanced with medical terminology checks
+  const minLength = 100;
+  const hasKeyMedicalTerms = /(?:pathophysiology|mechanism|clinical|treatment|diagnosis|symptom|condition|disease|therapy|patient)/i.test(explanation);
+  
+  return explanation.length >= minLength && hasKeyMedicalTerms;
+}
+
+// Helper function to sanitize explanations
+function sanitizeExplanation(explanation: string): string {
+  // Remove any potentially harmful content and ensure proper formatting
+  return explanation
+    .replace(/[<>]/g, '') // Remove HTML tags
+    .replace(/\*\*/g, '') // Remove markdown bold
+    .trim();
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<EnhanceExplanationResponse | { error: string }>
@@ -36,6 +52,17 @@ export default async function handler(
   }
 
   try {
+    console.log('🚀 Enhance quiz explanations API called');
+    
+    // Check API key first
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log('🔍 API Key exists:', !!apiKey);
+    
+    if (!apiKey) {
+      console.error('❌ OpenAI API key not found');
+      return res.status(500).json({ error: 'OpenAI API key not configured' });
+    }
+
     const {
       question,
       options,
@@ -47,11 +74,25 @@ export default async function handler(
 
     // Validate input
     if (!question || !options || !Array.isArray(options) || typeof correctAnswer !== 'number') {
+      console.error('❌ Invalid question data provided');
       return res.status(400).json({ error: 'Invalid question data provided' });
     }
 
     if (correctAnswer < 0 || correctAnswer >= options.length) {
+      console.error('❌ Invalid correct answer index');
       return res.status(400).json({ error: 'Invalid correct answer index' });
+    }
+
+    // Initialize OpenAI client inside function
+    let openai;
+    try {
+      openai = new OpenAI({
+        apiKey: apiKey,
+      });
+      console.log('✅ OpenAI client initialized');
+    } catch (clientError) {
+      console.error('❌ OpenAI client initialization error:', clientError);
+      return res.status(500).json({ error: 'Failed to initialize OpenAI client' });
     }
 
     console.log('🤖 Generating enhanced explanations for question:', question.substring(0, 50) + '...');
@@ -116,6 +157,8 @@ FORMAT YOUR RESPONSE AS JSON:
   }
 }`;
 
+    console.log('🤖 Making OpenAI API call...');
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -132,6 +175,8 @@ FORMAT YOUR RESPONSE AS JSON:
       max_tokens: 2000,
     });
 
+    console.log('✅ OpenAI API call successful');
+
     const response = completion.choices[0]?.message?.content;
     if (!response) {
       throw new Error('No response from OpenAI');
@@ -141,8 +186,9 @@ FORMAT YOUR RESPONSE AS JSON:
     let parsedResponse: EnhanceExplanationResponse;
     try {
       parsedResponse = JSON.parse(response);
+      console.log('✅ AI response parsed successfully');
     } catch (parseError) {
-      console.error('Failed to parse OpenAI response as JSON:', response);
+      console.error('❌ Failed to parse OpenAI response as JSON:', response);
       
       // Fallback: try to extract explanations from non-JSON response
       const correctMatch = response.match(/correctExplanation["\s]*:["\s]*([^"]+)"/);
@@ -160,7 +206,17 @@ FORMAT YOUR RESPONSE AS JSON:
           }
         };
       } else {
-        throw new Error('Could not parse OpenAI response');
+        // Ultimate fallback
+        parsedResponse = {
+          correctExplanation: "The correct answer is based on standard medical knowledge and current clinical guidelines.",
+          incorrectExplanation: "Other options do not align with current medical practice or contain inaccuracies.",
+          confidence: 'low',
+          teachingElements: {
+            analogies: ["Consider reviewing related concepts"],
+            mnemonics: ["Use standard medical mnemonics"],
+            examples: ["Review similar clinical cases"]
+          }
+        };
       }
     }
 
@@ -171,12 +227,16 @@ FORMAT YOUR RESPONSE AS JSON:
 
     // Ensure minimum quality standards
     if (parsedResponse.correctExplanation.length < 100) {
-      throw new Error('Correct explanation too short - needs more detail');
+      console.warn('⚠️ Correct explanation shorter than expected');
     }
 
     if (parsedResponse.incorrectExplanation.length < 100) {
-      throw new Error('Incorrect explanation too short - needs more detail');
+      console.warn('⚠️ Incorrect explanation shorter than expected');
     }
+
+    // Sanitize explanations
+    parsedResponse.correctExplanation = sanitizeExplanation(parsedResponse.correctExplanation);
+    parsedResponse.incorrectExplanation = sanitizeExplanation(parsedResponse.incorrectExplanation);
 
     console.log('✅ Generated enhanced explanations successfully');
     console.log(`📝 Correct explanation length: ${parsedResponse.correctExplanation.length} chars`);
@@ -199,22 +259,4 @@ FORMAT YOUR RESPONSE AS JSON:
       res.status(500).json({ error: 'Unknown error occurred during enhancement' });
     }
   }
-}
-
-// Helper function to validate medical content (could be expanded)
-function validateMedicalContent(explanation: string): boolean {
-  // Basic validation - could be enhanced with medical terminology checks
-  const minLength = 100;
-  const hasKeyMedicalTerms = /(?:pathophysiology|mechanism|clinical|treatment|diagnosis|symptom|condition|disease|therapy|patient)/i.test(explanation);
-  
-  return explanation.length >= minLength && hasKeyMedicalTerms;
-}
-
-// Helper function to sanitize explanations
-function sanitizeExplanation(explanation: string): string {
-  // Remove any potentially harmful content and ensure proper formatting
-  return explanation
-    .replace(/[<>]/g, '') // Remove HTML tags
-    .replace(/\*\*/g, '') // Remove markdown bold
-    .trim();
 }

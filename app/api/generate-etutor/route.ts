@@ -1,49 +1,6 @@
 import { NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-export async function POST(req: Request) {
-  try {
-    const { userName, quizTitle, notes, incorrectAnswers } = await req.json();
-
-    if (!userName || !quizTitle || !notes) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    const prompt = buildETutorPrompt(userName, quizTitle, notes, incorrectAnswers);
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are a knowledgeable and humorous medical tutor named Dr. MemoKash. Write in a warm, friendly, and inspiring tone.`,
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 3000,
-    });
-
-    const tutoringContent = completion.choices[0]?.message?.content;
-
-    if (!tutoringContent) {
-      return NextResponse.json({ error: 'No content generated' }, { status: 500 });
-    }
-
-    return NextResponse.json({ content: tutoringContent });
-  } catch (error) {
-    console.error('❌ Error generating eTutor:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
-
 // 🧠 Helper function to construct the AI prompt
 function buildETutorPrompt(
   userName: string,
@@ -72,4 +29,97 @@ Here are the student's notes per question:\n`;
   }
 
   return prompt;
+}
+
+export async function POST(req: Request) {
+  try {
+    console.log('🚀 Generate eTutor API called');
+    
+    // Check API key first
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log('🔍 API Key exists:', !!apiKey);
+    
+    if (!apiKey) {
+      console.error('❌ OpenAI API key not found');
+      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+    }
+
+    // Parse request body
+    let requestData;
+    try {
+      requestData = await req.json();
+      console.log('📝 Request data received:', {
+        hasUserName: !!requestData.userName,
+        hasQuizTitle: !!requestData.quizTitle,
+        hasNotes: !!requestData.notes,
+        incorrectAnswersCount: requestData.incorrectAnswers?.length || 0
+      });
+    } catch (parseError) {
+      console.error('❌ JSON parsing error:', parseError);
+      return NextResponse.json({ error: 'Invalid JSON in request' }, { status: 400 });
+    }
+
+    const { userName, quizTitle, notes, incorrectAnswers } = requestData;
+
+    // Validate required fields
+    if (!userName || !quizTitle || !notes) {
+      console.error('❌ Missing required fields');
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Initialize OpenAI client inside function
+    let openai;
+    try {
+      openai = new OpenAI({
+        apiKey: apiKey,
+      });
+      console.log('✅ OpenAI client initialized');
+    } catch (clientError) {
+      console.error('❌ OpenAI client initialization error:', clientError);
+      return NextResponse.json({ error: 'Failed to initialize OpenAI client' }, { status: 500 });
+    }
+
+    const prompt = buildETutorPrompt(userName, quizTitle, notes, incorrectAnswers);
+
+    console.log('🤖 Making OpenAI API call...');
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a knowledgeable and humorous medical tutor named Dr. MemoKash. Write in a warm, friendly, and inspiring tone.`,
+        },
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 3000,
+    });
+
+    console.log('✅ OpenAI API call successful');
+
+    const tutoringContent = completion.choices[0]?.message?.content;
+
+    if (!tutoringContent) {
+      console.error('❌ No content generated');
+      return NextResponse.json({ error: 'No content generated' }, { status: 500 });
+    }
+
+    console.log('🎉 Returning successful eTutor content');
+    return NextResponse.json({ content: tutoringContent });
+    
+  } catch (error) {
+    console.error('💥 Generate eTutor error:', error);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    return NextResponse.json({ 
+      error: 'Internal Server Error',
+      details: error.message 
+    }, { status: 500 });
+  }
 }
