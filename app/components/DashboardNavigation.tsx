@@ -1,9 +1,10 @@
-// components/DashboardNavigation.tsx - Enhanced with better spacing and signout
+// components/DashboardNavigation.tsx - Enhanced with proper routing and signout
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from './AuthContext';
 import { 
   Home, 
   BookOpen, 
@@ -23,11 +24,14 @@ import {
   LogOut,
   Crown,
   ChevronDown,
-  User
+  User,
+  Database
 } from 'lucide-react';
 
 const DashboardNavigation = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth(); // Using useAuth hook
   const [showUserMenu, setShowUserMenu] = useState(false);
   
   const navigationItems = [
@@ -38,74 +42,74 @@ const DashboardNavigation = () => {
       description: 'Overview and analytics'
     },
     {
-      name: 'MedicalSchoolQuizzes',
+      name: 'Medical Quizzes',
       href: '/courses',
       icon: BookOpen,
       description: 'Take quizzes and track progress',
     },
-    // NEW: Community & Educational Tools
+    // Community & Educational Tools
     {
       name: 'Question Bank',
-      href: '/dashboard/question-bank',
-      icon: BookOpen,
+      href: '/question-bank',
+      icon: Database,
       description: 'Community question repository',
       badge: 'Community'
     },
     {
       name: 'Study Groups',
-      href: '/dashboard/study-groups',
+      href: '/study-groups',
       icon: Users,
       description: 'Join or create study groups'
     },
     {
       name: 'Messages',
-      href: '/dashboard/messages',
+      href: '/messages',
       icon: MessageSquare,
       description: 'Internal messaging system',
       badge: '3'
     },
-    // NEW: Clinical & Professional Tools
+    // Clinical & Professional Tools
     {
       name: 'Calendar & Rotations',
-      href: '/dashboard/calendar',
+      href: '/calendar',
       icon: Calendar,
       description: 'Rotation schedules and calendar'
     },
     {
       name: 'Rounding Tools',
-      href: '/dashboard/rounding',
+      href: '/rounding-tools',
       icon: Stethoscope,
       description: 'H&P, Progress Notes, Procedures'
     },
     {
       name: 'Reading & Resources',
-      href: '/dashboard/reading',
+      href: '/reading-resources',
       icon: Library,
       description: 'Save and annotate articles'
     },
-    // NEW: Discussion Forums
+    // Discussion Forums
     {
       name: 'Student Rotations',
-      href: '/dashboard/student-rotations',
+      href: '/forums/student-rotations',
       icon: GraduationCap,
       description: 'Student rotation discussions'
     },
     {
       name: 'Residency Rotations',
-      href: '/dashboard/residency-rotations',
+      href: '/forums/residency-rotations',
       icon: UserCheck,
       description: 'Residency rotation discussions'
     },
     {
       name: 'General Residency',
-      href: '/dashboard/general-residency',
+      href: '/forums/general-residency',
       icon: FileText,
       description: 'General residency discussions'
     },
-    // Existing items
+    // Management
     {
       name: 'Students',
-      href: '/students',
+      href: '/admin/students',
       icon: Users,
       description: 'Student management'
     },
@@ -134,10 +138,10 @@ const DashboardNavigation = () => {
         }
       ]
     },
-    // NEW: CEUs
+    // CEUs
     {
       name: 'CEUs',
-      href: '/dashboard/ceus',
+      href: '/ceus',
       icon: Award,
       description: 'Continuing Education Units',
       badge: 'Soon'
@@ -154,9 +158,15 @@ const DashboardNavigation = () => {
     return pathname === href || pathname.startsWith(href);
   };
 
-  const handleSignOut = () => {
-    // Add your signout logic here
-    console.log('Signing out...');
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      setShowUserMenu(false);
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      alert('Failed to sign out. Please try again.');
+    }
   };
 
   return (
@@ -166,17 +176,17 @@ const DashboardNavigation = () => {
           <div className="flex">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <div className="flex items-center space-x-2">
+              <Link href="/dashboard" className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
                   <GraduationCap className="h-5 w-5 text-white" />
                 </div>
                 <span className="font-bold text-xl text-gray-900">MedEd LMS</span>
-              </div>
+              </Link>
             </div>
             
             {/* Navigation Links - Scrollable for mobile */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-1 overflow-x-auto">
-              {navigationItems.map((item) => {
+              {navigationItems.slice(0, 8).map((item) => { // Show first 8 items in main nav
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 
@@ -252,13 +262,16 @@ const DashboardNavigation = () => {
             </div>
           </div>
           
-          {/* Right side - User menu, notifications, unread messages indicator */}
+          {/* Right side - User menu, notifications, status indicators */}
           <div className="flex items-center space-x-4">
             {/* Messages indicator */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-blue-50 rounded-full">
+            <Link 
+              href="/messages"
+              className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
+            >
               <MessageSquare className="w-4 h-4 text-blue-600" />
               <span className="text-xs font-medium text-blue-700">3 unread</span>
-            </div>
+            </Link>
             
             {/* Status indicator for AI operations */}
             <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-green-50 rounded-full">
@@ -273,7 +286,9 @@ const DashboardNavigation = () => {
                 className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-white">U</span>
+                  <span className="text-sm font-medium text-white">
+                    {user?.displayName?.[0] || user?.email?.[0] || 'U'}
+                  </span>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-500" />
               </button>
@@ -286,11 +301,13 @@ const DashboardNavigation = () => {
                         <User className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">Dr. Sarah Johnson</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {user?.displayName || 'Medical Student'}
+                        </p>
                         <div className="flex items-center space-x-2">
-                          <p className="text-xs text-gray-500">Medical Student</p>
+                          <p className="text-xs text-gray-500">{user?.email}</p>
                           <Link 
-                            href="/dashboard/subscription"
+                            href="/subscription"
                             className="flex items-center space-x-1 px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-medium rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all"
                           >
                             <Crown className="h-3 w-3" />
@@ -303,7 +320,7 @@ const DashboardNavigation = () => {
                   
                   <div className="py-2">
                     <Link
-                      href="/dashboard/profile"
+                      href="/profile"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
@@ -312,7 +329,7 @@ const DashboardNavigation = () => {
                     </Link>
                     
                     <Link
-                      href="/dashboard/subscription"
+                      href="/subscription"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       onClick={() => setShowUserMenu(false)}
                     >
@@ -331,10 +348,7 @@ const DashboardNavigation = () => {
                     
                     <div className="border-t border-gray-100 mt-2 pt-2">
                       <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          handleSignOut();
-                        }}
+                        onClick={handleSignOut}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
                         <LogOut className="h-4 w-4 mr-3" />

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "engines": { 
+  "engines": {
     "pnpm": "^10.0.0"
   },
   "packageManager": "pnpm@10.0.0",
