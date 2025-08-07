@@ -3,8 +3,22 @@
 import React, { useState } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
-import { ArrowRight, Users, TrendingUp, Star, CheckCircle, Target, Brain, Award, Zap, Heart, Shield, Microscope, Pill, Bone, BookOpen } from 'lucide-react';
-import Header from './components/Header';  
+import { TrendingUp, Star, Target, Brain, Award, Zap, Heart, Shield, Microscope, Pill, Bone } from 'lucide-react';
+import Header from './components/Header'; 
+import {
+  ArrowRight,
+  CheckCircle,
+  BrainCircuit,
+  Sparkles,
+  Stethoscope,
+  NotebookText,
+  BookOpen,
+  Users,
+  MessageSquare,
+  Gauge,
+  BarChart3,
+  UserCog
+} from 'lucide-react'; 
 
 const HomePage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
@@ -100,6 +114,53 @@ const HomePage = () => {
     </div>
   );
 
+  const subscriptionBenefits = [
+    {
+      icon: BrainCircuit,
+      title: 'Smart Quiz Engine',
+      description: 'Interactive quizzes with AI-generated explanations and >15,000 questions across all disciplines.'
+    },
+    {
+      icon: Sparkles,
+      title: 'AI Tutor',
+      description: 'Get customized explanations and study guides tailored to your weak spots.'
+    },
+    {
+      icon: Stethoscope,
+      title: 'Clinical Rounding Tools',
+      description: 'Quick access to templates for H&Ps, procedures, and clinical documentation on the go.'
+    },
+    {
+      icon: NotebookText,
+      title: 'Reading Vault',
+      description: 'Store, annotate, and tag key readings, journal articles, and board resources.'
+    },
+    {
+      icon: Users,
+      title: 'Study Groups',
+      description: 'Join or build groups by rotation, discipline, or exam date. No more siloed studying.'
+    },
+    {
+      icon: MessageSquare,
+      title: 'Peer Chat & Messaging',
+      description: 'Direct communication with peers, mentors, or groups — built right into your dashboard.'
+    },
+    {
+      icon: Gauge,
+      title: 'Progress Tracking',
+      description: 'Track your quiz scores, course completions, and weekly study momentum.'
+    },
+    {
+      icon: BarChart3,
+      title: 'Performance Analytics',
+      description: 'Get visual insights into what topics you’ve mastered and what needs work.'
+    },
+    {
+      icon: UserCog,
+      title: 'Custom Learning Profile',
+      description: 'Personalize your dashboard, themes, and study goals across your career journey.'
+    }
+  ];
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
       
@@ -135,7 +196,7 @@ const HomePage = () => {
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-white drop-shadow-2xl">
-                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Unify your medical education.</span>
+                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Unified cross institutionalplatform for the medical community.</span>
               </h1>
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 leading-relaxed max-w-3xl mx-auto drop-shadow-xl">
                 From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools. </p>
@@ -164,12 +225,107 @@ const HomePage = () => {
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
-                <span className="drop-shadow-xl text-gray-100">🧠 Smart Quiz Engine, 15,000+ Questions</span>
+                <span className="drop-shadow-xl text-gray-100">🧠 Smart Quiz Engine,15,000+ Questions</span>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* 🔐 Subscription Benefits Section from Dashboard */}
+<section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+      Features You’ll Actually Use
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
+        <div
+          key={i}
+          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
+        >
+          <div className="flex justify-center mb-4">
+            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+    
+
+      
+      <section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+      Quizzes that Teach and test  - Each quiz is a complete mini Course
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {features.map(({ icon: Icon, title, description }, i) => (
+        <div
+          key={i}
+          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
+        >
+          <div className="flex justify-center mb-4">
+            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+      </section>
+      
+  {/* 🔐 Subscription Benefits Section from Dashboard */}
+<section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+      Features You’ll Actually Use
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
+        <div
+          key={i}
+          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
+        >
+          <div className="flex justify-center mb-4">
+            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
+          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+    
+
+{/* 🔄 Rotating Featured Quizzes Section (Wired later) */}
+<section className="py-20 bg-gradient-to-br from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
+      Try a Quiz — No Signup Needed
+    </h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {[1, 2, 3, 4].map((_, i) => (
+        <div
+          key={i}
+          className="bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-transform cursor-pointer text-center"
+          onClick={() => setShowAuthModal(true)}
+        >
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Sample Quiz #{i + 1}</h3>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+            A sneak peek into real board-style questions you can start answering in seconds.
+          </p>
+          <button className="text-sm font-semibold text-blue-700 dark:text-blue-300 underline">Start Free Quiz</button>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Stats Section */}
       <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
