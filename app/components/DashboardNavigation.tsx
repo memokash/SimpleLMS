@@ -58,10 +58,10 @@ const DashboardNavigation = () => {
       href: '/question-bank',
       icon: Database,
       description: 'Community question repository',
-      badge: 'Community'
+      
     },
     {
-      name: 'Study Groups',
+      name: 'Groups',
       href: '/study-groups',
       icon: Users,
       description: 'Join or create study groups'
@@ -74,13 +74,13 @@ const DashboardNavigation = () => {
       badge: '3'
     },
     {
-      name: 'Calendar',
-      href: '/calendar',
+      name: 'Rotations',
+      href: '/student-rotations',
       icon: Calendar,
       description: 'Rotation schedules and calendar'
     },
     {
-      name: 'Rounding Tools',
+      name: 'Rounding',
       href: '/rounding-tools',
       icon: Stethoscope,
       description: 'H&P, Progress Notes, Procedures'

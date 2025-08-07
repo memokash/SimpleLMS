@@ -199,7 +199,7 @@ export default function UserDashboard() {
       title: 'Continue Learning',
       description: 'Pick up where you left off with your medical studies',
       color: 'indigo',
-      stats: '4 active courses',
+      stats: 'active courses',
       badge: 'Continue'
     },
     {
@@ -224,11 +224,11 @@ export default function UserDashboard() {
 
   const studyTools = [
     {
-      href: '/etutor',
+      href: '/dashboard/etutor',
       icon: Sparkles,
       title: 'AI Tutor',
       description: 'Personalized explanations and comprehensive study guides tailored to your learning',
-      stats: '12 summaries available',
+      stats: 'tutoring available',
       isNew: true,
       color: 'pink',
       badge: 'Continue'
@@ -247,7 +247,7 @@ export default function UserDashboard() {
       icon: NotebookText,
       title: 'Reading Resources',
       description: 'Save and annotate medical articles and studies',
-      stats: '24 articles saved',
+      stats: 'Save articles here',
       color: 'green',
       badge: 'Continue'
     },
@@ -256,7 +256,7 @@ export default function UserDashboard() {
       icon: BookOpen,
       title: 'Enhanced Quiz',
       description: 'Interactive quiz system with detailed explanations',
-      stats: '156 questions available',
+      stats: '> 15000 questions available',
       color: 'blue',
       badge: 'Continue'
     }
@@ -267,8 +267,8 @@ export default function UserDashboard() {
       href: '/question-bank',
       icon: BookOpen,
       title: 'Community Question Bank',
-      description: 'Collaborative repository of medical education questions shared by peers',
-      stats: '1,247 questions available',
+      description: 'Collaborative repository of medical education questions generated with well trained medcicine models and shared by peers',
+      stats: 'Community generated questions available',
       color: 'green',
       badge: 'Community'
     },
@@ -277,7 +277,7 @@ export default function UserDashboard() {
       icon: Users,
       title: 'Study Groups',
       description: 'Join or create study groups with fellow medical students and residents',
-      stats: '23 active groups',
+      stats: 'active groups',
       color: 'purple',
       badge: 'Collaborate'
     },

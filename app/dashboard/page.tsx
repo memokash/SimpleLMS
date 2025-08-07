@@ -6,7 +6,7 @@ import { useAuth } from '../components/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import UserDashboard from '../components/UserDashboard';
-import DashboardNavigation from '../components/DashboardNavigation'; // ADD THIS
+import DashboardNavigation from '../components/DashboardNavigation';  
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
