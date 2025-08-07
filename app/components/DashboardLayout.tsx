@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,7 +15,8 @@ import {
   NotebookPen, 
   BrainCircuit, 
   Menu, 
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
 interface NavItem {
@@ -72,71 +73,92 @@ const NavItem = React.memo(({
 NavItem.displayName = 'NavItem';
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  // CRITICAL: Add mounted state to prevent SSR issues
+  const [mounted, setMounted] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
-  // Check if we should show the dashboard layout
+  // Handle mounting to prevent SSR/hydration mismatches
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Safe pathname check that only runs after mounting
   const showDashboard = useMemo(() => {
-    if (!pathname) {
-      return false;
+    // Always return true during SSR/initial load to maintain consistent structure
+    if (!mounted || !pathname) {
+      return true; // Default to showing dashboard layout
     }
-    // Don't show dashboard on homepage and auth pages
-    const excludedPaths = ['/', '/login', '/register', '/forgot-password'];
+    
+    // Only exclude specific auth pages
+    const excludedPaths = ['/', '/login', '/register', '/forgot-password', '/signup'];
     return !excludedPaths.includes(pathname);
-  }, [pathname]);
+  }, [mounted, pathname]);
 
   // Memoized toggle function
   const toggleSidebar = useCallback(() => {
     setCollapsed(prev => !prev);
   }, []);
 
-  // If not showing dashboard, render children directly
-  if (!showDashboard) {
-    return <main className="min-h-screen">{children}</main>;
+  // Show loading state during initial mount to prevent hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+          <Loader2 className="w-5 h-5 animate-spin" />
+          <span>Loading...</span>
+        </div>
+      </div>
+    );
   }
 
+  // Always render the same structure to prevent hydration mismatches
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
+      {/* Conditionally show/hide sidebar instead of changing structure */}
       <aside 
         className={`transition-all duration-300 ${
-          collapsed ? 'w-20' : 'w-64'
+          showDashboard ? (collapsed ? 'w-20' : 'w-64') : 'w-0 overflow-hidden'
         } bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 flex-shrink-0`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h1 
-            className={`text-lg font-bold text-indigo-600 dark:text-white transition-all duration-200 ${
-              collapsed ? 'opacity-0 w-0' : 'opacity-100'
-            }`}
-          >
-            MyLMS
-          </h1>
-          <button 
-            onClick={toggleSidebar}
-            className="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 p-1 rounded-lg transition-colors"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {collapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
-          </button>
-        </div>
+        {showDashboard && (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h1 
+                className={`text-lg font-bold text-indigo-600 dark:text-white transition-all duration-200 ${
+                  collapsed ? 'opacity-0 w-0' : 'opacity-100'
+                }`}
+              >
+                MyLMS
+              </h1>
+              <button 
+                onClick={toggleSidebar}
+                className="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 p-1 rounded-lg transition-colors"
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {collapsed ? <Menu className="w-5 h-5" /> : <X className="w-5 h-5" />}
+              </button>
+            </div>
 
-        {/* Navigation */}
-        <nav className="px-2 py-4 space-y-1 overflow-y-auto max-h-[calc(100vh-80px)]">
-          {navItems.map((item) => (
-            <NavItem
-              key={item.href}
-              {...item}
-              isActive={pathname === item.href}
-              collapsed={collapsed}
-            />
-          ))}
-        </nav>
+            {/* Navigation */}
+            <nav className="px-2 py-4 space-y-1 overflow-y-auto max-h-[calc(100vh-80px)]">
+              {navItems.map((item) => (
+                <NavItem
+                  key={item.href}
+                  {...item}
+                  isActive={pathname === item.href}
+                  collapsed={collapsed}
+                />
+              ))}
+            </nav>
+          </>
+        )}
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-6">
+      {/* Main Content - Always present with consistent structure */}
+      <main className={`flex-1 overflow-y-auto ${showDashboard ? '' : 'w-full'}`}>
+        <div className={showDashboard ? "p-6" : ""}>
           {children}
         </div>
       </main>

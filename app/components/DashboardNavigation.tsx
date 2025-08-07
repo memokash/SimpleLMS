@@ -1,7 +1,7 @@
-// components/DashboardNavigation.tsx - Enhanced with proper routing and signout
+// Fixed DashboardNavigation.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
@@ -31,8 +31,14 @@ import {
 const DashboardNavigation = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth(); // Using useAuth hook
+  const { user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle mounting to prevent SSR issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const navigationItems = [
     {
@@ -42,12 +48,11 @@ const DashboardNavigation = () => {
       description: 'Overview and analytics'
     },
     {
-      name: 'Quizzes',
+      name: 'Smart Quizzes',
       href: '/courses',
       icon: BookOpen,
       description: 'Take quizzes and track progress',
     },
-    // Community & Educational Tools
     {
       name: 'Question Bank',
       href: '/question-bank',
@@ -68,7 +73,6 @@ const DashboardNavigation = () => {
       description: 'Internal messaging system',
       badge: '3'
     },
-    // Clinical & Professional Tools
     {
       name: 'Calendar',
       href: '/calendar',
@@ -87,64 +91,11 @@ const DashboardNavigation = () => {
       icon: Library,
       description: 'Save and annotate articles'
     },
-    // Discussion Forums
-    {
-      name: 'Rotations',
-      href: '/forums/student-rotations',
-      icon: GraduationCap,
-      description: 'Student rotation discussions'
-    },
-    {
-      name: 'Residency Rotations',
-      href: '/forums/residency-rotations',
-      icon: UserCheck,
-      description: 'Residency rotation discussions'
-    },
-    {
-      name: 'General Residency',
-      href: '/forums/general-residency',
-      icon: FileText,
-      description: 'General residency discussions'
-    },
-    // Management
-    {
-      name: 'Students',
-      href: '/admin/students',
-      icon: Users,
-      description: 'Student management'
-    },
     {
       name: 'Analytics',
-      href: '/analytics',
+      href: '/performance-analytics',
       icon: BarChart3,
       description: 'Performance insights'
-    },
-    {
-      name: 'AI Operations',
-      href: '/ai/categorize-course',
-      icon: Brain,
-      description: 'AI-powered enhancements',
-      badge: 'New',
-      submenu: [
-        {
-          name: 'Course Categorization',
-          description: 'Auto-categorize medical courses',
-          icon: BookOpen
-        },
-        {
-          name: 'Explanation Enhancement',
-          description: 'Generate teaching explanations',
-          icon: GraduationCap
-        }
-      ]
-    },
-    // CEUs
-    {
-      name: 'CEUs',
-      href: '/ceus',
-      icon: Award,
-      description: 'Continuing Education Units',
-      badge: 'Soon'
     },
     {
       name: 'Settings',
@@ -155,19 +106,31 @@ const DashboardNavigation = () => {
   ];
 
   const isActive = (href: string) => {
+    if (!mounted || !pathname) {
+      return false;
+    }
     return pathname === href || pathname.startsWith(href);
   };
 
   const handleSignOut = async () => {
+    if (!mounted) {
+      return;
+    }
+
     try {
       await logout();
       setShowUserMenu(false);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error('Error signing out:', error);
       alert('Failed to sign out. Please try again.');
     }
   };
+
+  // Don't render until mounted (prevents SSR issues)
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <nav className="bg-white shadow-lg border-b border-gray-200">
@@ -184,85 +147,42 @@ const DashboardNavigation = () => {
               </Link>
             </div>
             
-            {/* Navigation Links - Scrollable for mobile */}
+            {/* Navigation Links */}
             <div className="hidden sm:ml-6 sm:flex sm:space-x-1 overflow-x-auto">
-              {navigationItems.slice(0, 8).map((item) => { // Show first 8 items in main nav
+              {navigationItems.slice(0, 6).map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
                 
                 return (
-                  <div key={item.name} className="relative group flex-shrink-0">
-                    <Link
-                      href={item.href}
-                      className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
-                        active
-                          ? 'bg-purple-100 text-purple-700 shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4 mr-2" />
-                      {item.name}
-                      {item.badge && (
-                        <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          item.badge === 'New' || item.badge === 'Community'
-                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                            : item.badge === 'Soon' 
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
-                            : /^\d+$/.test(item.badge) 
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                    
-                    {/* Dropdown for AI Operations */}
-                    {item.submenu && (
-                      <div className="absolute left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <div className="p-4">
-                          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-                            <Zap className="h-4 w-4 mr-2 text-purple-600" />
-                            AI-Powered Features
-                          </h3>
-                          <div className="space-y-3">
-                            {item.submenu.map((subItem) => {
-                              const SubIcon = subItem.icon;
-                              return (
-                                <div
-                                  key={subItem.name}
-                                  className="flex items-start space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                  <div className="flex-shrink-0">
-                                    <SubIcon className="h-5 w-5 text-gray-400" />
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-medium text-gray-900">
-                                      {subItem.name}
-                                    </h4>
-                                    <p className="text-xs text-gray-500">
-                                      {subItem.description}
-                                    </p>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-gray-100">
-                            <p className="text-xs text-gray-500">
-                              Transform your medical quizzes with AI-generated explanations and automatic categorization.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap ${
+                      active
+                        ? 'bg-purple-100 text-purple-700 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    {item.name}
+                    {item.badge && (
+                      <span className={`ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        item.badge === 'Community'
+                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+                          : /^\d+$/.test(item.badge) 
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {item.badge}
+                      </span>
                     )}
-                  </div>
+                  </Link>
                 );
               })}
             </div>
           </div>
           
-          {/* Right side - User menu, notifications, status indicators */}
+          {/* Right side - User menu */}
           <div className="flex items-center space-x-4">
             {/* Messages indicator */}
             <Link 
@@ -272,12 +192,6 @@ const DashboardNavigation = () => {
               <MessageSquare className="w-4 h-4 text-blue-600" />
               <span className="text-xs font-medium text-blue-700">3 unread</span>
             </Link>
-            
-            {/* Status indicator for AI operations */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-green-50 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium text-green-700">AI Ready</span>
-            </div>
             
             {/* User Menu Dropdown */}
             <div className="relative">
@@ -304,16 +218,7 @@ const DashboardNavigation = () => {
                         <p className="text-sm font-medium text-gray-900">
                           {user?.displayName || 'Medical Student'}
                         </p>
-                        <div className="flex items-center space-x-2">
-                          <p className="text-xs text-gray-500">{user?.email}</p>
-                          <Link 
-                            href="/subscription"
-                            className="flex items-center space-x-1 px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-medium rounded-full hover:from-yellow-500 hover:to-orange-600 transition-all"
-                          >
-                            <Crown className="h-3 w-3" />
-                            <span>Pro</span>
-                          </Link>
-                        </div>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
                     </div>
                   </div>
@@ -326,15 +231,6 @@ const DashboardNavigation = () => {
                     >
                       <User className="h-4 w-4 mr-3" />
                       Profile Settings
-                    </Link>
-                    
-                    <Link
-                      href="/subscription"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <Crown className="h-4 w-4 mr-3" />
-                      Upgrade Subscription
                     </Link>
                     
                     <Link
@@ -380,15 +276,13 @@ const DashboardNavigation = () => {
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                <div className="flex items-center justify-center mb-2">
+                <div className="flex items-center mb-2">
                   <Icon className="h-5 w-5 mr-3" />
                   {item.name}
                   {item.badge && (
                     <span className={`ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                      item.badge === 'New' || item.badge === 'Community'
+                      item.badge === 'Community'
                         ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
-                        : item.badge === 'Soon' 
-                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
                         : /^\d+$/.test(item.badge) 
                         ? 'bg-red-500 text-white'
                         : 'bg-gray-100 text-gray-700'
@@ -397,7 +291,7 @@ const DashboardNavigation = () => {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-500 text-center">{item.description}</p>
+                <p className="text-sm text-gray-500">{item.description}</p>
               </Link>
             );
           })}
