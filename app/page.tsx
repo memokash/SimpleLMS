@@ -237,10 +237,10 @@ const HomePage = () => {
       
       
   {/* 🔐 Subscription Benefits Section from Dashboard */}
-<section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+<section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-      Features You’ll Actually Use
+      Features to support your daily medical education journey
     </h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (

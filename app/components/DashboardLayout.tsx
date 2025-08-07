@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
   { href: '/study-groups', label: 'Study Groups', icon: Users },
   { href: '/messages', label: 'Messages', icon: MessageCircle },
   { href: '/student-rotations', label: 'Calendar', icon: Calendar },
-  { href: '/Rotations', label: 'Rotations', icon: Calendar },
+  { href: '/student-rotations', label: 'Rotations', icon: Calendar },
   { href: '/performance-analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/Discussion-forums', label: 'Forums', icon: FileText },
   { href: '/reading-resources', label: 'Resources', icon: NotebookPen },
