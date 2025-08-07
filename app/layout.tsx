@@ -1,4 +1,5 @@
 // app/layout.tsx
+import { ThemeProvider } from './components/ThemeContext';
 import './globals.css';
 import { AuthProvider } from './components/AuthContext';
 import Footer from './components/Footer';
@@ -25,10 +26,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <body>
         <AuthProvider>
+          <ThemeProvider>
           <DashboardLayout>
             {children}
           </DashboardLayout>
-          <Footer />
+            <Footer />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

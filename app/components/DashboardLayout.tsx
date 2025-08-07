@@ -31,13 +31,13 @@ interface DashboardLayoutProps {
 
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/courses-dashboard', label: 'Courses', icon: BookOpen },
+  { href: '/courses', label: 'Courses', icon: BookOpen },
   { href: '/study-groups', label: 'Study Groups', icon: Users },
   { href: '/messages', label: 'Messages', icon: MessageCircle },
   { href: '/calendar', label: 'Calendar', icon: Calendar },
   { href: '/student-rotations', label: 'Rotations', icon: Calendar },
   { href: '/performance-analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/discussion-forums', label: 'Forums', icon: FileText },
+  { href: '/Discussion-forums', label: 'Forums', icon: FileText },
   { href: '/reading-resources', label: 'Resources', icon: NotebookPen },
   { href: '/rounding-tools', label: 'Rounding Tools', icon: BrainCircuit },
   { href: '/enhanced-quiz-display', label: 'Take Quiz', icon: FileText },
