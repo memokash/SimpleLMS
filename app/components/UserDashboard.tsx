@@ -85,7 +85,7 @@ export default function UserDashboard() {
       badge: 'Continue'
     },
     {
-      href: '/dashboard/generator',
+      href: '/question-bank',
       icon: Lightbulb,
       title: 'Generate Questions',
       description: 'Create custom practice questions using AI',
@@ -94,7 +94,7 @@ export default function UserDashboard() {
       badge: 'Create'
     },
     {
-      href: '/dashboard/flashcards',
+      href: 'courses',
       icon: BrainCircuit,
       title: 'Quick Review',
       description: 'Smart flashcard session with spaced repetition',
@@ -106,44 +106,48 @@ export default function UserDashboard() {
 
   const studyTools = [
     {
-      href: '/dashboard/etutor',
+      href: '/etutor',
       icon: Sparkles,
       title: 'AI Tutor',
       description: 'Personalized explanations and comprehensive study guides tailored to your learning',
       stats: '12 summaries available',
       isNew: true,
-      color: 'pink'
+      color: 'pink',
+      badge: 'Continue'
     },
     {
-      href: '/dashboard/rounding',
+      href: '/rounding',
       icon: Stethoscope,
       title: 'Medical Rounding',
       description: 'Simulate real-world clinical scenarios and patient case studies',
       stats: '8 cases available',
-      color: 'red'
+      color: 'red',
+      badge: 'Continue'
     },
     {
-      href: '/dashboard/notes',
+      href: '/notes',
       icon: NotebookText,
       title: 'Smart Notes',
       description: 'AI-enhanced note taking with automatic summarization and organization',
       stats: '24 notes created',
-      color: 'green'
+      color: 'green',
+      badge: 'Continue'
     },
     {
-      href: '/dashboard/quickreview',
+      href: '/quiz',
       icon: BookOpen,
       title: 'Rapid Review',
       description: 'High-yield facts and rapid recall sessions for exam preparation',
       stats: '156 facts mastered',
-      color: 'blue'
+      color: 'blue',
+      badge: 'Continue'
     }
   ];
 
   // NEW: Enhanced Educational & Community Tools
   const communityTools = [
     {
-      href: '/dashboard/question-bank',
+      href: '/question-bank',
       icon: BookOpen,
       title: 'Community Question Bank',
       description: 'Collaborative repository of medical education questions shared by peers',
@@ -175,7 +179,7 @@ export default function UserDashboard() {
   // NEW: Clinical & Professional Tools
   const clinicalTools = [
     {
-      href: '/dashboard/calendar',
+      href: '/calendar',
       icon: Calendar,
       title: 'Calendar & Rotations',
       description: 'Manage rotation schedules, upload rotation lists, and track clinical requirements',
@@ -184,7 +188,7 @@ export default function UserDashboard() {
       subItems: ['Rotation Schedule', 'Upload Documents', 'Team Calendar']
     },
     {
-      href: '/dashboard/reading',
+      href: '/reading-resources',
       icon: Library,
       title: 'Reading & Resources',
       description: 'Save articles, studies, books, and PDFs with highlighting and annotation features',
@@ -196,7 +200,7 @@ export default function UserDashboard() {
   // NEW: Discussion Forums
   const discussionForums = [
     {
-      href: '/dashboard/student-rotations',
+      href: '/student-rotations',
       icon: GraduationCap,
       title: 'Student Rotations',
       description: 'Discuss rotations nationally and internationally, find opportunities',
@@ -204,7 +208,7 @@ export default function UserDashboard() {
       color: 'pink'
     },
     {
-      href: '/dashboard/residency-rotations',
+      href: '/residency-rotations',
       icon: UserCheck,
       title: 'Residency Rotations',
       description: 'Residency rotation discussions and experiences sharing',
@@ -212,7 +216,7 @@ export default function UserDashboard() {
       color: 'cyan'
     },
     {
-      href: '/dashboard/general-residency',
+      href: '/general-residency',
       icon: FileText,
       title: 'General Residency',
       description: 'General residency discussions organized in a Kardex-like manner',
@@ -223,7 +227,7 @@ export default function UserDashboard() {
 
   const performanceData = [
     {
-      href: '/dashboard/results',
+      href: '/results',
       icon: BarChart3,
       title: 'Performance Analytics',
       description: 'Detailed insights into your learning progress and quiz performance with trends',

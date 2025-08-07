@@ -3,13 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
-import { useTheme } from './ThemeContext';
 import {
-  BookOpen, Star, Target, Clock, CheckCircle, Award, Lock, Crown, ArrowRight, Book, Sun, Moon,
-  Filter, Search, Play, Users, TrendingUp, Zap, Calendar, Brain, Sparkles, BarChart3
+  BookOpen,
+  Star,
+  Clock,
+  Lock,
+  Search,
+  Sparkles,
+  Brain,
+  Layers,
+  Filter,
+  CheckCircle,
+  ChevronRight,
+  XCircle,
+  AlertCircle
 } from 'lucide-react';
-import { db } from '../../lib/firebase';
-import { collection, getDocs, doc } from 'firebase/firestore';
 
 interface Course {
   id: string;
@@ -21,449 +29,413 @@ interface Course {
   tier?: 'free' | 'pro' | 'premium';
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
   category?: string;
-  enrolledCount?: number;
-  lastUpdated?: string;
-}
-
-interface UserStats {
-  averageScore?: number;
-  quizzesCompleted?: number;
-  tier?: 'free' | 'pro' | 'premium';
+  imageURL?: string;
 }
 
 const CoursesDashboard = () => {
-  const { user } = useAuth();
   const router = useRouter();
-  const { isDark, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  
+  // Critical: Add mounted state to prevent SSR issues
+  const [mounted, setMounted] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [completedQuizData, setCompletedQuizData] = useState<Record<string, any>>({});
-  const [userNotes, setUserNotes] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('all');
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [questionAmount, setQuestionAmount] = useState<Record<string, number>>({});
 
-  // Predefined categories - no dynamic generation
-  const predefinedCategories = [
-    'all',
-    'General Medicine',
-    'Cardiology', 
-    'Neurology',
-    'Emergency Medicine',
-    'Pediatrics',
-    'Surgery',
-    'Psychiatry'
-  ];
+  // Handle mounting to prevent SSR issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const loadData = async () => {
-    if (!user) {
+  // Safe function to load courses (only on client)
+  const loadCourses = async () => {
+    if (!mounted) {
       return;
     }
 
-    const userRef = doc(db, 'users', user.uid);
-
-    // Enhanced mock data with predefined categories
-    const mockCourses: Course[] = [
-      {
-        id: 'msq-quiz-4',
-        title: 'MSQ Quiz 4',
-        description: 'Comprehensive medical knowledge assessment covering multiple body systems and clinical scenarios',
-        questionCount: 45,
-        estimatedTime: '45 min',
-        rating: 4.8,
-        tier: 'free',
-        difficulty: 'intermediate',
-        category: 'General Medicine',
-        enrolledCount: 1245,
-        lastUpdated: '2 days ago'
-      },
-      {
-        id: 'cardiology-fundamentals',
-        title: 'Cardiology Fundamentals',
-        description: 'Essential cardiology concepts including ECG interpretation, heart diseases, and treatment protocols',
-        questionCount: 30,
-        estimatedTime: '30 min',
-        rating: 4.9,
-        tier: 'pro',
-        difficulty: 'intermediate',
-        category: 'Cardiology',
-        enrolledCount: 892,
-        lastUpdated: '1 week ago'
-      },
-      {
-        id: 'neurology-advanced',
-        title: 'Advanced Neurology',
-        description: 'Complex neurological conditions, brain anatomy, and advanced diagnostic techniques',
-        questionCount: 60,
-        estimatedTime: '60 min',
-        rating: 4.7,
-        tier: 'premium',
-        difficulty: 'advanced',
-        category: 'Neurology',
-        enrolledCount: 456,
-        lastUpdated: '3 days ago'
-      },
-      {
-        id: 'emergency-medicine',
-        title: 'Emergency Medicine Essentials',
-        description: 'Critical care scenarios, trauma management, and emergency protocols',
-        questionCount: 40,
-        estimatedTime: '40 min',
-        rating: 4.6,
-        tier: 'pro',
-        difficulty: 'advanced',
-        category: 'Emergency Medicine',
-        enrolledCount: 678,
-        lastUpdated: '5 days ago'
-      },
-      {
-        id: 'pediatrics-basics',
-        title: 'Pediatrics Fundamentals',
-        description: 'Child development, pediatric diseases, and age-specific treatment approaches',
-        questionCount: 35,
-        estimatedTime: '35 min',
-        rating: 4.5,
-        tier: 'free',
-        difficulty: 'beginner',
-        category: 'Pediatrics',
-        enrolledCount: 923,
-        lastUpdated: '1 week ago'
-      }
-    ];
-
     try {
-      const resultsSnap = await getDocs(collection(userRef, 'quizResults'));
-      const results: Record<string, any> = {};
-      resultsSnap.forEach(doc => {
-        results[doc.id] = doc.data();
-      });
-
-      const notesSnap = await getDocs(collection(userRef, 'notes'));
-      const notes: Record<string, any> = {};
-      notesSnap.forEach(doc => {
-        notes[doc.id] = doc.data();
-      });
+      setError(null);
+      
+      // Mock courses data for now - replace with actual Firebase calls when ready
+      const mockCourses: Course[] = [
+        {
+          id: '1',
+          title: 'Cardiology Fundamentals',
+          description: 'Master the essentials of cardiovascular medicine with comprehensive questions covering anatomy, physiology, pathology, and clinical management.',
+          questionCount: 250,
+          estimatedTime: '3-4 hours',
+          rating: 4.9,
+          tier: 'free',
+          difficulty: 'intermediate',
+          category: 'Cardiology'
+        },
+        {
+          id: '2',
+          title: 'Emergency Medicine Scenarios',
+          description: 'Real-world emergency scenarios and critical decision making. Perfect for medical students and residents preparing for emergency rotations.',
+          questionCount: 180,
+          estimatedTime: '2-3 hours',
+          rating: 4.8,
+          tier: 'pro',
+          difficulty: 'advanced',
+          category: 'Emergency Medicine'
+        },
+        {
+          id: '3',
+          title: 'Internal Medicine Boards Prep',
+          description: 'Comprehensive internal medicine questions covering all major systems. Designed for board preparation and clinical excellence.',
+          questionCount: 400,
+          estimatedTime: '5-6 hours',
+          rating: 4.9,
+          tier: 'premium',
+          difficulty: 'advanced',
+          category: 'Internal Medicine'
+        },
+        {
+          id: '4',
+          title: 'Pediatrics Clinical Cases',
+          description: 'Pediatric medicine from newborn to adolescent. Covers development, diseases, and management specific to children.',
+          questionCount: 200,
+          estimatedTime: '3 hours',
+          rating: 4.7,
+          tier: 'free',
+          difficulty: 'intermediate',
+          category: 'Pediatrics'
+        },
+        {
+          id: '5',
+          title: 'Neurology Deep Dive',
+          description: 'Complex neurological conditions, diagnostic workups, and treatment protocols. For advanced learners.',
+          questionCount: 150,
+          estimatedTime: '2-3 hours',
+          rating: 4.8,
+          tier: 'pro',
+          difficulty: 'advanced',
+          category: 'Neurology'
+        },
+        {
+          id: '6',
+          title: 'Psychiatry & Mental Health',
+          description: 'Mental health disorders, therapeutic approaches, and psychopharmacology. Essential for well-rounded medical education.',
+          questionCount: 175,
+          estimatedTime: '2-3 hours',
+          rating: 4.6,
+          tier: 'free',
+          difficulty: 'beginner',
+          category: 'Psychiatry'
+        },
+        {
+          id: '7',
+          title: 'Surgical Principles',
+          description: 'Pre-operative, operative, and post-operative care. Surgical anatomy and common procedures across specialties.',
+          questionCount: 220,
+          estimatedTime: '3-4 hours',
+          rating: 4.9,
+          tier: 'pro',
+          difficulty: 'advanced',
+          category: 'Surgery'
+        },
+        {
+          id: '8',
+          title: 'USMLE Step 1 Practice',
+          description: 'High-yield USMLE Step 1 questions covering all basic science topics. Perfect for exam preparation.',
+          questionCount: 500,
+          estimatedTime: '6-8 hours',
+          rating: 4.9,
+          tier: 'premium',
+          difficulty: 'intermediate',
+          category: 'USMLE'
+        }
+      ];
 
       setCourses(mockCourses);
-      setCompletedQuizData(results);
-      setUserNotes(notes);
 
-      setUserStats({
-        averageScore: 82,
-        quizzesCompleted: Object.keys(results).length,
-        tier: 'pro'
+      // Uncomment below to use real Firebase data once build issues are resolved
+      /*
+      const { collection, getDocs } = await import('firebase/firestore');
+      const { db } = await import('../../lib/firebase');
+      
+      const snap = await getDocs(collection(db, 'courses'));
+      const data: Course[] = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        data.push({ id: doc.id, ...d } as Course);
       });
+      setCourses(data);
+      */
+
     } catch (error) {
-      console.error('Error loading data:', error);
-      // Still set courses even if Firebase fails
-      setCourses(mockCourses);
-      setUserStats({
-        averageScore: 82,
-        quizzesCompleted: 0,
-        tier: 'pro'
-      });
+      console.error('Error loading courses:', error);
+      setError('Failed to load courses. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  // Load courses only after mounting
   useEffect(() => {
-    loadData();
-  }, [user]);
-
-  const canAccessCourse = (course: Course) => {
-    if (!user) {
-      return false;
+    if (mounted) {
+      loadCourses();
     }
-    const userTier = userStats?.tier || 'free';
-    const courseTier = course.tier || 'free';
+  }, [mounted]);
 
-    return (
-      courseTier === 'free' ||
-      (courseTier === 'pro' && ['pro', 'premium'].includes(userTier)) ||
-      (courseTier === 'premium' && userTier === 'premium')
-    );
-  };
-
-  const shouldShowETutor = (quizId: string): boolean => {
-    const result = completedQuizData[quizId];
-    const notes = userNotes[quizId];
-    return !!(
-      result?.submitted &&
-      result?.wrongQuestions?.length > 0 &&
-      notes &&
-      Object.keys(notes).length > 0
-    );
-  };
-
-  const getTierBadgeClasses = (tier: string) => {
-    if (tier === 'premium') {
-      return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg';
-    } else if (tier === 'pro') {
-      return 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg';
+  const handleQuizStart = (courseId: string) => {
+    if (!mounted) {
+      return;
     }
-    return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+
+    const count = questionAmount[courseId] || 10;
+    router.push(`/quiz?id=${courseId}&limit=${count}`);
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30';
-      case 'intermediate': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30';
-      case 'advanced': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30';
-      default: return 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
-    }
+  const retryLoad = () => {
+    setError(null);
+    setLoading(true);
+    loadCourses();
   };
 
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, string> = {
-      blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
-      green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
-      purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
-      orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30'
-    };
-    return colorMap[color] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
-  };
-
-  // Section Separator Component
-  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
-    <div className="relative my-16">
-      <div className="absolute inset-0 flex items-center">
-        <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
-      </div>
-      <div className="relative flex justify-center">
-        <div className={`px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-white/40 dark:border-yellow-500/30 shadow-xl dark:shadow-yellow-500/20`}>
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${getColorClasses(color)}`}>
-              <Icon className="h-7 w-7" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Simple client-side filtering - no database calls
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+  // Filter courses based on search and category
+  const filtered = courses.filter(c => {
+    const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) ||
+                        c.description.toLowerCase().includes(search.toLowerCase());
+    const matchCategory = filter === 'all' || c.category === filter;
+    return matchSearch && matchCategory;
   });
+
+  // Don't render until mounted (prevents SSR issues)
+  if (!mounted) {
+    return null;
+  }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
         <div className="flex items-center text-gray-600 dark:text-gray-400 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-          <Brain className="animate-pulse h-6 w-6 mr-3 text-blue-500" />
-          <span className="text-lg font-medium">Loading your courses...</span>
+          <Brain className="animate-pulse h-6 w-6 mr-3 text-purple-500" />
+          <span className="text-lg font-medium">Loading courses...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-md">
+          <div className="flex items-center mb-4">
+            <AlertCircle className="h-6 w-6 text-red-500 mr-3" />
+            <h3 className="text-lg font-semibold text-red-800">Error Loading Courses</h3>
+          </div>
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={retryLoad}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 transition-all duration-500">
-      <div className="max-w-7xl mx-auto py-12 px-4">
-        
-        {/* Header Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 gap-6">
-          <div className="space-y-3">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-white flex items-center gap-4">
-              📚 Available Courses
-              <span className="text-xl font-normal bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-4 py-2 rounded-full">
-                {filteredCourses.length} courses
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Enhance your medical knowledge with our comprehensive quiz library
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
+            Explore Master-Level Medical Quizzes
+          </h1>
+          <p className="text-lg text-gray-500 dark:text-gray-300 max-w-2xl mx-auto">
+            15,000+ questions across all specialties. Built to help you dominate your boards. Choose a course below to start.
+          </p>
+        </div>
+
+        {/* Search and Filter */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 items-center mb-8">
+          <div className="flex-1 relative">
+            <Search className="absolute left-4 top-3 h-5 w-5 text-gray-400" />
+            <input
+              className="w-full rounded-xl pl-12 pr-4 py-3 border border-gray-300 bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              placeholder="Search courses..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/20 dark:border-yellow-500/30 shadow-lg dark:shadow-yellow-500/20">
-              <div className="flex items-center gap-3 text-base">
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-                <span className="text-gray-700 dark:text-gray-300 font-medium">Avg Score: {userStats?.averageScore}%</span>
+
+          <div className="flex gap-2 items-center">
+            <Filter className="text-gray-500" />
+            <select
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
+              className="rounded-xl px-4 py-3 border border-gray-300 bg-white dark:bg-gray-800 text-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            >
+              <option value="all">All Specialties</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Emergency Medicine">Emergency Medicine</option>
+              <option value="Internal Medicine">Internal Medicine</option>
+              <option value="Neurology">Neurology</option>
+              <option value="Pediatrics">Pediatrics</option>
+              <option value="Psychiatry">Psychiatry</option>
+              <option value="Surgery">Surgery</option>
+              <option value="USMLE">USMLE</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Courses Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filtered.map(course => (
+            <div
+              key={course.id}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden hover:scale-[1.02] border border-white/20 dark:border-gray-700"
+            >
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 flex-1">
+                    {course.title}
+                  </h2>
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium ml-2 flex-shrink-0 ${
+                    course.tier === 'free' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                      : course.tier === 'pro'
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                      : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+                  }`}>
+                    {course.tier?.toUpperCase() || 'FREE'}
+                  </span>
+                </div>
+
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 leading-relaxed">
+                  {course.description}
+                </p>
+
+                <div className="flex flex-wrap text-xs text-gray-500 dark:text-gray-400 mb-4 gap-3">
+                  <span className="flex items-center gap-1">
+                    <BookOpen className="h-4 w-4" /> 
+                    {course.questionCount} Qs
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-4 w-4" /> 
+                    {course.estimatedTime || 'Self-paced'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-yellow-400" /> 
+                    {course.rating || 4.8}
+                  </span>
+                </div>
+
+                {/* Difficulty Badge */}
+                {course.difficulty && (
+                  <div className="mb-4">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      course.difficulty === 'beginner' 
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                        : course.difficulty === 'intermediate'
+                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    }`}>
+                      {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
+                    </span>
+                  </div>
+                )}
+
+                {/* Question Amount Input and Start Button */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    className="flex-1 px-3 py-2 rounded-xl border border-gray-300 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    placeholder="# of questions"
+                    min={1}
+                    max={course.questionCount}
+                    value={questionAmount[course.id] || ''}
+                    onChange={e => setQuestionAmount({
+                      ...questionAmount,
+                      [course.id]: Number(e.target.value)
+                    })}
+                  />
+                  <button
+                    onClick={() => handleQuizStart(course.id)}
+                    disabled={!questionAmount[course.id] || questionAmount[course.id] <= 0}
+                    className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <span>Start</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Premium Lock for paid courses */}
+                {course.tier !== 'free' && !user && (
+                  <div className="mt-3 flex items-center gap-2 text-xs text-orange-600 dark:text-orange-400">
+                    <Lock className="h-3 w-3" />
+                    <span>Sign in required for {course.tier} content</span>
+                  </div>
+                )}
               </div>
             </div>
-            <button
-              onClick={toggleTheme}
-              className="p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl border border-white/20 dark:border-yellow-500/30 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200 shadow-lg hover:shadow-xl dark:shadow-yellow-500/20"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="h-6 w-6 text-yellow-500" />
-              ) : (
-                <Moon className="h-6 w-6 text-gray-700" />
-              )}
-            </button>
-          </div>
+          ))}
         </div>
 
-        {/* Search and Filter Section */}
-        <SectionSeparator title="Search & Filter" icon={Search} color="blue" />
-        
-        <div className="mb-12 bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-4 h-6 w-6 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg"
-              />
-            </div>
-            <div className="relative">
-              <Filter className="absolute left-4 top-4 h-6 w-6 text-gray-400" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-12 pr-8 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 min-w-[250px] text-gray-900 dark:text-white text-lg"
+        {/* No Results */}
+        {filtered.length === 0 && (
+          <div className="text-center py-12">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-12 max-w-md mx-auto shadow-lg">
+              <XCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                No Courses Found
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                No courses match your search criteria. Try adjusting your filters or search terms.
+              </p>
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setFilter('all');
+                }}
+                className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
               >
-                {predefinedCategories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category}
-                  </option>
-                ))}
-              </select>
+                Clear Filters
+              </button>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Courses Section */}
-        <SectionSeparator title="Your Courses" icon={BookOpen} color="purple" />
-        
-        <div className="grid lg:grid-cols-1 gap-8">
-          {filteredCourses.map(course => {
-            const hasAccess = canAccessCourse(course);
-            const showETutor = shouldShowETutor(course.id);
-            const isCompleted = completedQuizData[course.id]?.submitted;
-
-            return (
-              <div
-                key={course.id}
-                className="group relative bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-[1.01] overflow-hidden min-h-[300px]"
-              >
-                {/* Glow effect on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="relative z-10 p-8">
-                  {/* Header */}
-                  <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-4">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                          {course.title}
-                        </h2>
-                        {isCompleted && (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mb-6">
-                        {course.tier !== 'free' && (
-                          <span className={`text-sm px-4 py-2 rounded-full font-semibold ${getTierBadgeClasses(course.tier)}`}>
-                            {course.tier.toUpperCase()}
-                          </span>
-                        )}
-                        <span className={`text-sm px-3 py-1 rounded-full font-semibold ${getDifficultyColor(course.difficulty)}`}>
-                          {course.difficulty}
-                        </span>
-                        <span className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-semibold">
-                          {course.category}
-                        </span>
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed text-lg">
-                        {course.description}
-                      </p>
-
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 text-center">
-                          <Target className="h-6 w-6 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">{course.questionCount}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-300">Questions</div>
-                        </div>
-                        
-                        <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 text-center">
-                          <Clock className="h-6 w-6 text-green-600 dark:text-green-400 mx-auto mb-2" />
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">{course.estimatedTime}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-300">Duration</div>
-                        </div>
-                        
-                        <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl p-4 text-center">
-                          <Star className="h-6 w-6 text-yellow-600 dark:text-yellow-400 mx-auto mb-2" />
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">{course.rating}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-300">Rating</div>
-                        </div>
-                        
-                        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl p-4 text-center">
-                          <Users className="h-6 w-6 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">{course.enrolledCount}</div>
-                          <div className="text-sm text-gray-600 dark:text-gray-300">Enrolled</div>
-                        </div>
-                      </div>
-
-                      {/* Last Updated */}
-                      <div className="flex items-center gap-3 mb-8 text-base text-gray-500 dark:text-gray-300">
-                        <Calendar className="h-5 w-5" />
-                        <span>Updated {course.lastUpdated}</span>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons - Right Side */}
-                    <div className="flex flex-col justify-center gap-4 min-w-[200px]">
-                      <button
-                        onClick={() => router.push(`/quiz?id=${course.id}`)}
-                        className={`px-8 py-4 rounded-2xl font-bold flex items-center justify-center transition-all duration-300 text-lg ${
-                          hasAccess
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                            : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed'
-                        }`}
-                        disabled={!hasAccess}
-                      >
-                        {hasAccess ? (
-                          <>
-                            <Play className="mr-3 h-6 w-6" />
-                            {isCompleted ? 'Retake Quiz' : 'Start Quiz'}
-                            <ArrowRight className="ml-3 h-6 w-6" />
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="mr-3 h-6 w-6" />
-                            Upgrade Required
-                          </>
-                        )}
-                      </button>
-
-                      {showETutor && (
-                        <button
-                          onClick={() => router.push(`/dashboard/etutor/${course.id}`)}
-                          className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-bold text-lg"
-                        >
-                          <Sparkles className="h-6 w-6 mr-3" />
-                          AI Tutor
-                        </button>
-                      )}
-                    </div>
+        {/* Course Stats */}
+        {courses.length > 0 && (
+          <div className="mt-12 text-center">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 max-w-4xl mx-auto shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Course Statistics
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    {courses.length}
                   </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Courses</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {courses.reduce((sum, course) => sum + course.questionCount, 0).toLocaleString()}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Total Questions</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {courses.filter(c => c.tier === 'free').length}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Free Courses</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    {new Set(courses.map(c => c.category)).size}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Specialties</div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Empty State */}
-        {filteredCourses.length === 0 && (
-          <div className="text-center py-20">
-            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-12 border border-white/20 dark:border-yellow-500/30 shadow-lg max-w-lg mx-auto">
-              <Search className="h-16 w-16 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">No courses found</h3>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">Try adjusting your search or filter criteria</p>
             </div>
           </div>
         )}

@@ -42,7 +42,7 @@ const DashboardNavigation = () => {
       description: 'Overview and analytics'
     },
     {
-      name: 'Medical Quizzes',
+      name: 'Quizzes',
       href: '/courses',
       icon: BookOpen,
       description: 'Take quizzes and track progress',
@@ -70,7 +70,7 @@ const DashboardNavigation = () => {
     },
     // Clinical & Professional Tools
     {
-      name: 'Calendar & Rotations',
+      name: 'Calendar',
       href: '/calendar',
       icon: Calendar,
       description: 'Rotation schedules and calendar'
@@ -82,14 +82,14 @@ const DashboardNavigation = () => {
       description: 'H&P, Progress Notes, Procedures'
     },
     {
-      name: 'Reading & Resources',
+      name: 'Resources',
       href: '/reading-resources',
       icon: Library,
       description: 'Save and annotate articles'
     },
     // Discussion Forums
     {
-      name: 'Student Rotations',
+      name: 'Rotations',
       href: '/forums/student-rotations',
       icon: GraduationCap,
       description: 'Student rotation discussions'

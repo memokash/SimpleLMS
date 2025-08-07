@@ -27,7 +27,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "lib/stripe.ts"  ],
+, "lib/stripe.ts", "app/components/DashboardLayout.tsx"  ],
   "exclude": [
     "node_modules"
   ]
