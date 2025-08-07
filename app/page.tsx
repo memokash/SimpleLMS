@@ -196,7 +196,7 @@ const HomePage = () => {
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-white drop-shadow-2xl">
-                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Unified cross institutionalplatform for the medical community.</span>
+                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Supporting our doctors of the future</span>
               </h1>
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 leading-relaxed max-w-3xl mx-auto drop-shadow-xl">
                 From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools. </p>
