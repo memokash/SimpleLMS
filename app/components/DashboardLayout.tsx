@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
   { href: '/courses', label: 'Courses', icon: BookOpen },
   { href: '/study-groups', label: 'Study Groups', icon: Users },
   { href: '/messages', label: 'Messages', icon: MessageCircle },
-  { href: '/Calendar', label: 'Calendar', icon: Calendar },
+  { href: '/student-rotations', label: 'Calendar', icon: Calendar },
   { href: '/Rotations', label: 'Rotations', icon: Calendar },
   { href: '/performance-analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/Discussion-forums', label: 'Forums', icon: FileText },
@@ -130,7 +130,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   collapsed ? 'opacity-0 w-0' : 'opacity-100'
                 }`}
               >
-                MyLMS
+                My Medical Education LMS
               </h1>
               <button 
                 onClick={toggleSidebar}

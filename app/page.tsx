@@ -31,20 +31,20 @@ const HomePage = () => {
   const features = [
     {
       icon: BookOpen,
-      title: '15,000+ Expert Questions',
-      description: 'Focused quizzes help you stay on track, reinforce core concepts, and help you avoid falling behind — especially during those critical monthly and bimonthly assessments that determine academic standing.',
+      title: 'Why It’s Worth the Monthly Investment',
+      description: '🔁 Centralized Progress: Track every quiz, note, and resource — no matter what rotation or hospital you’re in.',
       color: 'blue'
     },
     {
       icon: TrendingUp,
-      title: 'AI-Powered Analytics',
-      description: 'Monitor your performance across different topics and identify areas that need more focus before your exams with smart recommendations.',
+      title: '🌎 Cross-Institutional Access',
+      description: 'Your LMS isn’t tied to one school — it follows you, not your program. 🧑‍⚕️ Built for All Levels: Medical students, residents, and attendings can all find value here — whether studying or teaching.',
       color: 'green'
     },
     {
       icon: Zap,
-      title: 'Instant Feedback',
-      description: 'Get immediate explanations for correct and incorrect answers to reinforce learning and improve retention.',
+      title: '🧠 Smart Quiz Engine',
+      description: 'Generate or take quizzes tailored to your specialty and weak points.🤝 Community-Driven Learning: Collaborate with real peers — not just abstract discussion boards.',
       color: 'purple'
     },
     {
@@ -61,8 +61,8 @@ const HomePage = () => {
     },
     {
       icon: Users,
-      title: 'Community Support',
-      description: 'Connect with other medical students, share study tips, and collaborate on challenging topics.',
+      title: '🔓 Self-Enroll, No Hassle',
+      description: 'No admin gatekeeping. Join, build your notebook, and track learning from Day 1.',
       color: 'indigo'
     }
   ];
@@ -124,10 +124,10 @@ const HomePage = () => {
         
         {/* Floating badges - Centered horizontally */}
         <div className="hidden lg:block absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-bold text-base shadow-2xl z-10">
-          🏆 #1 Medical Quiz Platform
+         🔒 Master Every Stage of Your Medical Training — All in One Place
         </div>
         <div className="hidden lg:block absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-lg text-blue-900 px-6 py-3 rounded-full font-semibold text-base shadow-2xl z-10">
-          💡 AI-Powered Learning
+          💡 AI-Powered smart Learning
         </div>
         
         {/* Content */}
@@ -135,13 +135,10 @@ const HomePage = () => {
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-white drop-shadow-2xl">
-                Master Medical School
-                <span className="block text-yellow-300 drop-shadow-2xl">With Smart Quizzes</span>
+                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Unify your medical education.</span>
               </h1>
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 leading-relaxed max-w-3xl mx-auto drop-shadow-xl">
-                Practice with expert-crafted questions covering your whole school syllabus, pathology, and more. 
-                Track your progress and pass your medical school exams with confidence.
-              </p>
+                From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools. </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center">
@@ -167,7 +164,7 @@ const HomePage = () => {
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
-                <span className="drop-shadow-xl text-gray-100">15,000+ Questions</span>
+                <span className="drop-shadow-xl text-gray-100">🧠 Smart Quiz Engine, 15,000+ Questions</span>
               </div>
             </div>
           </div>
@@ -261,7 +258,7 @@ const HomePage = () => {
 
           <div className="text-center mb-16">
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              Created by physicians, fellows, and actual exam writers, our question bank is designed to support medical students as they progress through their syllabus, not just for boards prep.
+              This is more than a quiz app. It’s your all-in-one medical education companion — built by physicians to centralize your progress, connect you to a like-minded community, and provide seamless access across disciplines and training sites. Whether you're rotating across hospitals or preparing for boards, we’ve got your back — every step of the way.
             </p>
           </div>
 
@@ -305,7 +302,7 @@ const HomePage = () => {
                   ))}
                 </div>
                 <p className="text-white/90 mb-6 italic text-lg leading-relaxed">
-                  "MedQuiz Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
+                  "MedEdLMS Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
                 </p>
               </div>
               <div>
@@ -342,7 +339,7 @@ const HomePage = () => {
 
           <div className="text-center mb-16">
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Access to the most comprehensive medical question bank available. Start free and upgrade when ready.
+              Access to the most comprehensive tutoring medical education question bank available. Start free and upgrade when ready.
             </p>
           </div>
 
@@ -467,7 +464,7 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
-                  1-on-1 tutoring sessions
+                  Etutor smart tutoring sessions
                 </li>
                 <li className="flex items-center">
                   <span className="text-green-500 mr-3">✅</span>
@@ -529,10 +526,10 @@ const HomePage = () => {
       <section className="bg-gradient-to-r from-blue-600 to-green-600 py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Access 15,000+ Medical Questions?
+            Ready to Access 15,000+ expert-crafted questions covering your whole medical eduction training...?
           </h2>
           <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-            Join thousands of medical students mastering their exams with the most comprehensive question bank available.
+            Join thousands of medical students, residents, mastering their exams with the most comprehensive question bank available.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 

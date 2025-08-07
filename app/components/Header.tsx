@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ onSignInClick, onSignUpClick }) => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <a href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                🩺 Medicine Training Centers
+                🩺 Medical Education LMS
               </a>
             </div>
             <div className="hidden md:block">
