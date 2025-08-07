@@ -232,8 +232,12 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 🔐 Subscription Benefits Section from Dashboard */}
-<section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
+      
+      
+      
+      
+  {/* 🔐 Subscription Benefits Section from Dashboard */}
+<section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
       Features You’ll Actually Use
@@ -255,8 +259,6 @@ const HomePage = () => {
   </div>
 </section>
     
-
-      
       <section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
@@ -278,30 +280,6 @@ const HomePage = () => {
     </div>
   </div>
       </section>
-      
-  {/* 🔐 Subscription Benefits Section from Dashboard */}
-<section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-      Features You’ll Actually Use
-    </h2>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
-        <div
-          key={i}
-          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
-        >
-          <div className="flex justify-center mb-4">
-            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-    
 
 {/* 🔄 Rotating Featured Quizzes Section (Wired later) */}
 <section className="py-20 bg-gradient-to-br from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
