@@ -33,6 +33,53 @@ const HomePage = () => {
     setShowAuthModal(true);
   };
 
+  // ✅ Enhanced Stripe handlers
+  const handleStripeCheckout = async (priceId: string, planName: string) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId,
+          userId: user.uid,
+          planName,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+      
+      const session = await response.json();
+      
+      if (session.sessionId) {
+        const { stripePromise } = await import('../lib/stripe');
+        const stripe = await stripePromise;
+        
+        const result = await stripe?.redirectToCheckout({
+          sessionId: session.sessionId,
+        });
+        
+        if (result?.error) {
+          console.error(result.error);
+          alert('Payment error: ' + result.error.message);
+        }
+      } else {
+        alert('Error creating checkout session');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment setup error. Please try again.');
+    }
+  };
+
   const specialties = [
     { name: 'Cardiology', count: 250, color: 'red', icon: Heart, description: 'Heart diseases, ECG interpretation, and cardiac procedures' },
     { name: 'Neurology', count: 180, color: 'purple', icon: Brain, description: 'Brain disorders, neurological examinations, and treatments' },
@@ -45,14 +92,14 @@ const HomePage = () => {
   const features = [
     {
       icon: BookOpen,
-      title: 'Why It’s Worth the Monthly Investment',
-      description: '🔁 Centralized Progress: Track every quiz, note, and resource — no matter what rotation or hospital you’re in.',
+      title: 'Why It\'s Worth the Monthly Investment',
+      description: '🔁 Centralized Progress: Track every quiz, note, and resource — no matter what rotation or hospital you\'re in.',
       color: 'blue'
     },
     {
       icon: TrendingUp,
       title: '🌎 Cross-Institutional Access',
-      description: 'Your LMS isn’t tied to one school — it follows you, not your program. 🧑‍⚕️ Built for All Levels: Medical students, residents, and attendings can all find value here — whether studying or teaching.',
+      description: 'Your LMS isn\'t tied to one school — it follows you, not your program. 🧑‍⚕️ Built for All Levels: Medical students, residents, and attendings can all find value here — whether studying or teaching.',
       color: 'green'
     },
     {
@@ -83,31 +130,50 @@ const HomePage = () => {
 
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
-      red: 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30',
-      purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
-      blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
-      green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30',
-      yellow: 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30',
-      pink: 'text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/30',
-      orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30',
-      indigo: 'text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30'
+      red: 'text-red-900 bg-red-50 border-red-200',
+      purple: 'text-purple-900 bg-purple-50 border-purple-200',
+      blue: 'text-blue-900 bg-blue-50 border-blue-200',
+      green: 'text-emerald-900 bg-emerald-50 border-emerald-200',
+      yellow: 'text-yellow-900 bg-yellow-50 border-yellow-200',
+      pink: 'text-pink-900 bg-pink-50 border-pink-200',
+      orange: 'text-orange-900 bg-orange-50 border-orange-200',
+      indigo: 'text-indigo-900 bg-indigo-50 border-indigo-200'
     };
-    return colorMap[color] || 'text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30';
+    return colorMap[color] || 'text-gray-900 bg-gray-50 border-gray-200';
   };
 
-  // Section Separator Component
+  // Enhanced Section Separator Component with medical-themed styling
   const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
-    <div className="relative my-16">
-      <div className="absolute inset-0 flex items-center">
-        <div className={`w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent dark:via-yellow-400/60 rounded-full`}></div>
+    <div className="relative my-20">
+      {/* Animated starfield background */}
+      <div className="absolute inset-0 overflow-hidden opacity-30">
+        <div className="stars-small"></div>
+        <div className="stars-medium"></div>
+        <div className="stars-large"></div>
       </div>
+      
+      {/* Medical-themed decorative lines */}
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-cyan-400/80 via-pink-400/60 via-cyan-400/80 to-transparent"></div>
+      </div>
+      
+      {/* Center element with medical decorations */}
       <div className="relative flex justify-center">
-        <div className={`px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-white/40 dark:border-yellow-500/30 shadow-xl dark:shadow-yellow-500/20`}>
+        <div className="medical-title px-12 py-8 bg-gradient-to-br from-white/95 to-cyan-50/95 backdrop-blur-xl rounded-3xl border border-cyan-400/40 shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 transition-all duration-500 hover:scale-105">
+          {/* DNA Helix decoration */}
+          <div className="dna-helix"></div>
+          
+          {/* Medical cross decorations */}
+          <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-pink-500 text-2xl animate-pulse">⚕️</div>
+          <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-cyan-500 text-2xl animate-pulse">🩺</div>
+          
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${getColorClasses(color)}`}>
-              <Icon className="h-7 w-7" />
+            <div className={`p-4 rounded-2xl ${getColorClasses(color)} backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 glow-effect`}>
+              <Icon className="h-8 w-8" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{title}</h2>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+              ⭐ ━━━ {title} ━━━ ⭐
+            </h2>
           </div>
         </div>
       </div>
@@ -153,7 +219,7 @@ const HomePage = () => {
     {
       icon: BarChart3,
       title: 'Performance Analytics',
-      description: 'Get visual insights into what topics you’ve mastered and what needs work.'
+      description: 'Get visual insights into what topics you\'ve mastered and what needs work.'
     },
     {
       icon: UserCog,
@@ -161,8 +227,195 @@ const HomePage = () => {
       description: 'Personalize your dashboard, themes, and study goals across your career journey.'
     }
   ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 relative overflow-hidden">
+      {/* Animated background stars */}
+      <div className="fixed inset-0 z-0">
+        <div className="stars-small"></div>
+        <div className="stars-medium"></div>
+        <div className="stars-large"></div>
+      </div>
+      
+      {/* Custom CSS for stars and glowing effects */}
+      <style jsx>{`
+        .stars-small {
+          background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                           radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.9), transparent),
+                           radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                           radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+                           radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+          background-repeat: repeat;
+          background-size: 200px 100px;
+          animation: stars-move 20s linear infinite;
+        }
+        
+        .stars-medium {
+          background-image: radial-gradient(3px 3px at 30px 40px, rgba(0,255,255,1), transparent),
+                           radial-gradient(2px 2px at 80px 20px, rgba(255,255,255,1), transparent),
+                           radial-gradient(3px 3px at 120px 90px, rgba(255,0,255,0.8), transparent);
+          background-repeat: repeat;
+          background-size: 300px 200px;
+          animation: stars-move 30s linear infinite reverse;
+        }
+        
+        .stars-large {
+          background-image: radial-gradient(4px 4px at 50px 60px, rgba(0,255,255,1), transparent),
+                           radial-gradient(3px 3px at 150px 30px, rgba(255,255,255,1), transparent),
+                           radial-gradient(5px 5px at 200px 100px, rgba(255,0,255,0.9), transparent);
+          background-repeat: repeat;
+          background-size: 400px 300px;
+          animation: stars-move 40s linear infinite;
+        }
+        
+        @keyframes stars-move {
+          from { transform: translateY(0px); }
+          to { transform: translateY(-200px); }
+        }
+        
+        .glow-effect {
+          box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+          animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow-pulse {
+          from { box-shadow: 0 0 25px rgba(0, 255, 255, 0.5); }
+          to { box-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
+        }
+        
+        .futuristic-tile {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border: 2px solid rgba(99, 102, 241, 0.3);
+          transition: all 0.4s ease;
+          box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+        }
+        
+        .futuristic-tile:hover {
+          transform: translateY(-10px) scale(1.02);
+          border-color: rgba(99, 102, 241, 0.6);
+          box-shadow: 0 25px 50px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+          background: rgba(255, 255, 255, 1);
+        }
+        
+        .sparkle-icon {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .sparkle-icon::before,
+        .sparkle-icon::after {
+          content: '✨';
+          position: absolute;
+          animation: sparkle 2s ease-in-out infinite;
+          font-size: 0.8em;
+          opacity: 0.7;
+        }
+        
+        .sparkle-icon::before {
+          top: -8px;
+          right: -8px;
+          animation-delay: 0s;
+        }
+        
+        .sparkle-icon::after {
+          bottom: -8px;
+          left: -8px;
+          animation-delay: 1s;
+        }
+        
+        @keyframes sparkle {
+          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .neon-border {
+          border: 2px solid transparent;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) padding-box,
+                      linear-gradient(45deg, #00ffff, #0080ff, #8000ff, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff) border-box;
+          animation: neon-rotate 3s linear infinite;
+        }
+        
+        @keyframes neon-rotate {
+          0% { filter: hue-rotate(0deg); }
+          100% { filter: hue-rotate(360deg); }
+        }
+        
+        .medical-title {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .medical-title::before,
+        .medical-title::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 100px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #00ffff, #ff0080, #00ffff, transparent);
+          animation: pulse-line 2s ease-in-out infinite;
+        }
+        
+        .medical-title::before {
+          left: -120px;
+        }
+        
+        .medical-title::after {
+          right: -120px;
+          animation-delay: 0.5s;
+        }
+        
+        @keyframes pulse-line {
+          0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
+          50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+        }
+        
+        .dna-helix {
+          position: absolute;
+          left: -150px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 30px;
+          height: 60px;
+          animation: rotate-dna 3s linear infinite;
+        }
+        
+        .dna-helix::before,
+        .dna-helix::after {
+          content: '';
+          position: absolute;
+          width: 4px;
+          height: 100%;
+          background: linear-gradient(180deg, #00ffff, #ff0080, #00ffff);
+          border-radius: 2px;
+        }
+        
+        .dna-helix::before {
+          left: 0;
+          animation: wave1 2s ease-in-out infinite;
+        }
+        
+        .dna-helix::after {
+          right: 0;
+          animation: wave2 2s ease-in-out infinite;
+        }
+        
+        @keyframes rotate-dna {
+          0% { transform: translateY(-50%) rotateY(0deg); }
+          100% { transform: translateY(-50%) rotateY(360deg); }
+        }
+        
+        @keyframes wave1 {
+          0%, 100% { transform: scaleY(1); }
+          50% { transform: scaleY(1.2); }
+        }
+        
+        @keyframes wave2 {
+          0%, 100% { transform: scaleY(1.2); }
+          50% { transform: scaleY(1); }
+        }
+      `}</style>
       
       {/* ✅ ADDED: Homepage Header */}
       <Header 
@@ -171,48 +424,50 @@ const HomePage = () => {
       />
 
       {/* Enhanced Hero Section with Books Background */}
-      <section className="relative overflow-hidden min-h-screen lg:min-h-screen flex items-center">
+      <section className="relative overflow-hidden min-h-screen lg:min-h-screen flex items-center z-10">
         {/* Books Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
           style={{
             backgroundImage: 'url(/books.webp)',
           }}
         ></div>
         
         {/* Lighter Gradient Overlay for Better Image Visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 via-blue-800/30 to-green-800/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 via-purple-900/20 to-indigo-900/30"></div>
         
-        {/* Floating badges - Centered horizontally */}
-        <div className="hidden lg:block absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-bold text-base shadow-2xl z-10">
-         🔒 Master Every Stage of Your Medical Training — All in One Place
+        {/* Floating badges - Enhanced futuristic styling */}
+        <div className="hidden lg:block absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-slate-900 px-8 py-4 rounded-full font-bold text-lg shadow-2xl shadow-yellow-500/50 z-20 glow-effect">
+         🩺 Master Every Stage of Your Medical Training — All in One Place
         </div>
-        <div className="hidden lg:block absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-lg text-blue-900 px-6 py-3 rounded-full font-semibold text-base shadow-2xl z-10">
-          💡 AI-Powered smart Learning
+        <div className="hidden lg:block absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-blue-900 px-8 py-4 rounded-full font-semibold text-lg shadow-2xl shadow-blue-500/50 border border-yellow-400/50 z-20">
+          🧠 AI-Powered Smart Learning
         </div>
         
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center text-white">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center z-10">
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-white drop-shadow-2xl">
-                Medical Education LMS .                <span className="block text-yellow-300 drop-shadow-2xl">Supporting our doctors of the future</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-yellow-300 drop-shadow-2xl">
+                Medical Education LMS
+                <span className="block text-white drop-shadow-2xl">Supporting our doctors of the future</span>
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-gray-100 leading-relaxed max-w-3xl mx-auto drop-shadow-xl">
-                From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools. </p>
+              <p className="text-lg sm:text-xl lg:text-2xl text-white leading-relaxed max-w-3xl mx-auto drop-shadow-xl bg-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-yellow-300/30">
+                From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools.
+              </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center">
               <a 
                 href="/quiz" 
-                className="px-8 py-4 lg:px-10 lg:py-5 bg-yellow-400 text-blue-900 font-bold rounded-lg text-lg lg:text-xl hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3 min-h-[48px]"
+                className="px-8 py-4 lg:px-10 lg:py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 font-bold rounded-2xl text-lg lg:text-xl hover:from-yellow-300 hover:to-orange-400 transition-all transform hover:scale-105 shadow-2xl shadow-yellow-500/50 flex items-center justify-center gap-3 min-h-[48px] glow-effect"
               >
                 Try Free Quiz Now 🧠
                 <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6" />
               </a>
               <button 
                 onClick={() => setShowAuthModal(true)}
-                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-white text-white font-semibold rounded-lg text-lg lg:text-xl hover:bg-white hover:text-blue-700 transition-colors shadow-2xl min-h-[48px]"
+                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-cyan-400 bg-gradient-to-r from-slate-800/50 to-blue-900/50 text-cyan-400 font-semibold rounded-2xl text-lg lg:text-xl hover:bg-gradient-to-r hover:from-cyan-400/20 hover:to-blue-400/20 transition-all shadow-2xl shadow-cyan-500/30 min-h-[48px] backdrop-blur-sm"
               >
                 Sign Up Free
               </button>
@@ -220,123 +475,155 @@ const HomePage = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8 text-base lg:text-lg">
               <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
-                <span className="drop-shadow-xl text-gray-100">No credit card required</span>
+                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-400" />
+                <span className="drop-shadow-xl text-gray-200">No credit card required</span>
               </div>
               <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-green-300" />
-                <span className="drop-shadow-xl text-gray-100">🧠 Smart Quiz Engine,15,000+ Questions</span>
+                <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-400" />
+                <span className="drop-shadow-xl text-gray-200">🧠 Smart Quiz Engine, 15,000+ Questions</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      
-      
-      
-      
-  {/* 🔐 Subscription Benefits Section from Dashboard */}
-<section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-      Features to support your daily medical education journey
-    </h2>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
-        <div
-          key={i}
-          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
-        >
-          <div className="flex justify-center mb-4">
-            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
+      {/* 🔐 Subscription Benefits Section - Solid background */}
+      <section className="py-20 relative z-10 bg-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
+            🩺 ⭐ ━━━ Features to support your daily medical education journey ━━━ ⭐ 🧠
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
+              <div
+                key={i}
+                className="futuristic-tile rounded-3xl p-8 text-center group"
+              >
+                <div className="flex justify-center mb-6">
+                  <div className="sparkle-icon p-6 rounded-3xl bg-indigo-500 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 glow-effect">
+                    <Icon className="w-12 h-12" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">{title}</h3>
+                <p className="text-slate-800 text-sm leading-relaxed">{description}</p>
+              </div>
+            ))}
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
     
-      <section className="py-20 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-      Quizzes that Teach and test  - Each quiz is a complete mini Course
-    </h2>
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {features.map(({ icon: Icon, title, description }, i) => (
-        <div
-          key={i}
-          className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-transform duration-300 hover:scale-105 text-center"
-        >
-          <div className="flex justify-center mb-4">
-            <Icon className="w-10 h-10 text-blue-600 dark:text-yellow-400" />
+      <section className="py-20 relative z-10 bg-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
+            🧠 ⚡ ━━━ Quizzes that Teach and Test - Each quiz is a complete mini Course ━━━ ⚡ 📚
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map(({ icon: Icon, title, description }, i) => (
+              <div
+                key={i}
+                className="futuristic-tile rounded-3xl p-8 text-center group"
+              >
+                <div className="flex justify-center mb-6">
+                  <div className={`sparkle-icon p-6 rounded-3xl ${getColorClasses(features[i].color)} shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+                    <Icon className="w-12 h-12" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">{title}</h3>
+                <p className="text-slate-800 text-sm leading-relaxed">{description}</p>
+              </div>
+            ))}
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{title}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{description}</p>
         </div>
-      ))}
-    </div>
-  </div>
       </section>
 
-{/* 🔄 Rotating Featured Quizzes Section (Wired later) */}
-<section className="py-20 bg-gradient-to-br from-blue-100 via-white to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-      Try a Quiz — No Signup Needed
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {[1, 2, 3, 4].map((_, i) => (
-        <div
-          key={i}
-          className="bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-2xl hover:scale-105 transition-transform cursor-pointer text-center"
-          onClick={() => setShowAuthModal(true)}
-        >
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Sample Quiz #{i + 1}</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-            A sneak peek into real board-style questions you can start answering in seconds.
-          </p>
-          <button className="text-sm font-semibold text-blue-700 dark:text-blue-300 underline">Start Free Quiz</button>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      {/* 🔄 Rotating Featured Quizzes Section */}
+      <section className="py-20 relative z-10 bg-purple-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
+            🚀 ⭐ ━━━ Try a Quiz — No Signup Needed ━━━ ⭐ 🎯
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((_, i) => (
+              <div
+                key={i}
+                className="futuristic-tile rounded-2xl p-6 text-center group cursor-pointer"
+                onClick={() => setShowAuthModal(true)}
+              >
+                <div className="sparkle-icon flex justify-center mb-4">
+                  <div className="p-4 rounded-2xl bg-purple-500 text-white shadow-lg">
+                    <BookOpen className="w-8 h-8" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">Sample Quiz #{i + 1}</h3>
+                <p className="text-slate-800 text-sm mb-6">
+                  A sneak peek into real board-style questions you can start answering in seconds.
+                </p>
+                <button className="text-sm font-semibold text-purple-800 hover:text-purple-900 underline transition-colors">
+                  Start Free Quiz
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section - Enhanced design */}
+      <section className="py-20 relative z-10 bg-indigo-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-slate-900">
+              📊 ⚡ ━━━ Our Impact on Medical Education ━━━ ⚡ 🏆
+            </h2>
+          </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
-              <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">15,000+</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Practice Questions</div>
+            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-cyan-500 text-white">
+                  <BookOpen className="w-8 h-8" />
+                </div>
+              </div>
+              <div className="text-5xl font-bold text-cyan-800 mb-3">15,000+</div>
+              <div className="text-slate-900 font-semibold">Practice Questions</div>
             </div>
-            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">95%</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Pass Rate Improvement</div>
+            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-emerald-500 text-white">
+                  <TrendingUp className="w-8 h-8" />
+                </div>
+              </div>
+              <div className="text-5xl font-bold text-emerald-800 mb-3">95%</div>
+              <div className="text-slate-900 font-semibold">Pass Rate Improvement</div>
             </div>
-            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">10,000+</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Students Enrolled</div>
+            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-purple-500 text-white">
+                  <Users className="w-8 h-8" />
+                </div>
+              </div>
+              <div className="text-5xl font-bold text-purple-800 mb-3">10,000+</div>
+              <div className="text-slate-900 font-semibold">Students Enrolled</div>
             </div>
-            <div className="text-center bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105">
-              <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">24/7</div>
-              <div className="text-gray-600 dark:text-gray-300 font-medium">Study Support</div>
+            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-yellow-500 text-white">
+                  <Zap className="w-8 h-8" />
+                </div>
+              </div>
+              <div className="text-5xl font-bold text-yellow-800 mb-3">24/7</div>
+              <div className="text-slate-900 font-semibold">Study Support</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Browse by Medical Specialty Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      <section className="py-20 relative z-10 bg-blue-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <SectionSeparator title="Medical Specialties" icon={Microscope} color="purple" />
 
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-900 max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-indigo-300 shadow-lg">
               Choose from our comprehensive collection of specialty-focused quizzes designed by medical experts
             </p>
           </div>
@@ -345,26 +632,26 @@ const HomePage = () => {
             {specialties.map((specialty, index) => {
               const IconComponent = specialty.icon;
               return (
-                <div key={index} className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 min-h-[280px]">
+                <div key={index} className="futuristic-tile rounded-3xl p-8 min-h-[320px] group">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className={`p-4 rounded-2xl ${getColorClasses(specialty.color)}`}>
-                        <IconComponent className="h-8 w-8" />
+                      <div className={`sparkle-icon p-4 rounded-2xl ${getColorClasses(specialty.color)} shadow-lg group-hover:scale-110 transition-all duration-300`}>
+                        <IconComponent className="h-10 w-10" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{specialty.name}</h3>
-                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${getColorClasses(specialty.color)}`}>
+                        <h3 className="text-xl font-bold text-slate-900">{specialty.name}</h3>
+                        <span className={`text-xs px-3 py-1 rounded-full font-semibold ${getColorClasses(specialty.color)} border-2`}>
                           {specialty.count} questions
                         </span>
                       </div>
                     </div>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6">
+                  <p className="text-slate-900 text-sm leading-relaxed mb-6">
                     {specialty.description}
                   </p>
                   <a 
                     href="/quiz"
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 block text-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="w-full bg-indigo-600 text-white py-3 px-6 rounded-2xl font-semibold hover:bg-indigo-700 transition-all duration-300 block text-center shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     Start Quiz
                   </a>
@@ -376,7 +663,7 @@ const HomePage = () => {
           <div className="text-center mt-16">
             <a 
               href="/quiz"
-              className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="px-12 py-4 bg-indigo-600 text-white font-bold rounded-3xl text-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 glow-effect"
             >
               View All Specialties
             </a>
@@ -385,14 +672,14 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced Features Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      <section className="py-20 relative z-10 bg-purple-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <SectionSeparator title="Why Choose Us" icon={Award} color="blue" />
 
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              This is more than a quiz app. It’s your all-in-one medical education companion — built by physicians to centralize your progress, connect you to a like-minded community, and provide seamless access across disciplines and training sites. Whether you're rotating across hospitals or preparing for boards, we’ve got your back — every step of the way.
+            <p className="text-xl text-slate-900 max-w-4xl mx-auto bg-white rounded-2xl p-6 border border-purple-300 shadow-lg">
+              This is more than a quiz app. It's your all-in-one medical education companion — built by physicians to centralize your progress, connect you to a like-minded community, and provide seamless access across disciplines and training sites.
             </p>
           </div>
 
@@ -400,13 +687,13 @@ const HomePage = () => {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <div key={index} className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-2xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 min-h-[300px]">
+                <div key={index} className="futuristic-tile rounded-3xl p-8 min-h-[320px] group">
                   <div className="text-center">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 ${getColorClasses(feature.color)}`}>
-                      <IconComponent className="w-8 h-8" />
+                    <div className={`sparkle-icon inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 ${getColorClasses(feature.color)} shadow-lg group-hover:scale-110 transition-all duration-300`}>
+                      <IconComponent className="w-10 h-10" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <h3 className="text-xl font-bold text-slate-900 mb-4">{feature.title}</h3>
+                    <p className="text-slate-900 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -418,236 +705,182 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced Testimonials */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-green-600 text-white">
+      <section className="py-20 bg-indigo-100 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">What Medical Students Say</h2>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+            <h2 className="text-5xl font-bold mb-4 text-slate-900">
+              🩺 ⭐ ━━━ What Medical Students Say ━━━ ⭐ 👩‍⚕️
+            </h2>
+            <p className="text-xl text-slate-900 max-w-3xl mx-auto">
               Join thousands of successful medical students and professionals
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 min-h-[250px] flex flex-col justify-between">
+            <div className="futuristic-tile rounded-3xl p-8 min-h-[280px] flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />
                   ))}
                 </div>
-                <p className="text-white/90 mb-6 italic text-lg leading-relaxed">
+                <p className="text-slate-900 mb-6 italic text-lg leading-relaxed font-medium">
                   "MedEdLMS Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
                 </p>
               </div>
               <div>
-                <div className="font-semibold text-white text-lg">Sarah M.</div>
-                <div className="text-blue-200 text-sm">3rd Year Medical Student</div>
+                <div className="font-bold text-indigo-800 text-lg">Sarah M.</div>
+                <div className="text-slate-800 text-sm font-medium">3rd Year Medical Student</div>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 min-h-[250px] flex flex-col justify-between">
+            <div className="futuristic-tile rounded-3xl p-8 min-h-[280px] flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />
                   ))}
                 </div>
-                <p className="text-white/90 mb-6 italic text-lg leading-relaxed">
+                <p className="text-slate-900 mb-6 italic text-lg leading-relaxed font-medium">
                   "The progress tracking feature is amazing. I can see exactly which topics I need to focus on before my board exams."
                 </p>
               </div>
               <div>
-                <div className="font-semibold text-white text-lg">Alex R.</div>
-                <div className="text-blue-200 text-sm">4th Year Medical Student</div>
+                <div className="font-bold text-indigo-800 text-lg">Alex R.</div>
+                <div className="text-slate-800 text-sm font-medium">4th Year Medical Student</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Enhanced Pricing Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
+      {/* Enhanced Pricing Section with Working Stripe Integration */}
+      <section className="py-20 relative z-10 bg-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <SectionSeparator title="Choose Your Plan" icon={Target} color="green" />
 
           <div className="text-center mb-16">
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Access to the most comprehensive tutoring medical education question bank available. Start free and upgrade when ready.
+            <p className="text-xl text-slate-900 max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-blue-300 shadow-lg">
+              Access to the most comprehensive medical education question bank available. Start free and upgrade when ready.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 text-center min-h-[500px] flex flex-col">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Free</h3>
-              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$0</div>
-              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8 flex-1">
+            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-gray-500 text-white">
+                  <BookOpen className="w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="text-3xl font-bold mb-4 text-slate-900">Free</h3>
+              <div className="text-5xl font-bold text-gray-700 mb-2">$0</div>
+              <div className="text-slate-800 mb-8 font-medium">per month</div>
+              <ul className="text-left space-y-4 mb-8 flex-1">
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  5 quiz attempts per day
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">5 quiz attempts per day</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Basic progress tracking
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Basic progress tracking</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Limited topic access
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Limited topic access</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-gray-400 mr-3">❌</span>
-                  <span className="text-gray-400">Full question bank</span>
+                  <span className="text-red-600 mr-3 text-xl">❌</span>
+                  <span className="text-slate-600 font-medium">Full question bank</span>
                 </li>
               </ul>
               <a 
                 href="/quiz"
-                className="w-full bg-gray-600 text-white py-3 rounded-xl font-semibold hover:bg-gray-700 transition-colors block text-center"
+                className="w-full bg-gray-600 text-white py-4 rounded-2xl font-semibold hover:bg-gray-700 transition-all duration-300 block text-center shadow-lg"
               >
                 Try Free Quiz
               </a>
             </div>
 
-            {/* Pro Plan */}
-            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border-2 border-blue-500 dark:border-blue-400 shadow-2xl dark:shadow-yellow-500/40 transform scale-105 relative min-h-[500px] flex flex-col">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-semibold">
+            {/* Pro Plan - Enhanced with border */}
+            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col relative transform scale-105 border-4 border-indigo-500">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg">
                 Most Popular
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Pro</h3>
-              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$49.99</div>
-              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8 flex-1">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-indigo-600 text-white">
+                  <Award className="w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="text-3xl font-bold mb-4 text-indigo-900">Pro</h3>
+              <div className="text-5xl font-bold text-indigo-800 mb-2">$49.99</div>
+              <div className="text-slate-800 mb-8 font-medium">per month</div>
+              <ul className="text-left space-y-4 mb-8 flex-1">
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Unlimited quiz attempts
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Unlimited quiz attempts</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  All 15,000+ questions
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">All 15,000+ questions</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  All medical specialties
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">All medical specialties</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Detailed explanations
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Detailed explanations</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Performance analytics
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Performance analytics</span>
                 </li>
               </ul>
               <button 
-                onClick={async () => {
-                  if (!user) {
-                    setShowAuthModal(true);
-                    return;
-                  }
-                  
-                  try {
-                    const response = await fetch('/api/create-checkout-session', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        priceId: 'price_1RqE1PEbNlb7nCbs0las6NY5', // Your Pro price ID
-                        userId: user.uid,
-                      }),
-                    });
-                    
-                    const session = await response.json();
-                    
-                    if (session.sessionId) {
-                      const { stripePromise } = await import('../lib/stripe');
-                      const stripe = await stripePromise;
-                      
-                      const result = await stripe.redirectToCheckout({
-                        sessionId: session.sessionId,
-                      });
-                      
-                      if (result.error) {
-                        console.error(result.error);
-                        alert('Payment error: ' + result.error.message);
-                      }
-                    } else {
-                      alert('Error creating checkout session');
-                    }
-                  } catch (error) {
-                    console.error('Payment error:', error);
-                    alert('Payment setup error. Please try again.');
-                  }
-                }}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                onClick={() => handleStripeCheckout('price_1RqE1PEbNlb7nCbs0las6NY5', 'Pro')}
+                className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-semibold hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 glow-effect"
               >
                 {user ? 'Subscribe for $49.99/month' : 'Sign Up to Subscribe'}
               </button>
             </div>
 
             {/* Premium Plan */}
-            <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl p-8 border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 text-center min-h-[500px] flex flex-col">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Premium</h3>
-              <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">$99</div>
-              <div className="text-gray-600 dark:text-gray-400 mb-6">per month</div>
-              <ul className="text-left space-y-3 mb-8 flex-1">
+            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col">
+              <div className="sparkle-icon flex justify-center mb-4">
+                <div className="p-4 rounded-2xl bg-purple-600 text-white">
+                  <Star className="w-8 h-8" />
+                </div>
+              </div>
+              <h3 className="text-3xl font-bold mb-4 text-purple-900">Premium</h3>
+              <div className="text-5xl font-bold text-purple-800 mb-2">$99</div>
+              <div className="text-slate-800 mb-8 font-medium">per month</div>
+              <ul className="text-left space-y-4 mb-8 flex-1">
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Everything in Pro
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Everything in Pro</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Etutor smart tutoring sessions
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">AI tutor smart tutoring sessions</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Custom study plans
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Custom study plans</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Priority support
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Priority support</span>
                 </li>
                 <li className="flex items-center">
-                  <span className="text-green-500 mr-3">✅</span>
-                  Exam prep courses
+                  <span className="text-emerald-700 mr-3 text-xl">✅</span>
+                  <span className="text-slate-900 font-medium">Exam prep courses</span>
                 </li>
               </ul>
               <button 
-                onClick={async () => {
-                  if (!user) {
-                    setShowAuthModal(true);
-                    return;
-                  }
-                  
-                  try {
-                    const response = await fetch('/api/create-checkout-session', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        priceId: 'price_1RqE4NEbNlb7nCbsKLwEcd3a', // Your Premium price ID
-                        userId: user.uid,
-                      }),
-                    });
-                    
-                    const session = await response.json();
-                    
-                    if (session.sessionId) {
-                      const { stripePromise } = await import('../lib/stripe');
-                      const stripe = await stripePromise;
-                      
-                      await stripe.redirectToCheckout({
-                        sessionId: session.sessionId,
-                      });
-                    }
-                  } catch (error) {
-                    console.error('Payment error:', error);
-                    alert('Payment setup error. Please try again.');
-                  }
-                }}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                onClick={() => handleStripeCheckout('price_1RqE4NEbNlb7nCbsKLwEcd3a', 'Premium')}
+                className="w-full bg-purple-600 text-white py-4 rounded-2xl font-semibold hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $99.00/month' : 'Sign Up to Subscribe'}
               </button>
@@ -657,35 +890,34 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-green-600 py-20">
+      <section className="bg-purple-100 py-20 relative z-10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Access 15,000+ expert-crafted questions covering your whole medical eduction training...?
+          <h2 className="text-5xl font-bold mb-6 text-slate-900">
+            Ready to Access 15,000+ expert-crafted questions covering your whole medical education training...?
           </h2>
-          <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+          <p className="text-xl text-slate-900 mb-8 leading-relaxed font-medium">
             Join thousands of medical students, residents, mastering their exams with the most comprehensive question bank available.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/quiz"
-              className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-2xl text-lg font-bold hover:bg-yellow-300 transition-all transform hover:scale-105 shadow-lg"
+              className="bg-yellow-500 text-slate-900 px-10 py-5 rounded-3xl text-lg font-bold hover:bg-yellow-400 transition-all transform hover:scale-105 shadow-lg glow-effect"
             >
               Start Free Trial Now 🧠
             </a>
             <button 
               onClick={() => setShowAuthModal(true)}
-              className="border-2 border-white text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+              className="border-4 border-indigo-600 bg-white text-indigo-900 px-10 py-5 rounded-3xl text-lg font-bold hover:bg-indigo-50 transition-all"
             >
               Create Account
             </button>
           </div>
-          <div className="mt-8 text-blue-200 text-sm">
+          <div className="mt-8 text-slate-800 text-sm font-medium">
             Free trial • No credit card required • Cancel anytime
           </div>
         </div>
       </section>
 
-      
       {/* Auth Modal - Single instance at the end */}
       <AuthModal
         isOpen={showAuthModal}
