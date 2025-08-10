@@ -1,6 +1,6 @@
 // services/uploadService.ts
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '../firebase/firebaseConfig';
+import { storage } from '../lib/firebase';
 
 export class UploadService {
   // Upload profile picture to Firebase Storage

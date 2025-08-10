@@ -1,7 +1,7 @@
 // hooks/useProfile.ts
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { auth } from '../../lib/firebase';
 import { ProfileService } from '../../services/profileService';
 import { MedicalProfile } from '../../types/profile.types';
 

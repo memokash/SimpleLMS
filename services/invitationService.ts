@@ -11,7 +11,10 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
-import { functions, db } from '../firebase/firebaseConfig';
+import { db } from '../lib/firebase';
+import { getFunctions } from 'firebase/functions';
+
+const functions = getFunctions();
 import { Invitation } from '../types/firebase.types';
 
 export class InvitationService {

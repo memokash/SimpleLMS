@@ -1,4 +1,4 @@
-import { initializeApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, FirebaseApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, collection, getDocs, Firestore, DocumentData } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
@@ -36,7 +36,7 @@ const validateFirebaseConfig = (config: FirebaseConfig): void => {
   console.log('✅ Firebase configuration validated');
 };
 
-// Initialize Firebase with error handling
+// Initialize Firebase with singleton pattern to prevent duplicate app errors
 let app: FirebaseApp;
 let db: Firestore;
 let auth: Auth;
@@ -46,7 +46,13 @@ let googleProvider: GoogleAuthProvider;
 try {
   validateFirebaseConfig(firebaseConfig);
   
-  app = initializeApp(firebaseConfig as any);
+  // Use singleton pattern - check if app already exists
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig as any);
+  } else {
+    app = getApp(); // Use existing app
+  }
+  
   db = getFirestore(app);
   auth = getAuth(app);
   storage = getStorage(app);

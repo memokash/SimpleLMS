@@ -19,7 +19,7 @@ import {
   getDownloadURL, 
   deleteObject 
 } from 'firebase/storage';
-import { db, storage } from '../firebase/firebaseConfig';
+import { db, storage } from '../lib/firebase';
 import { MedicalProfile } from '../types/profile.types';
 
 export class ProfileService {
