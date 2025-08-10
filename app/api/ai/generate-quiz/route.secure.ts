@@ -44,11 +44,11 @@ function validateRequest(data: any): { valid: boolean; errors: string[]; data?: 
   }
 
   // Validate optional fields
-  const specialty = data.specialty ? validation.sanitizeString(data.specialty, 100) : undefined;
+  const specialty = data.specialty ? validation.sanitizeString(data.specialty, 100) || undefined : undefined;
   const difficulty = data.difficulty && ['Easy', 'Medium', 'Hard'].includes(data.difficulty) ? data.difficulty : undefined;
-  const category = data.category ? validation.sanitizeString(data.category, 100) : undefined;
-  const topic = data.topic ? validation.sanitizeString(data.topic, 200) : undefined;
-  const filename = data.filename ? validation.sanitizeString(data.filename, 255) : undefined;
+  const category = data.category ? validation.sanitizeString(data.category, 100) || undefined : undefined;
+  const topic = data.topic ? validation.sanitizeString(data.topic, 200) || undefined : undefined;
+  const filename = data.filename ? validation.sanitizeString(data.filename, 255) || undefined : undefined;
 
   if (errors.length === 0) {
     return {

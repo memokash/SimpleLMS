@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserStats, UserStats } from '../../lib/courseService';
+import { getUserStats, UserStats as CourseServiceUserStats } from '../../lib/courseService';
 import {
   BookOpenCheck,
   FileText,

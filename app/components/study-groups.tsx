@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 import { 
   Users, 
   Plus, 
@@ -42,6 +43,7 @@ interface StudyGroup {
 
 const StudyGroupsPage = () => {
   const { user } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
   const [myGroups, setMyGroups] = useState<StudyGroup[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
