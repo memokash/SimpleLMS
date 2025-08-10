@@ -21,6 +21,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  getIdToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -78,6 +79,20 @@ const signInWithGoogle = async () => {
     router.push('/');
   };
 
+  const getIdToken = async (): Promise<string | null> => {
+    if (!user) {
+      return null;
+    }
+    
+    try {
+      const token = await user.getIdToken();
+      return token;
+    } catch (error) {
+      console.error('Error getting ID token:', error);
+      return null;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -85,6 +100,7 @@ const signInWithGoogle = async () => {
     signUpWithEmail,
     signInWithGoogle,
     logout,
+    getIdToken,
   };
 
   return (

@@ -11,7 +11,7 @@ import {
   BrainCircuit,
   Sparkles,
   Stethoscope,
-  NotebookText,
+  FileText,
   BookOpen,
   Users,
   MessageSquare,
@@ -197,7 +197,7 @@ const HomePage = () => {
       description: 'Quick access to templates for H&Ps, procedures, and clinical documentation on the go.'
     },
     {
-      icon: NotebookText,
+      icon: FileText,
       title: 'Reading Vault',
       description: 'Store, annotate, and tag key readings, journal articles, and board resources.'
     },

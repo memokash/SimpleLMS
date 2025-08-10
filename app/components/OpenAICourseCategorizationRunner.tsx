@@ -30,8 +30,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-// Toast notification component
-const Toast = ({ message, type, onClose }) => (
+// Toast notification component  
+const Toast = ({ message, type, onClose }: { message: string; type: 'success' | 'error' | 'warning' | 'info'; onClose: () => void }) => (
   <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md ${
     type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
     type === 'error' ? 'bg-red-50 border border-red-200 text-red-800' :
@@ -56,11 +56,26 @@ const Toast = ({ message, type, onClose }) => (
 );
 
 // Progress bar component
-const ProgressBar = ({ progress, showDetails = true }) => {
+interface ProgressData {
+  processed: number;
+  total: number;
+  categorized: number;
+  errors: number;
+  failed: number;
+  estimatedTimeRemaining?: number;
+  currentCourse?: string;
+}
+
+interface ToastData {
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+}
+
+const ProgressBar = ({ progress, showDetails = true }: { progress: ProgressData; showDetails?: boolean }) => {
   const percentage = Math.round((progress.processed / progress.total) * 100);
   const successRate = progress.processed > 0 ? Math.round((progress.categorized / progress.processed) * 100) : 0;
   
-  const formatTime = (ms) => {
+  const formatTime = (ms: number) => {
     if (!ms) {
       return 'Unknown';
     }
@@ -101,7 +116,7 @@ const ProgressBar = ({ progress, showDetails = true }) => {
             <div className="text-gray-600">Failed</div>
           </div>
           <div className="text-center">
-            <div className="font-semibold text-blue-600">{formatTime(progress.estimatedTimeRemaining)}</div>
+            <div className="font-semibold text-blue-600">{formatTime(progress.estimatedTimeRemaining || 0)}</div>
             <div className="text-gray-600">ETA</div>
           </div>
         </div>
@@ -130,20 +145,20 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
   const [isGettingStats, setIsGettingStats] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   
-  const [results, setResults] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [stats, setStats] = useState(null);
-  const [progress, setProgress] = useState(null);
-  const [toast, setToast] = useState(null);
+  const [results, setResults] = useState<any>(null);
+  const [preview, setPreview] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  const [toast, setToast] = useState<ToastData | null>(null);
   
   const controllerRef = useRef(null);
 
-  const showToast = useCallback((message, type = 'info') => {
+  const showToast = useCallback((message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
   }, []);
 
-  const handleProgressUpdate = useCallback((progressData) => {
+  const handleProgressUpdate = useCallback((progressData: any) => {
     setProgress(progressData);
   }, []);
 
@@ -158,7 +173,8 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
       showToast(`Preview complete! Analyzed ${previewResults.length} courses`, 'success');
     } catch (error) {
       console.error('Preview failed:', error);
-      showToast(`Preview failed: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showToast(`Preview failed: ${errorMessage}`, 'error');
     } finally {
       setIsPreviewing(false);
       setProgress(null);
@@ -204,7 +220,8 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
       
     } catch (error) {
       console.error('Categorization failed:', error);
-      showToast(`Categorization failed: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showToast(`Categorization failed: ${errorMessage}`, 'error');
     } finally {
       setIsRunning(false);
       setProgress(null);
@@ -219,7 +236,8 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
       showToast('Statistics updated successfully', 'success');
     } catch (error) {
       console.error('Stats failed:', error);
-      showToast(`Failed to get stats: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showToast(`Failed to get stats: ${errorMessage}`, 'error');
     } finally {
       setIsGettingStats(false);
     }
@@ -243,7 +261,8 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
       }
     } catch (error) {
       console.error('Validation failed:', error);
-      showToast(`Validation failed: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showToast(`Validation failed: ${errorMessage}`, 'error');
     } finally {
       setIsValidating(false);
     }
@@ -362,8 +381,8 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
             <h3 className="text-lg font-semibold text-blue-900">AI Categorization Preview</h3>
             <div className="flex items-center space-x-4 text-sm text-blue-800">
               <div>Courses: {preview.length}</div>
-              <div>Need Categories: {preview.filter(p => p.needsUpdate).length}</div>
-              <div>Categories: {Array.from(new Set(preview.map(p => p.aiSuggestedCategory))).length}</div>
+              <div>Need Categories: {preview.filter((p: any) => p.needsUpdate).length}</div>
+              <div>Categories: {Array.from(new Set(preview.map((p: any) => p.aiSuggestedCategory))).length}</div>
 
 
             </div>
@@ -381,7 +400,7 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
                 </tr>
               </thead>
               <tbody>
-                {preview.map((item, index) => (
+                {preview.map((item: any, index: number) => (
                   <tr key={index} className="border-b border-blue-200">
                     <td className="p-2">
                       <div className="font-medium max-w-xs truncate">{item.courseName}</div>
@@ -464,7 +483,7 @@ const EnhancedOpenAICourseCategorizationRunner = () => {
                 View {results.errors.length} Errors
               </summary>
               <div className="mt-2 max-h-40 overflow-y-auto bg-red-50 p-3 rounded border">
-                {results.errors.map((error, index) => (
+                {results.errors.map((error: any, index: number) => (
                   <div key={index} className="text-xs text-red-800 border-b border-red-200 pb-1 mb-1 last:border-b-0">
                     <span className="font-medium">{error.courseId}:</span> {error.error}
                   </div>

@@ -7,6 +7,7 @@ import { useAuth } from '../../../components/AuthContext';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft } from 'lucide-react';
+import DOMPurify from 'isomorphic-dompurify';
 
 
 export default function EtutorViewerPage() {
@@ -91,7 +92,7 @@ export default function EtutorViewerPage() {
 
       {/* Tutoring Content */}
       <div className="prose prose-lg max-w-3xl mx-auto px-4 py-10">
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
         <div className="mt-10 text-sm text-center text-gray-500">
           <p>With guidance from</p>
           <p className="font-bold text-blue-600">Dr. MemoKash 🧠</p>

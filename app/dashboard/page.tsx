@@ -6,7 +6,6 @@ import { useAuth } from '../components/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import UserDashboard from '../components/UserDashboard';
-import DashboardNavigation from '../components/DashboardNavigation';  
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -41,10 +40,5 @@ export default function DashboardPage() {
     return null;
   }
 
-  return (
-    <>
-      <DashboardNavigation />
-      <UserDashboard />
-    </>
-  );
+  return <UserDashboard />;
 }

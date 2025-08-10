@@ -21,12 +21,12 @@ interface Course {
   difficulty: string;
   questionCount: number;
   estimatedTime: string;
-  completed: boolean;
-  lastScore: number | null;
-  progress: number;
-  instructor: string;
-  rating: number;
-  studentsEnrolled: number;
+  completed?: boolean;
+  lastScore?: number | null;
+  progress?: number;
+  instructor?: string;
+  rating?: number;
+  studentsEnrolled?: number;
   isPublic: boolean;
 }
 
@@ -101,7 +101,7 @@ const CoursesDashboard = () => {
       console.log('🔥 Loading courses from Firebase...');
       
       // Use the existing courseService.ts to get courses
-      const coursesData = await getAllCoursesWithProgress(user?.uid);
+      const coursesData = await getAllCoursesWithProgress(user?.uid || null);
       console.log('✅ Loaded courses:', coursesData.length);
       
       setCourses(coursesData);
@@ -486,12 +486,12 @@ const CoursesDashboard = () => {
                   </button>
 
                   {/* Progress Indicator */}
-                  {course.progress > 0 && (
+                  {(course.progress || 0) > 0 && (
                     <div className="mt-6 pt-6 border-t border-gray-200/50 dark:border-gray-600/50">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                           <Activity className="h-4 w-4" />
-                          <span className="font-semibold">Progress: {course.progress}%</span>
+                          <span className="font-semibold">Progress: {course.progress || 0}%</span>
                         </div>
                         {course.lastScore && (
                           <span className="font-bold text-gray-900 dark:text-white">
@@ -502,7 +502,7 @@ const CoursesDashboard = () => {
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
                         <div 
                           className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${course.progress}%` }}
+                          style={{ width: `${course.progress || 0}%` }}
                         />
                       </div>
                     </div>

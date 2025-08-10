@@ -214,7 +214,7 @@ export async function testFirebaseConnection(): Promise<{ success: boolean; mess
     console.error('❌ Firebase connection test failed:', error);
     return {
       success: false,
-      message: `Connection failed: ${error.message}`
+      message: `Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     };
   }
 }

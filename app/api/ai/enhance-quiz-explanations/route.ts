@@ -6,13 +6,11 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🚀 Enhance quiz explanations API called');
     
-    // Check API key first
+    // Security: Check API key (without logging sensitive info)
     const apiKey = process.env.OPENAI_API_KEY;
-    console.log('🔍 API Key exists:', !!apiKey);
-    
     if (!apiKey) {
-      console.error('❌ OpenAI API key not found');
-      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+      console.error('❌ OpenAI API key not configured');
+      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
     }
 
     // Parse request body
@@ -108,13 +106,16 @@ Respond in JSON format:
 
   } catch (error) {
     console.error('💥 Enhancement error:', error);
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error message:', errorMessage);
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error stack:', error.stack);
+    }
     
     return NextResponse.json({ 
       error: 'Enhancement failed',
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 });
   }
 }

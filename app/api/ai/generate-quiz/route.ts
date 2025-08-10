@@ -8,15 +8,11 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🚀 Generate quiz API called');
     
-    // Check API key first (same structure as analyze)
+    // Security: Check API key (without logging sensitive info)
     const apiKey = process.env.OPENAI_API_KEY;
-    console.log('🔍 API Key exists:', !!apiKey);
-    console.log('🔍 API Key length:', apiKey?.length);
-    console.log('🔍 API Key starts with sk-:', apiKey?.startsWith('sk-'));
-    
     if (!apiKey) {
-      console.error('❌ OpenAI API key not found');
-      return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+      console.error('❌ OpenAI API key not configured');
+      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
     }
 
     // Parse request body (enhanced with category support)
@@ -51,15 +47,25 @@ export async function POST(request: NextRequest) {
       filename 
     } = requestData;
 
-    // Validate required fields
-    if (!content) {
-      console.error('❌ No content provided');
+    // Security: Validate and sanitize required fields
+    if (!content || typeof content !== 'string') {
+      console.error('❌ No valid content provided');
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
-    if (!questionCount || questionCount < 1) {
+    // Security: Limit content length to prevent abuse
+    if (content.length > 50000) {
+      return NextResponse.json({ error: 'Content too large' }, { status: 400 });
+    }
+
+    if (!questionCount || typeof questionCount !== 'number' || questionCount < 1 || questionCount > 50) {
       console.error('❌ Invalid question count');
-      return NextResponse.json({ error: 'Question count must be at least 1' }, { status: 400 });
+      return NextResponse.json({ error: 'Question count must be between 1 and 50' }, { status: 400 });
+    }
+
+    // Security: Validate user ID format if provided
+    if (userId && (typeof userId !== 'string' || userId.length > 100)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
     // Initialize OpenAI (same structure as analyze)
@@ -169,7 +175,7 @@ export async function POST(request: NextRequest) {
       console.log('🔍 Raw AI response:', completion.choices[0].message.content);
       return NextResponse.json({ 
         error: 'Failed to parse AI response', 
-        details: aiParseError.message 
+        details: aiParseError instanceof Error ? aiParseError.message : 'Parse error'
       }, { status: 500 });
     }
 
@@ -245,14 +251,18 @@ export async function POST(request: NextRequest) {
         
       } catch (saveError) {
         console.error('❌ Error saving questions to bank:', saveError);
+        const saveErrorMessage = saveError instanceof Error ? saveError.message : 'Unknown save error';
+        const saveErrorName = saveError instanceof Error ? saveError.name : 'UnknownError';
+        const saveErrorCode = (saveError as any)?.code || 'NO_CODE';
+        
         console.error('🔍 Save error details:', {
-          name: saveError.name,
-          message: saveError.message,
-          code: saveError.code
+          name: saveErrorName,
+          message: saveErrorMessage,
+          code: saveErrorCode
         });
         
         result.savedToBank = false;
-        result.bankMessage = `Questions generated but failed to save to bank: ${saveError.message}`;
+        result.bankMessage = `Questions generated but failed to save to bank: ${saveErrorMessage}`;
       }
     } else {
       console.log('⚠️ Not saving to bank:', {
@@ -285,16 +295,20 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('💥 Generate quiz error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorName = error instanceof Error ? error.name : 'UnknownError';
+    const errorStack = error instanceof Error ? error.stack?.substring(0, 500) : 'No stack trace';
+    
     console.error('🔍 Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack?.substring(0, 500)
+      name: errorName,
+      message: errorMessage,
+      stack: errorStack
     });
     
     return NextResponse.json({ 
       error: 'Failed to generate quiz',
-      details: error.message,
-      type: error.name
+      details: errorMessage,
+      type: errorName
     }, { status: 500 });
   }
 }

@@ -28,7 +28,7 @@ import {
   PlayCircle,
   PauseCircle,
   RotateCcw,
-  NotebookText,
+  FileText,
   Timer,
   BarChart3,
   Sparkles,
@@ -362,14 +362,14 @@ export default function QuizApp({ quizId }: Props) {
             <div className="space-y-3">
               <button
                 onClick={fetchQuizData}
-                className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="btn-primary w-full flex items-center justify-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
                 Try Again
               </button>
               <button
                 onClick={() => router.back()}
-                className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                className="btn-outline w-full flex items-center justify-center gap-2"
               >
                 <Home className="h-4 w-4" />
                 Go Back
@@ -389,7 +389,7 @@ export default function QuizApp({ quizId }: Props) {
           <div className="text-gray-600 dark:text-gray-400 text-lg mb-4">No questions available in this quiz</div>
           <button
             onClick={() => router.back()}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="btn-primary"
           >
             Go Back
           </button>
@@ -406,7 +406,7 @@ export default function QuizApp({ quizId }: Props) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 text-center">
+          <div className="medical-card p-8 text-center">
             <div className="mb-8">
               <Award className="h-20 w-20 text-yellow-500 mx-auto mb-4" />
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -418,21 +418,21 @@ export default function QuizApp({ quizId }: Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-blue-50 dark:bg-blue-900/30 rounded-2xl p-6">
+              <div className="color-internal rounded-2xl p-6">
                 <h3 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                   {score}%
                 </h3>
                 <p className="text-blue-800 dark:text-blue-300">Final Score</p>
               </div>
               
-              <div className="bg-green-50 dark:bg-green-900/30 rounded-2xl p-6">
+              <div className="color-surgery rounded-2xl p-6">
                 <h3 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
                   {answeredQuestions}/{questions.length}
                 </h3>
                 <p className="text-green-800 dark:text-green-300">Questions Answered</p>
               </div>
               
-              <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-6">
+              <div className="color-neurology rounded-2xl p-6">
                 <h3 className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                   {quizData?.category}
                 </h3>
@@ -443,7 +443,7 @@ export default function QuizApp({ quizId }: Props) {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={retryQuiz}
-                className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="btn-primary flex items-center justify-center gap-2"
               >
                 <RotateCcw className="h-5 w-5" />
                 Retake Quiz
@@ -451,14 +451,14 @@ export default function QuizApp({ quizId }: Props) {
               
               <button
                 onClick={() => router.push('/enhanced-quiz-display')}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="btn-outline"
               >
                 Choose Another Quiz
               </button>
               
               <button
-                onClick={() => router.push('/user-dashboard')}
-                className="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                onClick={() => router.push('/dashboard')}
+                className="btn-secondary flex items-center justify-center gap-2"
               >
                 <Home className="h-5 w-5" />
                 Dashboard
@@ -475,7 +475,7 @@ export default function QuizApp({ quizId }: Props) {
       <div className="max-w-6xl mx-auto px-4 py-8">
         
         {/* Header Controls */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-8 border border-white/20 shadow-lg mb-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass rounded-3xl p-8 shadow-lg mb-8">
           <div className="flex flex-col gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -494,8 +494,8 @@ export default function QuizApp({ quizId }: Props) {
                   disabled={quizCompleted}
                   className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${
                     mode === m
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
+                      ? 'btn-primary'
+                      : 'btn-outline'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {m.charAt(0).toUpperCase() + m.slice(1)} Mode
@@ -516,7 +516,7 @@ export default function QuizApp({ quizId }: Props) {
             
             <button
               onClick={toggleTheme}
-              className="p-4 bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm rounded-2xl border border-white/30 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="p-4 glass-strong rounded-2xl hover-glow transition-all duration-200"
               aria-label="Toggle theme"
             >
               {isDark ? (
@@ -541,10 +541,10 @@ export default function QuizApp({ quizId }: Props) {
         />
 
         {/* Notes Section */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl border border-white/20 p-8 shadow-lg mt-8">
+        <div className="glass rounded-3xl p-8 shadow-lg mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">
-              <NotebookText className="h-6 w-6" />
+              <FileText className="h-6 w-6" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
               Notes for this question
@@ -552,7 +552,7 @@ export default function QuizApp({ quizId }: Props) {
           </div>
           <textarea
             placeholder="Write your notes and thoughts about this question..."
-            className="w-full p-6 border border-gray-200 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md text-lg"
+            className="input-field text-lg"
             rows={4}
             value={notes[currentQuestion.id] || ''}
             onChange={(e) => handleNoteChange(e.target.value)}
@@ -564,7 +564,7 @@ export default function QuizApp({ quizId }: Props) {
           <div className="text-center mt-8">
             <button
               onClick={handleSubmit}
-              className="px-12 py-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-3xl font-bold text-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="btn-secondary px-12 py-5 rounded-3xl font-bold text-xl hover-lift"
             >
               🎯 Submit Quiz
             </button>

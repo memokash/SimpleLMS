@@ -6,7 +6,9 @@ import { useTheme } from './ThemeContext'; // Re-enable if you have this
 import { 
   getQuestionBankStats, 
   searchQuestions, 
-  generateQuizFromBank 
+  generateQuizFromBank,
+  QuestionBankQuestion,
+  QuestionBankStats as QuestionBankServiceStats
 } from '../../lib/questionBankService';
 import { 
   Database, 
@@ -41,31 +43,25 @@ import {
   BarChart3
 } from 'lucide-react';
 
-interface QuestionBankStats {
-  totalQuestions: number;
+interface ExtendedQuestionBankStats extends QuestionBankServiceStats {
   bySpecialty: Record<string, number>;
   byDifficulty: Record<string, number>;
   byTopic: Record<string, number>;
   byCategory: Record<string, number>;
-  recentlyAdded: number;
+  // Additional variables for comprehensive stats
+  totalUsers: number;
+  averageQualityScore: number;
+  totalQuizzes: number;
+  popularQuestions: QuestionBankQuestion[];
+  aiGeneratedCount: number;
+  userGeneratedCount: number;
+  questionsByMonth: Record<string, number>;
+  topContributors: Array<{userId: string; name: string; count: number}>;
+  mostUsedQuestions: QuestionBankQuestion[];
+  lastUpdated: Date;
 }
 
-interface Question {
-  id: string;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-  topic: string;
-  specialty: string;
-  difficulty: string;
-  category: string;
-  createdBy: string;
-  createdAt: any;
-  timesUsed: number;
-  qualityScore: number;
-  aiGenerated: boolean;
-}
+// Using QuestionBankQuestion from service
 
 const QuestionBankDashboard = () => {
   const { user } = useAuth();
@@ -75,8 +71,8 @@ const QuestionBankDashboard = () => {
   
   // Critical: Add mounted state to prevent SSR issues
   const [mounted, setMounted] = useState(false);
-  const [stats, setStats] = useState<QuestionBankStats | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [stats, setStats] = useState<ExtendedQuestionBankStats | null>(null);
+  const [questions, setQuestions] = useState<QuestionBankQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -112,7 +108,7 @@ const QuestionBankDashboard = () => {
   });
 
   // Mock data fallbacks
-  const mockStats: QuestionBankStats = {
+  const mockStats: ExtendedQuestionBankStats = {
     totalQuestions: 1247,
     bySpecialty: {
       'General Medicine': 245,
@@ -142,25 +138,63 @@ const QuestionBankDashboard = () => {
       'Treatment Planning': 145,
       'Pharmacology': 81
     },
-    recentlyAdded: 23
+    recentlyAdded: 23,
+    categories: {
+      'Medical Knowledge': 456,
+      'Clinical Skills': 298,
+      'Diagnostic Reasoning': 267,
+      'Treatment Planning': 145,
+      'Pharmacology': 81
+    },
+    difficulties: {
+      'Easy': 412,
+      'Medium': 567,
+      'Hard': 268
+    },
+    communityContributions: 1247,
+    // Additional mock data for new variables
+    totalUsers: 156,
+    averageQualityScore: 8.2,
+    totalQuizzes: 89,
+    popularQuestions: [], // Will be populated with mockQuestions
+    aiGeneratedCount: 687,
+    userGeneratedCount: 560,
+    questionsByMonth: {
+      '2024-01': 45,
+      '2024-02': 52,
+      '2024-03': 67,
+      '2024-04': 71,
+      '2024-05': 89,
+      '2024-06': 94
+    },
+    topContributors: [
+      { userId: 'user1', name: 'Dr. Sarah Chen', count: 67 },
+      { userId: 'user2', name: 'Dr. Michael Rodriguez', count: 54 },
+      { userId: 'user3', name: 'Dr. Emily Thompson', count: 42 },
+      { userId: 'ai', name: 'AI Generator', count: 687 }
+    ],
+    mostUsedQuestions: [], // Will be populated with mockQuestions
+    lastUpdated: new Date()
   };
 
-  const mockQuestions: Question[] = [
+  const mockQuestions: QuestionBankQuestion[] = [
     {
       id: '1',
       question: 'A 45-year-old patient presents with chest pain radiating to the left arm. What is the most appropriate initial diagnostic test?',
       options: ['Chest X-ray', 'ECG', 'Echocardiogram', 'Cardiac catheterization'],
       correctAnswer: 1,
       explanation: 'ECG is the most appropriate initial test for suspected acute coronary syndrome, providing immediate information about cardiac rhythm and potential ST changes.',
-      topic: 'Acute Coronary Syndrome',
-      specialty: 'Cardiology',
-      difficulty: 'Intermediate',
       category: 'Diagnostic Reasoning',
+      specialty: 'Cardiology',
+      difficulty: 'Medium',
+      tags: ['cardiology', 'diagnosis'],
+      source: 'Community',
       createdBy: 'Dr. Smith',
-      createdAt: { toDate: () => new Date() },
-      timesUsed: 89,
-      qualityScore: 9,
-      aiGenerated: false
+      createdAt: new Date(),
+      upvotes: 89,
+      downvotes: 2,
+      verified: true,
+      reportCount: 0
     },
     {
       id: '2',
@@ -168,15 +202,17 @@ const QuestionBankDashboard = () => {
       options: ['ACE inhibitors', 'Beta-blockers', 'NSAIDs', 'Diuretics'],
       correctAnswer: 2,
       explanation: 'NSAIDs are contraindicated in severe heart failure as they can worsen fluid retention and reduce the effectiveness of ACE inhibitors and diuretics.',
-      topic: 'Heart Failure Management',
-      specialty: 'Cardiology',
-      difficulty: 'Advanced',
       category: 'Pharmacology',
+      specialty: 'Cardiology',
+      difficulty: 'Hard',
+      tags: ['cardiology', 'pharmacology'],
+      source: 'AI Generated',
       createdBy: 'AI Generator',
-      createdAt: { toDate: () => new Date() },
-      timesUsed: 67,
-      qualityScore: 8,
-      aiGenerated: true
+      createdAt: new Date(),
+      upvotes: 67,
+      downvotes: 1,
+      verified: true,
+      reportCount: 0
     },
     {
       id: '3',
@@ -184,15 +220,17 @@ const QuestionBankDashboard = () => {
       options: ['Haemophilus influenzae', 'Streptococcus pneumoniae', 'Mycoplasma pneumoniae', 'Legionella pneumophila'],
       correctAnswer: 1,
       explanation: 'Streptococcus pneumoniae remains the most common bacterial cause of community-acquired pneumonia in adults, especially in those over 65.',
-      topic: 'Pneumonia',
-      specialty: 'Internal Medicine',
-      difficulty: 'Beginner',
       category: 'Medical Knowledge',
+      specialty: 'Internal Medicine',
+      difficulty: 'Easy',
+      tags: ['internal medicine', 'infectious disease'],
+      source: 'Community',
       createdBy: 'Dr. Johnson',
-      createdAt: { toDate: () => new Date() },
-      timesUsed: 156,
-      qualityScore: 9,
-      aiGenerated: false
+      createdAt: new Date(),
+      upvotes: 156,
+      downvotes: 3,
+      verified: true,
+      reportCount: 0
     }
   ];
 
@@ -215,7 +253,25 @@ const QuestionBankDashboard = () => {
       
       const bankStats = await getQuestionBankStats();
       console.log('✅ Firebase stats loaded:', bankStats);
-      setStats(bankStats);
+      // Convert to ExtendedQuestionBankStats
+      const extendedStats: ExtendedQuestionBankStats = {
+        ...bankStats,
+        bySpecialty: bankStats.categories,
+        byDifficulty: bankStats.difficulties,
+        byTopic: {},
+        byCategory: bankStats.categories,
+        totalUsers: 0,
+        averageQualityScore: 0,
+        totalQuizzes: 0,
+        popularQuestions: [],
+        aiGeneratedCount: 0,
+        userGeneratedCount: bankStats.communityContributions,
+        questionsByMonth: {},
+        topContributors: [],
+        mostUsedQuestions: [],
+        lastUpdated: new Date()
+      };
+      setStats(extendedStats);
 
       const initialQuestions = await searchQuestions('', {});
       console.log('✅ Firebase questions loaded:', initialQuestions.length);
@@ -224,8 +280,15 @@ const QuestionBankDashboard = () => {
     } catch (error) {
       console.warn('⚠️ Firebase failed, using mock data fallback:', error);
       
+      // Update mock stats with populated arrays
+      const updatedMockStats = {
+        ...mockStats,
+        popularQuestions: mockQuestions.slice(0, 3),
+        mostUsedQuestions: mockQuestions.slice(0, 5)
+      };
+      
       // Use mock data as fallback
-      setStats(mockStats);
+      setStats(updatedMockStats);
       setQuestions(mockQuestions);
       
       // Set a non-blocking error message
@@ -258,7 +321,7 @@ const QuestionBankDashboard = () => {
       
       const filters = {
         specialty: selectedSpecialty || undefined,
-        difficulty: selectedDifficulty || undefined,
+        difficulty: selectedDifficulty ? [selectedDifficulty] : undefined,
         topic: selectedTopic || undefined,
         category: selectedCategory || undefined
       };
@@ -278,7 +341,7 @@ const QuestionBankDashboard = () => {
       if (searchTerm) {
         filteredQuestions = filteredQuestions.filter(q => 
           q.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.topic.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (q.tags && q.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))) ||
           q.explanation.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
@@ -320,7 +383,7 @@ const QuestionBankDashboard = () => {
     setGenerationResult(null);
 
     try {
-      console.log('🤖 Generating questions from content...');
+      console.log('🔍 Generating questions from content...');
       
       const response = await fetch('/api/ai/generate-quiz', {
         method: 'POST',
@@ -363,7 +426,9 @@ const QuestionBankDashboard = () => {
       // Provide mock generation result for demo purposes
       setGenerationResult({
         success: false,
-        message: `Generation failed: ${error.message}. Try again or check your connection.`,
+        message: `Generation failed: ${
+          error instanceof Error ? error.message : String(error)
+        }. Try again or check your connection.`,
         fallbackAvailable: true
       });
       
@@ -389,10 +454,14 @@ const QuestionBankDashboard = () => {
         excludeUsedRecently: true
       };
 
-      const generatedQuiz = await generateQuizFromBank(preferences);
+      const generatedQuiz = await generateQuizFromBank(
+        quizPrefs.category,
+        quizPrefs.questionCount,
+        quizPrefs.difficulty !== 'all' ? quizPrefs.difficulty : undefined
+      );
       console.log('✅ Quiz generated:', generatedQuiz);
       
-      alert(`✅ Quiz generated successfully!\n\n📝 ${generatedQuiz.questions.length} questions\n🎯 ${generatedQuiz.metadata.specialty}\n📊 ${generatedQuiz.metadata.difficulty} difficulty`);
+      alert(`✅ Quiz generated successfully!\n\n📝 ${generatedQuiz.questions.length} questions\n📊 ${quizPrefs.difficulty !== 'all' ? quizPrefs.difficulty : 'All Difficulties'} difficulty`);
       
     } catch (error) {
       console.warn('⚠️ Firebase quiz generation failed, using fallback:', error);
@@ -712,8 +781,11 @@ const QuestionBankDashboard = () => {
                           🎉 Generated {generationResult.questions.length} questions and saved to question bank!
                         </p>
                         <div className="max-h-48 overflow-y-auto space-y-3">
-                          {generationResult.questions.slice(0, 3).map((q, index) => (
-                            <div key={index} className="text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 p-4 rounded-xl">
+                          {(generationResult.questions as QuestionBankQuestion[]).slice(0, 3).map((q: QuestionBankQuestion, index: number) => (
+                            <div
+                              key={index}
+                              className="text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 p-4 rounded-xl"
+                            >
                               <strong>Q{index + 1}:</strong> {q.question}
                             </div>
                           ))}
@@ -778,6 +850,49 @@ const QuestionBankDashboard = () => {
                     </div>
                     <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stats.recentlyAdded}</div>
                     <div className="text-gray-600 dark:text-gray-300 font-medium">Added This Week</div>
+                  </div>
+                </div>
+                
+                {/* Extended Stats Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${getColorClasses('indigo')}`}>
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.totalUsers || 0}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">Total Users</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${getColorClasses('yellow')}`}>
+                      <Award className="w-6 h-6" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.averageQualityScore?.toFixed(1) || 0}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">Avg Quality</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${getColorClasses('green')}`}>
+                      <Play className="w-6 h-6" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.totalQuizzes || 0}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">Quizzes Created</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${getColorClasses('purple')}`}>
+                      <Brain className="w-6 h-6" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.aiGeneratedCount || 0}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">AI Generated</div>
+                  </div>
+                  
+                  <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg hover:shadow-xl dark:hover:shadow-yellow-500/40 transition-all duration-300 hover:scale-105 p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${getColorClasses('red')}`}>
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{stats.userGeneratedCount || 0}</div>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">User Generated</div>
                   </div>
                 </div>
               </>
@@ -873,8 +988,8 @@ const QuestionBankDashboard = () => {
                       <div className="flex-1">
                         <div className="flex items-center flex-wrap gap-3 mb-4">
                           <span className={`text-sm px-3 py-1 rounded-full font-medium ${
-                            question.difficulty === 'Beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
-                            question.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                            question.difficulty === 'Easy' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                            question.difficulty === 'Medium' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
                             'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                           }`}>
                             {question.difficulty}
@@ -882,15 +997,17 @@ const QuestionBankDashboard = () => {
                           <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full font-medium">
                             {question.specialty}
                           </span>
-                          <span className="text-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full font-medium">
-                            {question.topic}
-                          </span>
+                          {question.tags && question.tags.length > 0 && (
+                            <span className="text-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full font-medium">
+                              {question.tags[0]}
+                            </span>
+                          )}
                           {question.category && (
                             <span className="text-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-3 py-1 rounded-full font-medium flex items-center">
                               📂 {question.category}
                             </span>
                           )}
-                          {question.aiGenerated && (
+                          {question.source === 'AI Generated' && (
                             <span className="text-sm bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full font-medium flex items-center">
                               <Brain className="w-4 h-4 mr-1" />
                               AI Generated
@@ -924,10 +1041,11 @@ const QuestionBankDashboard = () => {
                         )}
 
                         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 flex-wrap gap-6">
-                          <span className="flex items-center">📊 Used {question.timesUsed} times</span>
-                          <span className="flex items-center">⭐ Quality: {question.qualityScore}/10</span>
+                          <span className="flex items-center">👍 {question.upvotes} upvotes</span>
+                          <span className="flex items-center">👎 {question.downvotes} downvotes</span>
                           <span className="flex items-center">👤 {question.createdBy}</span>
-                          <span className="flex items-center">📅 {question.createdAt?.toDate?.()?.toLocaleDateString()}</span>
+                          <span className="flex items-center">📅 {question.createdAt?.toLocaleDateString?.() || new Date(question.createdAt).toLocaleDateString()}</span>
+                          {question.verified && <span className="flex items-center text-green-600 dark:text-green-400">✓ Verified</span>}
                         </div>
                       </div>
 

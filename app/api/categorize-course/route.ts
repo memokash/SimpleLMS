@@ -1,6 +1,8 @@
 // app/api/ai/categorize-course/route.ts 
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { doc, setDoc, updateDoc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../../lib/firebase';
 
 // Rate limiting (simple in-memory implementation - use Redis for production)
 const rateLimitMap = new Map();
@@ -9,12 +11,34 @@ const RATE_LIMIT_MAX_REQUESTS = 60; // 60 requests per minute
 
 // Category validation
 const VALID_CATEGORIES = [
-  'Immunology', 'Dermatology', 'Cardiology', 'Neurology', 'Emergency Medicine',
-  'Internal Medicine', 'Surgery', 'Pediatrics', 'Psychiatry', 'Radiology',
-  'Obstetrics & Gynecology', 'Orthopedics', 'Anesthesiology', 'Pathology',
-  'Pharmacology', 'Family Medicine', 'Ophthalmology', 'Otolaryngology',
-  'Urology', 'Oncology', 'Endocrinology', 'Gastroenterology', 'Pulmonology',
-  'Nephrology', 'Infectious Disease', 'Hematology', 'Rheumatology', 'Medical Knowledge'
+  // Primary Medical Branches
+  'Cardiology', 'Pulmonology', 'Neurology', 'Gastroenterology', 'Endocrinology',
+  'Nephrology', 'Hematology', 'Oncology', 'Rheumatology', 'Immunology',
+  'Dermatology', 'Infectious Disease', 'Emergency Medicine', 'Critical Care',
+  
+  // Surgical Specialties
+  'General Surgery', 'Cardiac Surgery', 'Neurosurgery', 'Orthopedic Surgery',
+  'Plastic Surgery', 'Vascular Surgery', 'Thoracic Surgery', 'Transplant Surgery',
+  
+  // Primary Care & Specialty Medicine
+  'Internal Medicine', 'Family Medicine', 'Pediatrics', 'Geriatrics',
+  'Obstetrics & Gynecology', 'Psychiatry', 'Physical Medicine & Rehabilitation',
+  
+  // Diagnostic Specialties
+  'Radiology', 'Pathology', 'Laboratory Medicine', 'Nuclear Medicine',
+  
+  // Procedural Specialties
+  'Anesthesiology', 'Pain Medicine', 'Interventional Radiology',
+  
+  // Organ System Specialties
+  'Ophthalmology', 'Otolaryngology', 'Urology', 'Orthopedics',
+  
+  // Basic Sciences & Foundational
+  'Biochemistry', 'Physiology', 'Anatomy', 'Pharmacology', 'Microbiology',
+  'Immunology', 'Genetics', 'Molecular Biology', 'Public Health',
+  
+  // General/Other
+  'Medical Knowledge', 'Clinical Skills', 'Medical Ethics', 'Research Methods'
 ];
 
 // Enhanced system prompt for better categorization
@@ -31,33 +55,31 @@ CATEGORIZATION GUIDELINES:
 5. For interdisciplinary content, choose the specialty most relevant to the learning objectives
 
 SPECIALTY DEFINITIONS:
-- Cardiology: Heart, blood vessels, cardiovascular system
-- Neurology: Brain, nervous system, neurological disorders
-- Dermatology: Skin, hair, nails, related disorders
-- Emergency Medicine: Acute care, trauma, emergency procedures
-- Internal Medicine: Adult general medicine, systemic diseases
-- Surgery: Surgical procedures, operative techniques, perioperative care
-- Pediatrics: Children's health, child development, pediatric diseases
-- Psychiatry: Mental health, behavioral disorders, psychological conditions
-- Radiology: Medical imaging, diagnostic procedures, imaging interpretation
-- Obstetrics & Gynecology: Women's health, pregnancy, reproductive system
-- Orthopedics: Bones, joints, musculoskeletal system
-- Anesthesiology: Anesthesia, pain management, perioperative care
-- Pathology: Disease diagnosis, laboratory medicine, tissue analysis
-- Pharmacology: Medications, drug interactions, therapeutic principles
-- Family Medicine: Primary care, comprehensive healthcare, preventive medicine
-- Ophthalmology: Eyes, vision, ocular diseases
-- Otolaryngology: Ear, nose, throat, head and neck
-- Urology: Urinary system, male reproductive system
-- Oncology: Cancer, tumors, oncological treatments
-- Endocrinology: Hormones, diabetes, metabolic disorders
-- Gastroenterology: Digestive system, liver, pancreas
+PRIMARY MEDICAL BRANCHES:
+- Cardiology: Heart, blood vessels, cardiovascular system, cardiac diseases
 - Pulmonology: Lungs, respiratory system, breathing disorders
-- Nephrology: Kidneys, renal system, dialysis
-- Infectious Disease: Infections, antimicrobials, epidemiology
-- Hematology: Blood, bleeding disorders, blood cancers
-- Rheumatology: Autoimmune diseases, arthritis, connective tissue
-- Immunology: Immune system, allergies, immunological disorders
+- Neurology: Brain, nervous system, neurological disorders, CNS diseases
+- Gastroenterology: Digestive system, GI tract, liver, pancreas
+- Endocrinology: Hormones, endocrine glands, diabetes, metabolic disorders
+- Nephrology: Kidneys, renal system, dialysis, fluid/electrolyte balance
+- Hematology: Blood disorders, anemia, clotting disorders, blood cancers
+- Oncology: Cancer diagnosis, treatment, chemotherapy, tumor biology
+- Rheumatology: Autoimmune diseases, arthritis, connective tissue disorders
+- Dermatology: Skin, hair, nails, dermatological conditions
+
+SURGICAL SPECIALTIES:
+- General Surgery: Abdominal surgery, trauma surgery, basic surgical principles
+- Cardiac Surgery: Heart surgery, bypass procedures, valve repair
+- Neurosurgery: Brain and spine surgery, CNS surgical procedures
+- Orthopedic Surgery: Bone, joint, musculoskeletal surgical procedures
+
+BASIC SCIENCES:
+- Biochemistry: Molecular processes, metabolism, enzyme function
+- Physiology: Body function, organ systems, homeostasis
+- Anatomy: Body structure, anatomical relationships, morphology
+- Pharmacology: Drug action, mechanisms, therapeutic principles
+- Microbiology: Bacteria, viruses, fungi, infectious agents
+- Pathology: Disease mechanisms, tissue analysis, diagnosis
 
 RESPONSE FORMAT:
 Return ONLY the category name exactly as listed above. No additional text, explanations, or formatting.`;
@@ -66,6 +88,14 @@ interface RequestBody {
   title?: string;
   description?: string;
   courseName?: string;
+  questions?: Array<{
+    id: string;
+    question: string;
+    questionTitle?: string;
+    category?: string;
+    options?: string[];
+  }>;
+  courseId?: string;
 }
 
 interface CategoryResponse {
@@ -73,6 +103,7 @@ interface CategoryResponse {
   confidence: 'high' | 'medium' | 'low' | 'corrected';
   rawResponse?: string;
   processingTime: number;
+  savedToFirebase?: boolean;
   fallbackUsed?: boolean;
 }
 
@@ -89,7 +120,7 @@ function checkRateLimit(clientId: string): boolean {
   
   const requests = rateLimitMap.get(clientId);
   // Remove old requests outside the window
-  const recentRequests = requests.filter(timestamp => timestamp > windowStart);
+  const recentRequests = requests.filter((timestamp: number) => timestamp > windowStart);
   
   if (recentRequests.length >= RATE_LIMIT_MAX_REQUESTS) {
     return false;
@@ -108,22 +139,43 @@ function validateCourseContent(body: RequestBody): {
   content: string;
   error?: string;
 } {
-  const { title, description, courseName } = body;
+  const { title, description, courseName, questions } = body;
   
-  if (!title && !description && !courseName) {
+  if (!title && !description && !courseName && (!questions || questions.length === 0)) {
     return {
       isValid: false,
       content: '',
-      error: 'At least one of title, description, or courseName is required'
+      error: 'At least one of title, description, courseName, or questions is required'
     };
   }
   
   // Build content string with proper formatting
   const contentParts = [
-    title && title.trim() && `Title: ${title.trim()}`,
+    title && title.trim() && `Course Title: ${title.trim()}`,
     courseName && courseName.trim() && `Course Name: ${courseName.trim()}`,
-    description && description.trim() && `Description: ${description.trim()}`
+    description && description.trim() && `Course Description: ${description.trim()}`
   ].filter(Boolean);
+
+  // Add questions content for analysis
+  if (questions && questions.length > 0) {
+    const questionContent = questions
+      .slice(0, 5) // Analyze first 5 questions to avoid token limits
+      .map((q, index) => {
+        const parts = [`Question ${index + 1}: ${q.question.trim()}`];
+        if (q.questionTitle) {
+          parts.unshift(`Question Title: ${q.questionTitle.trim()}`);
+        }
+        if (q.options && q.options.length > 0) {
+          parts.push(`Options: ${q.options.slice(0, 4).join(', ')}`);
+        }
+        return parts.join('\n');
+      })
+      .join('\n\n');
+    
+    if (questionContent.trim()) {
+      contentParts.push(`Sample Questions:\n${questionContent}`);
+    }
+  }
   
   const content = contentParts.join('\n');
   
@@ -138,7 +190,8 @@ function validateCourseContent(body: RequestBody): {
   if (content.length > 4000) {
     // Truncate if too long, keeping the most important parts
     const truncatedContent = contentParts
-      .map(part => part.length > 1000 ? part.substring(0, 1000) + '...' : part)
+      .filter((part): part is string => typeof part === 'string')
+      .map((part: string) => part.length > 1000 ? part.substring(0, 1000) + '...' : part)
       .join('\n');
     
     return {
@@ -273,6 +326,48 @@ async function categorizeWithOpenAI(content: string): Promise<{
   }
 }
 
+/**
+ * Save categorization results to Firebase
+ */
+async function saveCategoryToFirebase(
+  courseId: string, 
+  category: string, 
+  confidence: string,
+  requestData: RequestBody
+): Promise<boolean> {
+  try {
+    console.log(`💾 Saving category "${category}" to Firebase for course ${courseId}`);
+
+    // Update course document with the new category
+    const courseRef = doc(db, 'courses', courseId);
+    await updateDoc(courseRef, {
+      category: category,
+      categoryConfidence: confidence,
+      categorizedAt: serverTimestamp(),
+      categorizedBy: 'OpenAI'
+    });
+
+    // Also save to categorization log for analytics
+    const categorizationLogRef = collection(db, 'categorization_logs');
+    await addDoc(categorizationLogRef, {
+      courseId,
+      category,
+      confidence,
+      courseTitle: requestData.title,
+      courseName: requestData.courseName,
+      questionCount: requestData.questions?.length || 0,
+      timestamp: serverTimestamp(),
+      method: 'OpenAI-GPT'
+    });
+
+    console.log(`✅ Successfully saved category "${category}" to Firebase`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error saving to Firebase:', error);
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
@@ -352,6 +447,17 @@ export async function POST(request: NextRequest) {
       ...(result.rawResponse && { rawResponse: result.rawResponse }),
       ...(result.fallbackUsed && { fallbackUsed: result.fallbackUsed })
     };
+
+    // Save to Firebase if courseId is provided
+    if (requestData.courseId) {
+      const saved = await saveCategoryToFirebase(
+        requestData.courseId, 
+        result.category, 
+        result.confidence, 
+        requestData
+      );
+      response.savedToFirebase = saved;
+    }
 
     return NextResponse.json(response, {
       headers: {

@@ -27,16 +27,12 @@ const AuthModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Debug logging
-  console.log('AuthModal render:', { isOpen, isSignUp, email, loading });
-
   if (!isOpen) {
     return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', { isSignUp, email, password });
     
     setLoading(true);
     setError('');

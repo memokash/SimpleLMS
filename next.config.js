@@ -2,34 +2,54 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Only use static export if you need it
-  // output: 'export',
-  
-  // Handle build errors
-  typescript: {
-    // Only if you need to ignore TypeScript errors during build
-    // ignoreBuildErrors: false,
-  },
-  
-  eslint: {
-    // Only if you need to ignore ESLint errors during build
-    // ignoreDuringBuilds: false,
-  },
-
-  // Add experimental features if needed
-  experimental: {
-    // esmExternals: true,
-  },
-
-  // Improve build performance
+  // Production optimizations
   swcMinify: true,
+  compress: true,
   
   // Handle trailing slashes
   trailingSlash: false,
   
-  // Ensure proper image handling
+  // Image optimization for production
   images: {
-    unoptimized: true, // Required for static export
+    domains: ['firebasestorage.googleapis.com', 'lh3.googleusercontent.com'],
+    formats: ['image/webp', 'image/avif'],
+  },
+
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'geolocation=(), microphone=(), camera=()',
+          },
+        ],
+      },
+    ];
+  },
+
+  // Environment-specific settings
+  env: {
+    CUSTOM_KEY: process.env.NODE_ENV,
+  },
+
+  // Build-time optimizations
+  experimental: {
+    scrollRestoration: true,
   },
 };
 

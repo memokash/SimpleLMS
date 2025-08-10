@@ -1,0 +1,431 @@
+/* SimpleLMS Design System - Simplified Working Version */
+
+/* Component Classes - Essential for Dashboard */
+
+/* Cards */
+.medical-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(16, 24, 40, 0.1), 0 4px 6px -4px rgba(16, 24, 40, 0.1);
+  transition: box-shadow 0.3s, transform 0.3s;
+  border: 1px solid #e5e7eb;
+}
+@media (prefers-color-scheme: dark) {
+  .medical-card {
+    background-color: #1e293b;
+    border-color: #374151;
+  }
+}
+.medical-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(16, 24, 40, 0.15), 0 8px 10px -6px rgba(16, 24, 40, 0.15);
+}
+
+.medical-card-hover {
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(16, 24, 40, 0.1), 0 4px 6px -4px rgba(16, 24, 40, 0.1);
+  transition: box-shadow 0.3s, transform 0.3s;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+@media (prefers-color-scheme: dark) {
+  .medical-card-hover {
+    background-color: #1e293b;
+    border-color: #374151;
+  }
+}
+.medical-card-hover:hover {
+  box-shadow: 0 20px 25px -5px rgba(16, 24, 40, 0.15), 0 8px 10px -6px rgba(16, 24, 40, 0.15);
+  transform: scale(1.05) translateY(-0.25rem);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(to right, #2563eb, #4f46e5); /* from-blue-600 to-indigo-600 */
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(16, 24, 40, 0.1);
+  transition: all 0.2s;
+  outline: none;
+  border: none;
+  position: relative;
+}
+.btn-primary:hover {
+  background: linear-gradient(to right, #1d4ed8, #4338ca); /* hover:from-blue-700 hover:to-indigo-700 */
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.15);
+}
+.btn-primary:focus {
+  outline: 2px solid #3b82f6; /* focus:ring-2 focus:ring-blue-500 */
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: linear-gradient(to right, #9333ea, #ec4899); /* from-purple-600 to-pink-600 */
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(16, 24, 40, 0.1);
+  transition: all 0.2s;
+  outline: none;
+  border: none;
+  position: relative;
+}
+.btn-secondary:hover {
+  background: linear-gradient(to right, #7e22ce, #db2777); /* hover:from-purple-700 hover:to-pink-700 */
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.15);
+}
+.btn-secondary:focus {
+  outline: 2px solid #a21caf; /* focus:ring-2 focus:ring-purple-500 */
+  outline-offset: 2px;
+}
+
+.btn-outline {
+  border: 2px solid #d1d5db; /* border-gray-300 */
+  color: #374151; /* text-gray-700 */
+  background: transparent;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+  outline: none;
+  position: relative;
+}
+@media (prefers-color-scheme: dark) {
+  .btn-outline {
+    border-color: #4b5563; /* dark:border-gray-600 */
+    color: #d1d5db; /* dark:text-gray-300 */
+  }
+}
+.btn-outline:hover {
+  background: #f9fafb; /* hover:bg-gray-50 */
+}
+@media (prefers-color-scheme: dark) {
+  .btn-outline:hover {
+    background: #374151; /* dark:hover:bg-gray-700 */
+  }
+}
+.btn-outline:focus {
+  outline: 2px solid #6b7280; /* focus:ring-2 focus:ring-gray-500 */
+  outline-offset: 2px;
+}
+
+/* Backgrounds */
+.bg-medical-gradient {
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 50%, #faf5ff 100%);
+}
+
+.bg-medical-dark {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #312e81 100%);
+}
+
+/* Text */
+.text-primary {
+  color: #2563eb; /* text-blue-600 */
+}
+/* The following block had mismatched and misplaced curly braces and selectors, which are now removed for valid CSS. 
+   All necessary classes are defined later in the file, so this block is not needed and is removed to fix the error. */
+
+.text-secondary {
+  color: #9333ea; /* text-purple-600 */
+}
+@media (prefers-color-scheme: dark) {
+  .text-secondary {
+    color: #a78bfa; /* dark:text-purple-400 */
+  }
+}
+
+.text-heading {
+  color: #111827; /* text-gray-900 */
+  font-weight: bold;
+}
+@media (prefers-color-scheme: dark) {
+  .text-heading {
+    color: #fff; /* dark:text-white */
+  }
+}
+
+.text-body {
+  color: #374151; /* text-gray-700 */
+}
+@media (prefers-color-scheme: dark) {
+  .text-body {
+    color: #d1d5db; /* dark:text-gray-300 */
+  }
+}
+
+.text-muted {
+  color: #6b7280; /* text-gray-500 */
+}
+@media (prefers-color-scheme: dark) {
+  .text-muted {
+    color: #9ca3af; /* dark:text-gray-400 */
+  }
+}
+
+/* Form Elements */
+.input-field {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  background: #fff;
+  color: #111827; /* text-gray-900 */
+  border-radius: 0.75rem; /* rounded-xl */
+  transition: all 0.2s;
+  outline: none;
+}
+.input-field:focus {
+  outline: 2px solid #3b82f6; /* focus:ring-2 focus:ring-blue-500 */
+  outline-offset: 2px;
+  border-color: transparent;
+}
+@media (prefers-color-scheme: dark) {
+  .input-field {
+    border-color: #4b5563; /* dark:border-gray-600 */
+    background: #1f2937; /* dark:bg-gray-800 */
+    color: #fff; /* dark:text-white */
+  }
+}
+
+/* Search Field */
+.search-field {
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  background: #fff;
+  color: #111827; /* text-gray-900 */
+  border-radius: 0.75rem; /* rounded-xl */
+  transition: all 0.2s;
+  outline: none;
+}
+.search-field:focus {
+  outline: 2px solid #a21caf; /* focus:ring-2 focus:ring-purple-500 */
+  outline-offset: 2px;
+  border-color: transparent;
+}
+@media (prefers-color-scheme: dark) {
+  .search-field {
+    border-color: #4b5563; /* dark:border-gray-600 */
+    background: #1f2937; /* dark:bg-gray-800 */
+    color: #fff; /* dark:text-white */
+  }
+}
+
+/* Badges */
+.badge-primary {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500;
+  background: #dbeafe; /* bg-blue-100 */
+  color: #1e40af; /* text-blue-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .badge-primary {
+    background: rgba(30, 58, 138, 0.3); /* dark:bg-blue-900/30 */
+    color: #93c5fd; /* dark:text-blue-300 */
+  }
+}
+
+.badge-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500;
+  background: #f3e8ff; /* bg-purple-100 */
+  color: #6d28d9; /* text-purple-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .badge-secondary {
+    background: rgba(76, 29, 149, 0.3); /* dark:bg-purple-900/30 */
+    color: #c4b5fd; /* dark:text-purple-300 */
+  }
+}
+
+.badge-success {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 500;
+  background: #d1fae5; /* bg-green-100 */
+  color: #065f46; /* text-green-800 */
+}
+@media (prefers-color-scheme: dark) {
+  .badge-success {
+    background: rgba(6, 78, 59, 0.3); /* dark:bg-green-900/30 */
+    color: #6ee7b7; /* dark:text-green-300 */
+  }
+}
+
+/* Glass Effects */
+.glass {
+  backdrop-filter: blur(4px);
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(229,231,235,0.5);
+}
+@media (prefers-color-scheme: dark) {
+  .glass {
+    background: rgba(31,41,55,0.7); /* dark:bg-gray-800/70 */
+    border: 1px solid rgba(55,65,81,0.5); /* dark:border-gray-700/50 */
+  }
+}
+
+.glass-strong {
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(229,231,235,0.6);
+}
+@media (prefers-color-scheme: dark) {
+  .glass-strong {
+    background: rgba(31,41,55,0.8); /* dark:bg-gray-800/80 */
+    border: 1px solid rgba(55,65,81,0.6); /* dark:border-gray-700/60 */
+  }
+}
+
+/* Hover Effects */
+.hover-glow {
+  transition: box-shadow 0.2s;
+}
+.hover-glow:hover {
+  box-shadow: 0 10px 15px -3px rgba(16, 24, 40, 0.2), 0 4px 6px -4px rgba(16, 24, 40, 0.2);
+}
+
+/* Yellow Glow Effects for Featured Courses */
+.glow {
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.3), 0 0 40px rgba(251, 191, 36, 0.2);
+}
+
+.group:hover .glow {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.3), 0 0 40px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.5), 0 0 60px rgba(251, 191, 36, 0.3);
+  }
+}
+
+/* Reactive tile hover animations */
+.reactive-tile {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.reactive-tile:hover {
+  transform: scale(1.05) translateY(-8px);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 15px -3px rgba(250, 204, 21, 0.2),
+    0 0 0 1px rgba(251, 191, 36, 0.1);
+}
+
+/* Enhanced yellow gradient effects */
+.yellow-glow-border {
+  border: 2px solid transparent;
+  background-image: linear-gradient(white, white), linear-gradient(45deg, #fbbf24, #f59e0b, #d97706);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .yellow-glow-border {
+    background-image: linear-gradient(#1f2937, #1f2937), linear-gradient(45deg, #fbbf24, #f59e0b, #d97706);
+  }
+}
+
+/* Utility Classes for Dashboard */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Navigation Items */
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0.8); /* White with transparency */
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item-active {
+  background-color: rgba(59, 130, 246, 0.2); /* Blue background with transparency */
+  color: white;
+  font-weight: 600;
+}
+
+/* Mobile navigation adjustments */
+.nav-item.block {
+  display: block;
+  padding: 0.75rem 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .medical-card {
+    border-radius: 0.75rem; /* rounded-xl */
+  }
+  
+  .btn-primary, .btn-secondary, .btn-outline {
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem;
+    font-size: 0.875rem; /* text-sm */
+  }
+
+  .line-clamp-2 {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  
+  .line-clamp-3 {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}

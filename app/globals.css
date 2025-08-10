@@ -2,11 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import SimpleLMS Design System - Simplified Version */
+@import url('../styles/design-system-simple.css');
+
 /* Enhanced Styles for Medical Education App */
 
 /* Smooth transitions for theme switching */
 * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Reactive Tiles with Yellow Glow */
+.reactive-tile {
+  @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg transition-all duration-300 cursor-pointer;
+}
+
+.reactive-tile:hover {
+  @apply shadow-xl dark:shadow-yellow-500/40 transform hover:scale-105 border-yellow-400/50 dark:border-yellow-400/60;
+  box-shadow: 0 10px 25px 0 rgba(234, 179, 8, 0.3);
+}
+
+.reactive-tile:active {
+  @apply transform scale-95;
+}
+
+/* Gradient Titles */
+.gradient-title {
+  @apply bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 dark:from-yellow-400 dark:via-orange-400 dark:to-red-400 bg-clip-text text-transparent font-bold;
+}
+
+.gradient-title-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent font-bold;
+}
+
+.gradient-title-secondary {
+  @apply bg-gradient-to-r from-green-600 to-blue-600 dark:from-lime-400 dark:to-cyan-400 bg-clip-text text-transparent font-bold;
+}
+
+.gradient-title-accent {
+  @apply bg-gradient-to-r from-pink-600 to-violet-600 dark:from-orange-400 dark:to-pink-400 bg-clip-text text-transparent font-bold;
+}
+
+/* Improved Light Theme Contrast */
+.light-theme-text {
+  @apply text-gray-900;
+}
+
+.light-theme-bg {
+  @apply bg-white;
+}
+
+.light-theme-border {
+  @apply border-gray-300;
+}
+
+.light-theme-muted {
+  @apply text-gray-700;
+}
+
+.light-theme-card {
+  @apply bg-white shadow-lg border border-gray-200;
+}
+
+/* Enhanced Dark Theme */
+.dark .dark-theme-text {
+  @apply text-gray-100;
+}
+
+.dark .dark-theme-bg {
+  @apply bg-gray-900;
+}
+
+.dark .dark-theme-border {
+  @apply border-gray-700;
+}
+
+.dark .dark-theme-muted {
+  @apply text-gray-300;
+}
+
+.dark .dark-theme-card {
+  @apply bg-gray-800 shadow-xl shadow-yellow-500/20 border border-yellow-500/30;
+}
+
+/* Better button contrast */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+}
+
+.dark .btn-primary {
+  @apply bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-medium;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600;
 }
 
 /* Dark mode yellow glow effect */

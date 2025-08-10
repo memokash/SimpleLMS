@@ -239,7 +239,7 @@ const StudyGroupsPage = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="text-sm font-medium text-gray-700">{group.avgRating}</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{group.avgRating}</span>
                       </div>
                     </div>
 
@@ -247,13 +247,13 @@ const StudyGroupsPage = () => {
 
                     <div className="space-y-2 mb-4">
                       {group.meetingTime && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                           <Clock className="h-4 w-4" />
                           {group.meetingTime}
                         </div>
                       )}
                       {group.location && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                           <MapPin className="h-4 w-4" />
                           {group.location}
                         </div>
@@ -402,39 +402,55 @@ const StudyGroupsPage = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Meeting Schedule</label>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Meeting Schedule</label>
                   <input
                     type="text"
                     placeholder="e.g., Wednesdays 7:00 PM"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                      isDark 
+                        ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                        : 'border-gray-200 bg-white text-gray-900 placeholder-gray-500'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Location</label>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Location</label>
                   <input
                     type="text"
                     placeholder="e.g., Library Room 204 or Virtual"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                      isDark 
+                        ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                        : 'border-gray-200 bg-white text-gray-900 placeholder-gray-500'
+                    }`}
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Max Members</label>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Max Members</label>
                   <input
                     type="number"
                     placeholder="15"
                     min="2"
                     max="50"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                      isDark 
+                        ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                        : 'border-gray-200 bg-white text-gray-900 placeholder-gray-500'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">Privacy</label>
-                  <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Privacy</label>
+                  <select className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    isDark 
+                      ? 'border-gray-600 bg-gray-700 text-white' 
+                      : 'border-gray-200 bg-white text-gray-900'
+                  }`}>
                     <option value="public">Public - Anyone can join</option>
                     <option value="private">Private - Invite only</option>
                   </select>
@@ -442,24 +458,32 @@ const StudyGroupsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">Tags (comma separated)</label>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Tags (comma separated)</label>
                 <input
                   type="text"
                   placeholder="e.g., ECG, Clinical Cases, USMLE"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    isDark 
+                      ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                      : 'border-gray-200 bg-white text-gray-900 placeholder-gray-500'
+                  }`}
                 />
               </div>
 
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all transform hover:scale-105"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   Create Study Group
                 </button>
                 <button
                   type="button"
-                  className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+                  className={`px-6 py-3 border rounded-xl transition-all duration-200 ${
+                    isDark 
+                      ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                      : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
                   Cancel
                 </button>

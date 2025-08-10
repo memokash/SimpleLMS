@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-// import { useUserStats } from '../hooks/useUserStats'; // Commented out for safety
-// import { useTheme } from './ThemeContext'; // Commented out for safety
+import { getUserStats, UserStats } from '../../lib/courseService';
 import {
   BookOpenCheck,
   FileText,
@@ -13,7 +12,6 @@ import {
   Lightbulb,
   Stethoscope,
   BrainCircuit,
-  NotebookText,
   BookOpen,
   Gauge,
   UserCog,
@@ -94,31 +92,28 @@ export default function UserDashboard() {
         setMounted(true);
         setError(null);
 
-        // Try to load real user stats (replace with your actual hook/API call)
+        // Load real user stats from Firebase
         try {
-          // Uncomment and modify this when your hooks are working:
-          // const { stats: realStats, loading: statsLoading } = useUserStats();
-          // if (!statsLoading && realStats) {
-          //   setStats(realStats);
-          // }
-          
-          // For now, simulate loading with mock data
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // You can replace this with actual API calls
-          if (user) {
-            // Mock personalized stats based on user
-            setStats({
-              totalCourses: 15,
-              completed: Math.floor(Math.random() * 10) + 5,
-              inProgress: Math.floor(Math.random() * 5) + 2,
-              avgScore: Math.floor(Math.random() * 20) + 75
-            });
+          if (user?.uid) {
+            const realStats = await getUserStats(user.uid);
+            if (realStats) {
+              setStats({
+                totalCourses: (realStats.coursesStarted + realStats.coursesCompleted) || 0,
+                completed: realStats.coursesCompleted || 0,
+                inProgress: realStats.coursesStarted || 0,
+                avgScore: realStats.averageScore || 0
+              });
+            }
           }
-          
-        } catch (hookError) {
-          console.warn('Hook error, using fallback data:', hookError);
-          // Keep using mock data as fallback
+        } catch (statsError) {
+          console.warn('Failed to load user stats, using defaults:', statsError);
+          // Use default empty stats instead of random mock data
+          setStats({
+            totalCourses: 0,
+            completed: 0,
+            inProgress: 0,
+            avgScore: 0
+          });
         }
 
       } catch (error) {
@@ -244,7 +239,7 @@ export default function UserDashboard() {
     },
     {
       href: '/reading-resources',
-      icon: NotebookText,
+      icon: FileText,
       title: 'Reading Resources',
       description: 'Save and annotate medical articles and studies',
       stats: 'Save articles here',
@@ -317,7 +312,7 @@ export default function UserDashboard() {
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl gradient-title">
               Welcome back, {user?.displayName || user?.email?.split('@')[0] || 'Medical Student'}! 👋
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-200">
@@ -349,7 +344,7 @@ export default function UserDashboard() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="reactive-tile p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('blue')}`}>
                 <BookOpen className="h-6 w-6" />
@@ -360,7 +355,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Total Courses</p>
           </div>
 
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="reactive-tile p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('green')}`}>
                 <Award className="h-6 w-6" />
@@ -371,7 +366,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Completed</p>
           </div>
 
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="reactive-tile p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('purple')}`}>
                 <Target className="h-6 w-6" />
@@ -382,7 +377,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">In Progress</p>
           </div>
 
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          <div className="reactive-tile p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('yellow')}`}>
                 <Gauge className="h-6 w-6" />
@@ -401,7 +396,7 @@ export default function UserDashboard() {
           <div className="space-y-8">
             {/* Quick Actions */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+              <h2 className="text-2xl gradient-title-primary mb-6 flex items-center gap-3">
                 <Zap className="h-6 w-6 text-yellow-500" />
                 Quick Actions
               </h2>
@@ -410,7 +405,7 @@ export default function UserDashboard() {
                   const IconComponent = action.icon;
                   return (
                     <Link key={action.href} href={action.href}>
-                      <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                      <div className="group reactive-tile p-6 cursor-pointer">
                         <div className="flex items-center gap-4">
                           <div className={`p-3 rounded-xl ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300`}>
                             <IconComponent className="h-6 w-6" />
@@ -478,7 +473,7 @@ export default function UserDashboard() {
           <div className="space-y-8">
             {/* Community Tools */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+              <h2 className="text-2xl gradient-title-secondary mb-6 flex items-center gap-3">
                 <Users className="h-6 w-6 text-green-500" />
                 Community Tools
               </h2>

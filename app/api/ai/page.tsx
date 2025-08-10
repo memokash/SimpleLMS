@@ -1,6 +1,5 @@
 // app/ai/page.tsx
 import Link from 'next/link';
-import DashboardNavigation from '../../components/DashboardNavigation';
 import { Brain, Zap, Database, Settings, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function AIToolsIndex() {
@@ -44,9 +43,7 @@ export default function AIToolsIndex() {
   ];
 
   return (
-    <>
-      <DashboardNavigation />
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-slate-50 to-blue-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,14 +66,14 @@ export default function AIToolsIndex() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {aiTools.map((tool, index) => {
               const IconComponent = tool.icon;
-              const colorClasses = {
+              const colorClasses: Record<string, string> = {
                 purple: 'from-purple-500 to-purple-600 shadow-purple-200/50',
                 blue: 'from-blue-500 to-blue-600 shadow-blue-200/50',
                 yellow: 'from-yellow-500 to-yellow-600 shadow-yellow-200/50',
                 green: 'from-green-500 to-green-600 shadow-green-200/50'
               };
               
-              const statusClasses = {
+              const statusClasses: Record<string, string> = {
                 'Available': 'bg-green-100 text-green-700 border-green-200',
                 'Active': 'bg-blue-100 text-blue-700 border-blue-200',
                 'Coming Soon': 'bg-gray-100 text-gray-600 border-gray-200'
@@ -185,7 +182,6 @@ export default function AIToolsIndex() {
           </div>
         </div>
       </div>
-    </>
   );
 }
 

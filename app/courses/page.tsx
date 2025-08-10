@@ -1,11 +1,5 @@
-import CoursesDashboard from '../components/CoursesDashboard';
-import DashboardNavigation from '../components/DashboardNavigation';
+import CoursesDashboardOptimized from '../components/CoursesDashboardOptimized';
 
 export default function CoursesPage() {
-  return (
-    <>
-      <DashboardNavigation />
-      <CoursesDashboard />
-    </>
-  );
+  return <CoursesDashboardOptimized />;
 }

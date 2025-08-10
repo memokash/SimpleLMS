@@ -1,5 +1,6 @@
 // lib/stripe.ts
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import StripeSDK from 'stripe';
 
 // Stripe types for product plans
 export type PlanType = 'FREE' | 'PRO' | 'PREMIUM';
@@ -10,6 +11,11 @@ interface Plan {
   features: string[];
   stripePriceId: string | null;
 }
+
+// Initialize server-side Stripe
+export const stripe = new StripeSDK(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-07-30.basil',
+});
 
 // Load Stripe on frontend
 export const stripePromise: Promise<Stripe | null> = loadStripe(
