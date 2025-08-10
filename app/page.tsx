@@ -755,7 +755,7 @@ const HomePage = () => {
       </section>
 
       {/* Enhanced Pricing Section with Working Stripe Integration */}
-      <section className="py-20 relative z-10 bg-blue-100">
+      <section id="pricing" className="py-20 relative z-10 bg-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <SectionSeparator title="Choose Your Plan" icon={Target} color="green" />

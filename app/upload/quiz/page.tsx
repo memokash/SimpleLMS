@@ -3,14 +3,13 @@ import { useEffect, useState } from "react";
 import { useTheme } from '../../components/ThemeContext';
 import { db } from "../../../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { Quiz, Question } from "../../../types/quiz";
+// import { Quiz, Question } from "../../../types/quiz";
 import { Sun, Moon, Upload, Sparkles } from 'lucide-react';
 
 export default function QuizPage() {
   const { isDark, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [quiz, setQuiz] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -20,7 +19,7 @@ export default function QuizPage() {
     const loadQuiz = async () => {
       try {
         const snapshot = await getDocs(collection(db, "courses"));
-        const quizData = snapshot.docs[0]?.data() as Quiz;
+        const quizData = snapshot.docs[0]?.data();
         setQuiz(quizData);
       } catch (error) {
         console.error("Error loading quiz:", error);
@@ -73,7 +72,7 @@ export default function QuizPage() {
             <Upload className="w-8 h-8 text-purple-500" />
             <Sparkles className="w-6 h-6 text-yellow-500" />
           </div>
-          <h1 className="gradient-title text-3xl mb-6">{quiz.title}</h1>
+          <h1 className="gradient-title text-3xl mb-6">{quiz?.title || 'Quiz Upload'}</h1>
           <div className="bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-700 rounded-xl p-6">
             <p className="text-gray-600 dark:text-gray-300 text-lg">Quiz upload and results feature coming soon! 🚀</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Enhanced quiz creation tools with AI assistance are in development.</p>
@@ -82,5 +81,4 @@ export default function QuizPage() {
       </div>
     </div>
   );
-}
 }
