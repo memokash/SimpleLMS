@@ -78,7 +78,9 @@ export class MainService {
         confidence: result.confidence
       };
     } catch (error) {
-      console.error('Error categorizing course:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error categorizing course:', error);
+      }
       return { success: false };
     }
   }
@@ -137,7 +139,9 @@ export class MainService {
         incorrectExplanation: result.incorrectExplanation
       };
     } catch (error) {
-      console.error('Error enhancing explanations:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error enhancing explanations:', error);
+      }
       return { success: false };
     }
   }
@@ -189,7 +193,9 @@ export class MainService {
       
       return { success: true, categorized, failed };
     } catch (error) {
-      console.error('Batch categorization error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Batch categorization error:', error);
+      }
       return { success: false, categorized: 0, failed: 0 };
     }
   }
@@ -217,7 +223,9 @@ export class MainService {
       
       return docRef.id;
     } catch (error) {
-      console.error('Error saving uploaded content:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error saving uploaded content:', error);
+      }
       throw error;
     }
   }
@@ -247,7 +255,9 @@ export class MainService {
         uploadedAt: data.uploadedAt?.toDate()
       };
     } catch (error) {
-      console.error('Error fetching uploaded content:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching uploaded content:', error);
+      }
       throw error;
     }
   }
@@ -300,7 +310,9 @@ export class MainService {
 
       return newUser as User;
     } catch (error) {
-      console.error('Error in getOrCreateUser:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error in getOrCreateUser:', error);
+      }
       throw error;
     }
   }
@@ -316,7 +328,9 @@ export class MainService {
         updatedAt: serverTimestamp()
       });
     } catch (error) {
-      console.error('Error updating user subscription:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating user subscription:', error);
+      }
       throw error;
     }
   }
@@ -345,7 +359,9 @@ export class MainService {
       const tierHierarchy: Record<string, number> = { free: 0, pro: 1, premium: 2 };
       return (tierHierarchy[userTier] ?? 0) >= (tierHierarchy[requiredTier] ?? 0);
     } catch (error) {
-      console.error('Error checking user access:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error checking user access:', error);
+      }
       return false;
     }
   }
@@ -431,7 +447,9 @@ export class MainService {
       
       return courses.sort((a, b) => a.title.localeCompare(b.title));
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching courses:', error);
+      }
       throw error;
     }
   }
@@ -488,7 +506,9 @@ export class MainService {
 
       return course;
     } catch (error) {
-      console.error('Error fetching course:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching course:', error);
+      }
       throw error;
     }
   }
@@ -570,7 +590,9 @@ export class MainService {
       
       return questions.sort((a, b) => (a.id || '').localeCompare(b.id || ''));
     } catch (error) {
-      console.error('Error fetching quiz questions:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching quiz questions:', error);
+      }
       throw error;
     }
   }
@@ -611,7 +633,9 @@ export class MainService {
         notes: data.notes || {}
       };
     } catch (error) {
-      console.error('Error fetching progress:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching progress:', error);
+      }
       return null;
     }
   }
@@ -659,7 +683,9 @@ export class MainService {
         await this.updateUserStats(userId, courseId, progressUpdate.lastScore || 0);
       }
     } catch (error) {
-      console.error('Error updating progress:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating progress:', error);
+      }
       throw error;
     }
   }
@@ -690,7 +716,9 @@ export class MainService {
       
       return docRef.id;
     } catch (error) {
-      console.error('Error saving quiz attempt:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error saving quiz attempt:', error);
+      }
       throw error;
     }
   }
@@ -729,7 +757,9 @@ export class MainService {
 
       return session.url || '';
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error creating checkout session:', error);
+      }
       throw error;
     }
   }
@@ -757,7 +787,9 @@ export class MainService {
         updatedAt: serverTimestamp()
       });
     } catch (error) {
-      console.error('Error canceling subscription:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error canceling subscription:', error);
+      }
       throw error;
     }
   }
@@ -827,7 +859,9 @@ export class MainService {
         });
       }
     } catch (error) {
-      console.error('Error updating user stats:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating user stats:', error);
+      }
     }
   }
 }

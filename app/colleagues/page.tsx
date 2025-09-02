@@ -76,7 +76,9 @@ const ColleaguesPage = () => {
       setColleagues(filteredColleagues);
     } catch (err) {
       setError('Failed to load colleagues. Please try again.');
-      console.error('Error loading colleagues:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error loading colleagues:', err);
+      }
     } finally {
       setLoading(false);
     }

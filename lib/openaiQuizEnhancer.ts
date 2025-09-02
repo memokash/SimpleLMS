@@ -98,14 +98,12 @@ export const enhanceQuizExplanationsWithOpenAI = async (
   const errors: Array<{quizId: string; questionId: string; error: string}> = [];
 
   try {
-    console.log('📚 Starting OpenAI quiz explanation enhancement...');
     
     // Get all quizzes (courses)
     const coursesRef = collection(db, 'courses');
     const coursesSnapshot = await getDocs(coursesRef);
     
     if (coursesSnapshot.empty) {
-      console.log('📝 No quizzes found');
       return createEmptyResult(startTime);
     }
     
@@ -115,7 +113,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
     );
     
     const totalQuizzes = quizzesToProcess.length;
-    console.log(`📊 Found ${totalQuizzes} quizzes to process`);
     
     // Count total questions first for accurate progress
     let totalQuestions = 0;
@@ -125,7 +122,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
       totalQuestions += questionsSnapshot.size;
     }
     
-    console.log(`🔢 Total questions to analyze: ${totalQuestions}`);
     
     // Initialize progress
     if (progressCallback) {
@@ -149,14 +145,12 @@ export const enhanceQuizExplanationsWithOpenAI = async (
       const quizTitle = quizData.NewTitle || quizData.OriginalQuizTitle || quizData.CourseName || quizId;
       
       try {
-        console.log(`🎯 Processing quiz: ${quizTitle}`);
         
         // Get all questions for this quiz
         const questionsRef = collection(db, 'courses', quizId, 'questions');
         const questionsSnapshot = await getDocs(questionsRef);
         
         if (questionsSnapshot.empty) {
-          console.log(`  ⚠️ No questions found in quiz ${quizId}`);
           processedQuizzes++;
           continue;
         }
@@ -174,7 +168,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
                                             questionData.incorrectExplanation.trim() === '';
             
             if (!needsCorrectExplanation && !needsIncorrectExplanation) {
-              console.log(`  ✅ Question ${questionId} already has explanations`);
               processedQuestions++;
               skippedQuestions++;
               continue;
@@ -199,7 +192,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
               });
             }
             
-            console.log(`  🔍 Enhancing question: ${questionData.question?.substring(0, 50)}...`);
             
             // Generate enhanced explanations with AI
             const enhancementResult = await generateEnhancedExplanationsWithRetry(
@@ -229,9 +221,7 @@ export const enhanceQuizExplanationsWithOpenAI = async (
               batchCount++;
               enhancedQuestions++;
               
-              console.log(`  ✨ Enhanced explanations for question ${questionId}`);
             } else {
-              console.log(`  ⚠️ Could not enhance question ${questionId}: ${enhancementResult.error}`);
               errors.push({quizId, questionId, error: enhancementResult.error || 'Unknown error'});
               failedQuestions++;
             }
@@ -241,7 +231,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
             // Commit batch if it reaches the limit
             if (batchCount >= BATCH_SIZE) {
               await batch.commit();
-              console.log(`💾 Committed batch of ${batchCount} question updates`);
               batch = writeBatch(db);
               batchCount = 0;
             }
@@ -250,7 +239,9 @@ export const enhanceQuizExplanationsWithOpenAI = async (
             await sleep(RATE_LIMIT_DELAY);
             
           } catch (questionError) {
-            console.error(`❌ Error processing question ${questionId}:`, questionError);
+            if (process.env.NODE_ENV === 'development') {
+              console.error(`❌ Error processing question ${questionId}:`, questionError);
+            }
             errors.push({
               quizId,
               questionId, 
@@ -264,7 +255,9 @@ export const enhanceQuizExplanationsWithOpenAI = async (
         processedQuizzes++;
         
       } catch (quizError) {
-        console.error(`❌ Error processing quiz ${quizId}:`, quizError);
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`❌ Error processing quiz ${quizId}:`, quizError);
+        }
         errors.push({
           quizId,
           questionId: 'N/A',
@@ -277,7 +270,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
     // Commit any remaining items in the batch
     if (batchCount > 0) {
       await batch.commit();
-      console.log(`💾 Committed final batch of ${batchCount} updates`);
     }
     
     // Final progress update
@@ -293,9 +285,6 @@ export const enhanceQuizExplanationsWithOpenAI = async (
     }
     
     const duration = Date.now() - startTime;
-    console.log(`🎉 Explanation enhancement complete!`);
-    console.log(`📊 Results: ${processedQuestions} questions processed, ${enhancedQuestions} enhanced, ${failedQuestions} failed, ${skippedQuestions} skipped`);
-    console.log(`⏱️ Duration: ${Math.round(duration / 1000)}s`);
     
     return {
       processedQuizzes,
@@ -309,7 +298,9 @@ export const enhanceQuizExplanationsWithOpenAI = async (
     };
     
   } catch (error) {
-    console.error('❌ Explanation enhancement failed:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Explanation enhancement failed:', error);
+    }
     throw error;
   }
 };
@@ -331,7 +322,6 @@ const generateEnhancedExplanationsWithRetry = async (
           retryConfig.baseDelay * Math.pow(retryConfig.backoffMultiplier, attempt - 1),
           retryConfig.maxDelay
         );
-        console.log(`  🔄 Retry attempt ${attempt} after ${delay}ms delay`);
         await sleep(delay);
       }
       
@@ -374,7 +364,6 @@ const generateEnhancedExplanationsWithRetry = async (
       
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
-      console.log(`  ⚠️ Attempt ${attempt + 1} failed: ${lastError.message}`);
       
       // Don't retry for certain errors
       if (lastError.message.includes('Invalid question') || lastError.message.includes('No content')) {
@@ -397,7 +386,6 @@ export const previewExplanationEnhancements = async (
   progressCallback?: EnhancementProgressCallback
 ): Promise<EnhancementPreviewResult[]> => {
   try {
-    console.log(`🔍 Previewing explanation enhancements (first ${limitCount} questions)...`);
     
     const preview: EnhancementPreviewResult[] = [];
     let count = 0;
@@ -488,15 +476,13 @@ export const previewExplanationEnhancements = async (
       Category: p.category
     })));
     
-    console.log(`📊 Preview Summary:`);
-    console.log(`  - Questions previewed: ${preview.length}`);
-    console.log(`  - Need enhancement: ${preview.filter(p => p.needsEnhancement).length}`);
-    console.log(`  - Categories: ${Array.from(new Set(preview.map(p => p.category))).join(', ')}`);
     
     return preview;
     
   } catch (error) {
-    console.error('❌ Preview failed:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Preview failed:', error);
+    }
     throw error;
   }
 };
@@ -559,18 +545,13 @@ export const getEnhancementStatistics = async (): Promise<{
       });
     }
     
-    console.log('📊 Enhancement Statistics:');
-    console.log(`  📚 Total quizzes: ${stats.totalQuizzes}`);
-    console.log(`  ❓ Total questions: ${stats.totalQuestions}`);
-    console.log(`  ✅ With correct explanations: ${stats.questionsWithCorrectExplanations}`);
-    console.log(`  ❌ With incorrect explanations: ${stats.questionsWithIncorrectExplanations}`);
-    console.log(`  🔧 Need enhancement: ${stats.questionsNeedingEnhancement}`);
-    console.log(`  📂 By category:`, stats.enhancementsByCategory);
     
     return stats;
     
   } catch (error) {
-    console.error('Error getting enhancement statistics:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error getting enhancement statistics:', error);
+    }
     throw error;
   }
 };

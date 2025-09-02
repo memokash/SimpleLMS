@@ -32,7 +32,9 @@ export class InvitationService {
 
       return (result.data as any).success;
     } catch (error) {
-      console.error('Error sending invitations:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending invitations:', error);
+      }
       throw new Error('Failed to send invitations');
     }
   }
@@ -55,7 +57,9 @@ export class InvitationService {
 
       return invitations;
     } catch (error) {
-      console.error('Error fetching sent invitations:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching sent invitations:', error);
+      }
       throw new Error('Failed to fetch sent invitations');
     }
   }
@@ -87,7 +91,9 @@ export class InvitationService {
         });
       }
     } catch (error) {
-      console.error('Error accepting referral:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error accepting referral:', error);
+      }
     }
   }
 }

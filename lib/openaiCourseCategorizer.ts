@@ -94,14 +94,12 @@ export const categorizeCoursesWithOpenAI = async (
   const errors: Array<{courseId: string; error: string}> = [];
 
   try {
-    console.log('🤖 Starting enhanced OpenAI course categorization...');
     
     // Get all courses that need categorization
     const coursesRef = collection(db, 'courses');
     const coursesSnapshot = await getDocs(coursesRef);
     
     if (coursesSnapshot.empty) {
-      console.log('📝 No courses found');
       return { 
         processedCount: 0, 
         categorizedCount: 0, 
@@ -114,7 +112,6 @@ export const categorizeCoursesWithOpenAI = async (
     }
     
     const totalCourses = coursesSnapshot.size;
-    console.log(`📊 Found ${totalCourses} courses to process`);
     
     // Initialize progress
     if (progressCallback) {
@@ -136,11 +133,9 @@ export const categorizeCoursesWithOpenAI = async (
       const courseName = courseData.CourseName || courseData.NewTitle || courseId;
       
       try {
-        console.log(`🔍 Processing course: ${courseName}`);
         
         // Skip if Category already exists
         if (courseData.Category) {
-          console.log(`  ✅ Category already exists: ${courseData.Category}`);
           processedCount++;
           skippedCount++;
           continue;
@@ -155,7 +150,6 @@ export const categorizeCoursesWithOpenAI = async (
         
         // Skip if no meaningful content
         if (!courseContent.title && !courseContent.description && !courseContent.courseName) {
-          console.log(`  ⚠️ No content to analyze for course ${courseId}`);
           errors.push({courseId, error: 'No content available for analysis'});
           processedCount++;
           failedCount++;
@@ -175,11 +169,9 @@ export const categorizeCoursesWithOpenAI = async (
             categoryVersion: '2.0' // Track version for future migrations
           });
           
-          console.log(`  🤖 AI categorized as: ${aiResult.category} (${aiResult.confidence})`);
           batchCount++;
           categorizedCount++;
         } else {
-          console.log(`  ⚠️ Could not categorize course ${courseId}: ${aiResult.error}`);
           errors.push({courseId, error: aiResult.error || 'Unknown error'});
           failedCount++;
         }
@@ -205,7 +197,6 @@ export const categorizeCoursesWithOpenAI = async (
         // Commit batch if it reaches the limit
         if (batchCount >= BATCH_SIZE) {
           await batch.commit();
-          console.log(`💾 Committed batch of ${batchCount} updates`);
           batch = writeBatch(db);
           batchCount = 0;
         }
@@ -214,7 +205,9 @@ export const categorizeCoursesWithOpenAI = async (
         await sleep(RATE_LIMIT_DELAY);
         
       } catch (courseError) {
-        console.error(`❌ Error processing course ${courseId}:`, courseError);
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`❌ Error processing course ${courseId}:`, courseError);
+        }
         errors.push({
           courseId, 
           error: courseError instanceof Error ? courseError.message : 'Unknown error'
@@ -227,7 +220,6 @@ export const categorizeCoursesWithOpenAI = async (
     // Commit any remaining items in the batch
     if (batchCount > 0) {
       await batch.commit();
-      console.log(`💾 Committed final batch of ${batchCount} updates`);
     }
     
     // Final progress update
@@ -241,9 +233,6 @@ export const categorizeCoursesWithOpenAI = async (
     }
     
     const duration = Date.now() - startTime;
-    console.log(`🎉 Categorization complete!`);
-    console.log(`📊 Results: ${processedCount} processed, ${categorizedCount} categorized, ${failedCount} failed, ${skippedCount} skipped`);
-    console.log(`⏱️ Duration: ${Math.round(duration / 1000)}s`);
     
     return {
       processedCount,
@@ -256,7 +245,9 @@ export const categorizeCoursesWithOpenAI = async (
     };
     
   } catch (error) {
-    console.error('❌ Categorization failed:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Categorization failed:', error);
+    }
     throw error;
   }
 };

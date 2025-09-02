@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
+// TODO: Add Firebase imports for admin functionality
+// import { collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+// import { db } from '../../../lib/firebase';
 import {
   GraduationCap,
   Users,
@@ -192,207 +195,82 @@ const StudentsManagementPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check user permissions
-    const mockUserProfile: UserProfile = {
-      id: user?.uid || '1',
-      firstName: user?.displayName?.split(' ')[0] || 'John',
-      lastName: user?.displayName?.split(' ')[1] || 'Doe',
-      email: user?.email || 'user@example.com',
-      role: 'attending', // This would come from user profile
-      npiNumber: '1234567890', // This would be from user profile
-      institution: 'University Hospital',
-      verified: true,
-      canManageUsers: true
+    // Check user permissions - TODO: Load from Firebase user profile
+    const loadUserProfile = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        // TODO: Query Firebase for user profile data
+        // const userProfileDoc = await getDoc(doc(db, 'profiles', user.uid));
+        // const profileData = userProfileDoc.data() as UserProfile;
+        
+        // Mock profile for now - replace with Firebase query
+        const mockUserProfile: UserProfile = {
+          id: user?.uid || '1',
+          firstName: user?.displayName?.split(' ')[0] || 'User',
+          lastName: user?.displayName?.split(' ')[1] || 'Name',
+          email: user?.email || 'user@example.com',
+          role: 'attending', // This would come from Firebase user profile
+          npiNumber: '1234567890', // This would be from Firebase user profile
+          institution: 'University Hospital',
+          verified: true,
+          canManageUsers: true
+        };
+        
+        setUserProfile(mockUserProfile);
+        setHasNPIAccess(!!mockUserProfile.npiNumber && mockUserProfile.verified);
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
     };
-    
-    setUserProfile(mockUserProfile);
-    setHasNPIAccess(!!mockUserProfile.npiNumber && mockUserProfile.verified);
 
-    // Mock data
-    const mockStudents: Student[] = [
-      {
-        id: '1',
-        firstName: 'Emily',
-        lastName: 'Johnson',
-        email: 'emily.johnson@med.university.edu',
-        phone: '(555) 123-4567',
-        institution: 'University Medical School',
-        year: 'MS3',
-        specialty: 'Internal Medicine',
-        status: 'active',
-        joinDate: new Date('2024-01-15'),
-        lastActive: new Date('2024-08-06'),
-        gpa: 3.8,
-        examScores: {
-          step1: 245,
-          step2: 250
-        },
-        rotations: [
-          {
-            id: '1',
-            name: 'Internal Medicine',
-            service: 'General Medicine',
-            startDate: new Date('2024-07-01'),
-            endDate: new Date('2024-08-30'),
-            grade: 'Honors',
-            completed: false
-          }
-        ],
-        metrics: {
-          presentationsCompleted: 24,
-          notesSubmitted: 18,
-          averageGrade: 8.5,
-          attendanceRate: 95,
-          peerRating: 4.6
-        },
-        groups: ['1', '2'],
-        roundingTeams: ['1'],
-        permissions: {
-          canCreateGroups: false,
-          canManageUsers: false,
-          canAccessAnalytics: false,
-          canViewAllNotes: false
-        }
-      },
-      {
-        id: '2',
-        firstName: 'Michael',
-        lastName: 'Chen',
-        email: 'michael.chen@med.university.edu',
-        institution: 'University Medical School',
-        year: 'MS4',
-        specialty: 'Emergency Medicine',
-        npiNumber: '9876543210',
-        status: 'active',
-        joinDate: new Date('2023-09-01'),
-        lastActive: new Date('2024-08-05'),
-        gpa: 3.9,
-        examScores: {
-          step1: 255,
-          step2: 260
-        },
-        rotations: [
-          {
-            id: '2',
-            name: 'Emergency Medicine',
-            service: 'Emergency Department',
-            startDate: new Date('2024-06-01'),
-            endDate: new Date('2024-07-30'),
-            grade: 'High Pass',
-            completed: true
-          }
-        ],
-        metrics: {
-          presentationsCompleted: 42,
-          notesSubmitted: 38,
-          averageGrade: 9.1,
-          attendanceRate: 98,
-          peerRating: 4.8
-        },
-        groups: ['1', '3'],
-        roundingTeams: ['2'],
-        permissions: {
-          canCreateGroups: true,
-          canManageUsers: false,
-          canAccessAnalytics: true,
-          canViewAllNotes: false
-        }
-      },
-      {
-        id: '3',
-        firstName: 'Sarah',
-        lastName: 'Rodriguez',
-        email: 'sarah.rodriguez@med.university.edu',
-        institution: 'University Medical School',
-        year: 'MS2',
-        status: 'active',
-        joinDate: new Date('2024-02-01'),
-        lastActive: new Date('2024-08-04'),
-        gpa: 3.7,
-        examScores: {},
-        rotations: [],
-        metrics: {
-          presentationsCompleted: 8,
-          notesSubmitted: 12,
-          averageGrade: 7.8,
-          attendanceRate: 92,
-          peerRating: 4.2
-        },
-        groups: ['2'],
-        roundingTeams: [],
-        permissions: {
-          canCreateGroups: false,
-          canManageUsers: false,
-          canAccessAnalytics: false,
-          canViewAllNotes: false
-        }
+    const loadStudentData = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        
+        // TODO: Replace with actual Firebase queries
+        // const studentsQuery = query(
+        //   collection(db, 'profiles'),
+        //   where('role', '==', 'student'),
+        //   where('institution', '==', userProfile?.institution),
+        //   orderBy('joinDate', 'desc')
+        // );
+        // const studentsSnapshot = await getDocs(studentsQuery);
+        // const studentsData = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student));
+        // setStudents(studentsData);
+
+        // const groupsQuery = query(
+        //   collection(db, 'groups'),
+        //   where('institution', '==', userProfile?.institution)
+        // );
+        // const groupsSnapshot = await getDocs(groupsQuery);
+        // const groupsData = groupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Group));
+        // setGroups(groupsData);
+
+        // const teamsQuery = query(
+        //   collection(db, 'roundingTeams'),
+        //   where('attendingNPI', '==', userProfile?.npiNumber),
+        //   where('isActive', '==', true)
+        // );
+        // const teamsSnapshot = await getDocs(teamsQuery);
+        // const teamsData = teamsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RoundingTeam));
+        // setRoundingTeams(teamsData);
+
+        // Initialize with empty arrays until Firebase collections are set up
+        setStudents([]);
+        setGroups([]);
+        setRoundingTeams([]);
+      } catch (error) {
+        console.error('Error loading student data:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    const mockGroups: Group[] = [
-      {
-        id: '1',
-        name: 'Internal Medicine Clerkship - Summer 2024',
-        description: 'Third-year medical students rotating through internal medicine',
-        type: 'rotation',
-        institution: 'University Medical School',
-        createdBy: mockUserProfile.id,
-        createdDate: new Date('2024-06-01'),
-        members: ['1', '2'],
-        admins: [mockUserProfile.id],
-        isPrivate: false,
-        maxMembers: 15,
-        settings: {
-          allowSelfJoin: false,
-          requireApproval: true,
-          allowMemberInvites: false
-        }
-      },
-      {
-        id: '2',
-        name: 'USMLE Step 1 Study Group',
-        description: 'Collaborative study group for USMLE Step 1 preparation',
-        type: 'study-group',
-        institution: 'University Medical School',
-        createdBy: '1',
-        createdDate: new Date('2024-01-15'),
-        members: ['1', '3'],
-        admins: ['1'],
-        isPrivate: false,
-        settings: {
-          allowSelfJoin: true,
-          requireApproval: false,
-          allowMemberInvites: true
-        }
-      }
-    ];
-
-    const mockRoundingTeams: RoundingTeam[] = [
-      {
-        id: '1',
-        name: 'Medicine Team A',
-        service: 'Internal Medicine',
-        attendingPhysician: 'Dr. Sarah Johnson',
-        attendingNPI: '1234567890',
-        residents: ['res1'],
-        students: ['1'],
-        nurses: ['nurse1'],
-        pharmacists: ['pharm1'],
-        startDate: new Date('2024-07-01'),
-        endDate: new Date('2024-08-30'),
-        isActive: true,
-        schedule: {
-          roundsTime: '7:00 AM',
-          location: 'Medicine Ward',
-          frequency: 'weekdays'
-        }
-      }
-    ];
-
-    setStudents(mockStudents);
-    setGroups(mockGroups);
-    setRoundingTeams(mockRoundingTeams);
-    setLoading(false);
+    loadUserProfile();
+    loadStudentData();
   }, [user]);
 
   const filteredStudents = students.filter(student => {

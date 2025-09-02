@@ -143,8 +143,11 @@ export class CourseService {
    */
   static async getAllCourses(): Promise<Course[]> {
     try {
+      console.log('CourseService.getAllCourses: Starting...');
       const coursesRef = collection(db, 'courses');
       const querySnapshot = await getDocs(coursesRef);
+      
+      console.log(`CourseService.getAllCourses: Found ${querySnapshot.size} documents`);
       
       if (querySnapshot.empty) {
         console.log('No courses found in database');

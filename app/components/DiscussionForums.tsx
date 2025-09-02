@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+// TODO: Add Firebase imports when implementing data layer  
+// import { collection, query, where, orderBy, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
+// import { db } from '../../lib/firebase';
 import {
   MessageCircle,
   Search,
@@ -200,293 +203,39 @@ const DiscussionForumsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data
-    const mockCategories: Category[] = [
-      {
-        id: '1',
-        name: 'General Discussion',
-        description: 'General medical education discussions and announcements',
-        icon: '💬',
-        color: 'bg-blue-100 text-blue-800',
-        postCount: 1247,
-        isLocked: false,
-        moderators: ['mod1', 'mod2']
-      },
-      {
-        id: '2',
-        name: 'Clinical Cases',
-        description: 'Share and discuss interesting clinical cases',
-        icon: '🏥',
-        color: 'bg-green-100 text-green-800',
-        postCount: 856,
-        isLocked: false,
-        moderators: ['mod1'],
-        subcategories: [
-          {
-            id: '2a',
-            name: 'Internal Medicine Cases',
-            description: 'Internal medicine case discussions',
-            icon: '🫀',
-            color: 'bg-red-100 text-red-800',
-            postCount: 324,
-            isLocked: false,
-            moderators: ['mod1']
-          },
-          {
-            id: '2b',
-            name: 'Emergency Medicine Cases',
-            description: 'Emergency department case discussions',
-            icon: '🚨',
-            color: 'bg-orange-100 text-orange-800',
-            postCount: 198,
-            isLocked: false,
-            moderators: ['mod2']
-          }
-        ]
-      },
-      {
-        id: '3',
-        name: 'Study Groups',
-        description: 'Form study groups and share study materials',
-        icon: '📚',
-        color: 'bg-purple-100 text-purple-800',
-        postCount: 432,
-        isLocked: false,
-        moderators: ['mod1']
-      },
-      {
-        id: '4',
-        name: 'USMLE/COMLEX',
-        description: 'Exam preparation discussions and tips',
-        icon: '📝',
-        color: 'bg-yellow-100 text-yellow-800',
-        postCount: 1024,
-        isLocked: false,
-        moderators: ['mod1', 'mod2']
-      },
-      {
-        id: '5',
-        name: 'Research & Publications',
-        description: 'Research opportunities and publication discussions',
-        icon: '🔬',
-        color: 'bg-indigo-100 text-indigo-800',
-        postCount: 287,
-        isLocked: false,
-        moderators: ['mod1']
-      },
-      {
-        id: '6',
-        name: 'Career Guidance',
-        description: 'Residency, fellowship, and career advice',
-        icon: '🎯',
-        color: 'bg-pink-100 text-pink-800',
-        postCount: 645,
-        isLocked: false,
-        moderators: ['mod2']
-      },
-      {
-        id: '7',
-        name: 'Technology & Tools',
-        description: 'Medical apps, software, and technology discussions',
-        icon: '💻',
-        color: 'bg-gray-100 text-gray-800',
-        postCount: 156,
-        isLocked: false,
-        moderators: ['mod1']
-      },
-      {
-        id: '8',
-        name: 'Announcements',
-        description: 'Official announcements and updates',
-        icon: '📢',
-        color: 'bg-red-100 text-red-800',
-        postCount: 23,
-        isLocked: true,
-        moderators: ['admin']
+    const loadForumData = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        // TODO: Load categories, threads, replies, and notifications from Firebase
+        // Categories would be stored in a 'forumCategories' collection
+        // Threads in 'forumThreads' with categoryId reference
+        // Replies in 'forumReplies' with threadId reference
+        // User notifications in 'userNotifications' with userId reference
+        
+        // For now, use empty arrays until Firebase collections are set up
+        setCategories([]);
+        setThreads([]);
+        setReplies([]);
+        setNotifications([]);
+      } catch (error) {
+        console.error('Error loading forum data:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    const mockThreads: Thread[] = [
-      {
-        id: '1',
-        title: 'Best resources for Internal Medicine shelf exam?',
-        content: 'Looking for recommendations on the best study materials for the IM shelf exam. What worked for you?',
-        author: {
-          id: '1',
-          name: 'Sarah Johnson',
-          role: 'MS3',
-          reputation: 245,
-          isVerified: true
-        },
-        category: '4',
-        tags: ['USMLE', 'Internal Medicine', 'Study Materials'],
-        createdAt: new Date('2024-08-05T10:30:00'),
-        updatedAt: new Date('2024-08-06T14:20:00'),
-        isPinned: false,
-        isLocked: false,
-        isResolved: false,
-        views: 156,
-        likes: 12,
-        replies: 8,
-        lastReply: {
-          author: 'Dr. Michael Chen',
-          timestamp: new Date('2024-08-06T14:20:00')
-        },
-        attachments: []
-      },
-      {
-        id: '2',
-        title: '🔥 Interesting case: 25-year-old with chest pain',
-        content: '25F presents to ED with acute chest pain. EKG shows ST elevations in leads II, III, aVF. What\'s your differential?',
-        author: {
-          id: '2',
-          name: 'Dr. Emily Rodriguez',
-          role: 'Attending',
-          reputation: 1250,
-          isVerified: true
-        },
-        category: '2',
-        tags: ['Cardiology', 'Emergency Medicine', 'Case Study'],
-        createdAt: new Date('2024-08-04T15:45:00'),
-        updatedAt: new Date('2024-08-06T11:30:00'),
-        isPinned: true,
-        isLocked: false,
-        isResolved: true,
-        views: 342,
-        likes: 28,
-        replies: 15,
-        lastReply: {
-          author: 'Resident Mike',
-          timestamp: new Date('2024-08-06T11:30:00')
-        },
-        attachments: [
-          {
-            id: '1',
-            name: 'ekg-image.jpg',
-            type: 'image',
-            url: '/api/placeholder/400/300',
-            size: '245 KB'
-          }
-        ]
-      },
-      {
-        id: '3',
-        title: 'Study group for Step 2 CK - Join us!',
-        content: 'Starting a virtual study group for Step 2 CK. Meeting twice weekly via Zoom. Looking for dedicated members!',
-        author: {
-          id: '3',
-          name: 'Alex Kim',
-          role: 'MS4',
-          reputation: 189,
-          isVerified: false
-        },
-        category: '3',
-        tags: ['Step 2', 'Study Group', 'Virtual'],
-        createdAt: new Date('2024-08-03T09:15:00'),
-        updatedAt: new Date('2024-08-05T16:45:00'),
-        isPinned: false,
-        isLocked: false,
-        isResolved: false,
-        views: 89,
-        likes: 7,
-        replies: 12,
-        lastReply: {
-          author: 'Jennifer Wu',
-          timestamp: new Date('2024-08-05T16:45:00')
-        },
-        attachments: [],
-        poll: {
-          question: 'What time works best for study sessions?',
-          options: [
-            { text: 'Morning (8-10 AM)', votes: 5 },
-            { text: 'Afternoon (2-4 PM)', votes: 8 },
-            { text: 'Evening (6-8 PM)', votes: 12 },
-            { text: 'Night (8-10 PM)', votes: 3 }
-          ],
-          totalVotes: 28,
-          multipleChoice: false,
-          endsAt: new Date('2024-08-10T23:59:59')
-        }
-      }
-    ];
-
-    const mockReplies: Reply[] = [
-      {
-        id: '1',
-        threadId: '1',
-        content: 'I highly recommend UWorld and OnlineMedEd for IM shelf. UWorld questions are very similar to the actual exam format.',
-        author: {
-          id: '4',
-          name: 'Dr. Michael Chen',
-          role: 'Resident',
-          reputation: 567,
-          isVerified: true
-        },
-        createdAt: new Date('2024-08-05T12:15:00'),
-        likes: 8,
-        dislikes: 0,
-        isAcceptedAnswer: true,
-        isModerator: false,
-        attachments: [],
-        mentions: ['Sarah Johnson']
-      },
-      {
-        id: '2',
-        threadId: '1',
-        content: 'Don\'t forget about Step Up to Medicine! Great for quick review and high-yield facts.',
-        author: {
-          id: '5',
-          name: 'Lisa Park',
-          role: 'MS4',
-          reputation: 123,
-          isVerified: false
-        },
-        createdAt: new Date('2024-08-05T14:30:00'),
-        likes: 5,
-        dislikes: 0,
-        isAcceptedAnswer: false,
-        isModerator: false,
-        attachments: [],
-        mentions: []
-      }
-    ];
-
-    const mockNotifications: UserNotification[] = [
-      {
-        id: '1',
-        type: 'reply',
-        title: 'New reply to your thread',
-        message: 'Dr. Michael Chen replied to "Best resources for Internal Medicine shelf exam?"',
-        isRead: false,
-        createdAt: new Date('2024-08-06T12:30:00'),
-        url: '/forums/thread/1'
-      },
-      {
-        id: '2',
-        type: 'mention',
-        title: 'You were mentioned',
-        message: 'Alex Kim mentioned you in "Study group for Step 2 CK"',
-        isRead: false,
-        createdAt: new Date('2024-08-06T10:15:00'),
-        url: '/forums/thread/3'
-      },
-      {
-        id: '3',
-        type: 'like',
-        title: 'Your post was liked',
-        message: 'Someone liked your reply in "Interesting case: 25-year-old with chest pain"',
-        isRead: true,
-        createdAt: new Date('2024-08-05T18:45:00'),
-        url: '/forums/thread/2'
-      }
-    ];
-
-    setCategories(mockCategories);
-    setThreads(mockThreads);
-    setReplies(mockReplies);
-    setNotifications(mockNotifications);
+    // Initialize with empty data until Firebase collections are set up
+    setCategories([]);
+    setThreads([]);
+    setReplies([]);
+    setNotifications([]);
     setLoading(false);
-  }, []);
+    
+    // Uncomment when Firebase collections are ready:
+    // loadForumData();
+  }, [user]);
 
   const filteredThreads = threads.filter(thread => {
     const matchesSearch = thread.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

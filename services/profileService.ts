@@ -34,7 +34,9 @@ export class ProfileService {
       }
       return null;
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching profile:', error);
+      }
       throw new Error('Failed to fetch profile');
     }
   }
@@ -57,7 +59,9 @@ export class ProfileService {
 
       await setDoc(profileRef, updateData, { merge: true });
     } catch (error) {
-      console.error('Error updating profile:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating profile:', error);
+      }
       throw new Error('Failed to update profile');
     }
   }
@@ -72,7 +76,9 @@ export class ProfileService {
           const oldImageRef = ref(storage, `profile-pictures/${userId}/profile.jpg`);
           await deleteObject(oldImageRef);
         } catch (deleteError) {
-          console.log('No existing image to delete or delete failed');
+          if (process.env.NODE_ENV === 'development') {
+            console.log('No existing image to delete or delete failed');
+          }
         }
       }
 
@@ -86,7 +92,9 @@ export class ProfileService {
 
       return downloadURL;
     } catch (error) {
-      console.error('Error uploading profile picture:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error uploading profile picture:', error);
+      }
       throw new Error('Failed to upload profile picture');
     }
   }
@@ -143,7 +151,9 @@ export class ProfileService {
 
       return profiles;
     } catch (error) {
-      console.error('Error searching colleagues:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error searching colleagues:', error);
+      }
       throw new Error('Failed to search colleagues');
     }
   }
@@ -171,7 +181,9 @@ export class ProfileService {
 
       return profiles;
     } catch (error) {
-      console.error('Error fetching colleagues by rotation:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching colleagues by rotation:', error);
+      }
       throw new Error('Failed to fetch colleagues by rotation');
     }
   }

@@ -163,12 +163,12 @@ export async function searchQuizLibrary(options: SearchOptions = {}): Promise<Se
     snapshot.forEach((doc) => {
       const data = doc.data();
       
-      // Transform to SearchableQuiz format
+      // Transform to SearchableQuiz format - handle Firebase field names
       const quiz: SearchableQuiz = {
         id: doc.id,
-        title: data.title || '',
-        courseName: data.courseName || data.title || '',
-        description: data.description || '',
+        title: data.NewTitle || data.OriginalQuizTitle || data.title || doc.id,
+        courseName: data.CourseName || data.courseName || data.NewTitle || '',
+        description: data.BriefDescription || data.Description || data.description || '',
         category: data.category || 'Medical Knowledge',
         specialty: data.specialty || data.category || 'General',
         difficulty: data.difficulty || 'Intermediate',

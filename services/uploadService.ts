@@ -19,7 +19,9 @@ export class UploadService {
       // Get download URL and return it
       return await getDownloadURL(snapshot.ref);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error uploading file:', error);
+      }
       throw new Error('Failed to upload profile picture');
     }
   }
@@ -31,7 +33,9 @@ export class UploadService {
       const imageRef = ref(storage, imageUrl);
       await deleteObject(imageRef);
     } catch (error) {
-      console.error('Error deleting file:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error deleting file:', error);
+      }
       // Don't throw - old image deletion isn't critical
     }
   }

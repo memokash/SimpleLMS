@@ -76,7 +76,6 @@ export interface SearchFilters {
  */
 export async function getQuestionBankStats(): Promise<QuestionBankStats> {
   try {
-    console.log('📊 Fetching question bank statistics...');
     
     const questionsRef = collection(db, 'questionBank');
     const questionsQuery = query(questionsRef, firestoreLimit(1000));
@@ -110,11 +109,12 @@ export async function getQuestionBankStats(): Promise<QuestionBankStats> {
       }
     });
     
-    console.log('✅ Question bank statistics fetched:', stats);
     return stats;
     
   } catch (error) {
-    console.error('❌ Error fetching question bank stats:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error fetching question bank stats:', error);
+    }
     
     // Return mock data as fallback
     return {
@@ -153,7 +153,6 @@ export async function searchQuestions(
   limit: number = 50
 ): Promise<QuestionBankQuestion[]> {
   try {
-    console.log('🔍 Searching questions:', { searchTerm, filters, limit });
     
     const questionsRef = collection(db, 'questionBank');
     let questionsQuery = query(questionsRef, firestoreLimit(limit));
@@ -211,11 +210,12 @@ export async function searchQuestions(
       }
     });
     
-    console.log(`✅ Found ${questions.length} questions`);
     return questions;
     
   } catch (error) {
-    console.error('❌ Error searching questions:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error searching questions:', error);
+    }
     
     // Return mock data as fallback
     return generateMockQuestions(limit);
@@ -236,7 +236,6 @@ export async function generateQuizFromBank(
   questions: QuestionBankQuestion[];
 }> {
   try {
-    console.log('🎯 Generating quiz from question bank:', { category, questionCount, difficulty });
     
     const filters: SearchFilters = { category };
     if (difficulty) {
@@ -265,7 +264,6 @@ export async function generateQuizFromBank(
       source: 'questionBank'
     });
     
-    console.log('✅ Quiz generated successfully:', quizId);
     
     return {
       quizId,
@@ -274,7 +272,9 @@ export async function generateQuizFromBank(
     };
     
   } catch (error) {
-    console.error('❌ Error generating quiz from bank:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error generating quiz from bank:', error);
+    }
     throw error;
   }
 }
@@ -287,7 +287,6 @@ export async function addQuestionToBank(
   question: Omit<QuestionBankQuestion, 'id' | 'createdAt' | 'upvotes' | 'downvotes' | 'verified' | 'reportCount'>
 ): Promise<string> {
   try {
-    console.log('➕ Adding question to bank:', question.question);
     
     const questionsRef = collection(db, 'questionBank');
     const docRef = await addDoc(questionsRef, {
@@ -299,11 +298,12 @@ export async function addQuestionToBank(
       reportCount: 0
     });
     
-    console.log('✅ Question added successfully:', docRef.id);
     return docRef.id;
     
   } catch (error) {
-    console.error('❌ Error adding question to bank:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error adding question to bank:', error);
+    }
     throw error;
   }
 }
@@ -355,7 +355,9 @@ export async function getQuestionCategories(): Promise<string[]> {
     const stats = await getQuestionBankStats();
     return Object.keys(stats.categories).sort();
   } catch (error) {
-    console.error('❌ Error fetching categories:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error fetching categories:', error);
+    }
     return [
       'Internal Medicine',
       'Surgery', 
@@ -383,10 +385,11 @@ export async function voteOnQuestion(questionId: string, isUpvote: boolean): Pro
         : { downvotes: (currentData.downvotes || 0) + 1 };
       
       await setDoc(questionRef, updateData, { merge: true });
-      console.log('✅ Vote recorded successfully');
     }
   } catch (error) {
-    console.error('❌ Error voting on question:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Error voting on question:', error);
+    }
     throw error;
   }
 }

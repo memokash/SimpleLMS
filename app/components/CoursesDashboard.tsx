@@ -98,11 +98,8 @@ const CoursesDashboard = () => {
       setError(null);
       setLoading(true);
       
-      console.log('🔥 Loading courses from Firebase...');
-      
       // Use the existing courseService.ts to get courses
       const coursesData = await getAllCoursesWithProgress(user?.uid || null);
-      console.log('✅ Loaded courses:', coursesData.length);
       
       setCourses(coursesData);
       setFilteredCourses(coursesData);
@@ -110,7 +107,6 @@ const CoursesDashboard = () => {
       if (user) {
         // Get user statistics
         const stats = await getUserStats(user.uid);
-        console.log('✅ Loaded user stats:', stats);
         setUserStats(stats);
       } else {
         setUserStats({
@@ -128,7 +124,9 @@ const CoursesDashboard = () => {
       }
 
     } catch (error) {
-      console.error('❌ Data loading failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Data loading failed:', error);
+      }
       setError('Failed to load course data. Please try again.');
       
       // No fallback to mock data - just show error
@@ -209,7 +207,9 @@ const CoursesDashboard = () => {
     try {
       router.push(`/quiz?id=${courseId}`);
     } catch (error) {
-      console.error('Navigation failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Navigation failed:', error);
+      }
       alert('Failed to start quiz. Please try again.');
     }
   };

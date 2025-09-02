@@ -55,32 +55,37 @@ export default function PerformanceAnalyticsDashboard() {
   const loadPerformanceMetrics = async () => {
     setIsLoading(true);
     try {
-      // Mock data - replace with actual API calls
-      const mockMetrics: PerformanceMetrics = {
+      // TODO: Replace with actual API calls to get performance metrics
+      // const response = await fetch('/api/analytics/performance');
+      // const data = await response.json();
+      // setMetrics(data);
+      
+      // Initialize with empty/zero values until API is implemented
+      const emptyMetrics: PerformanceMetrics = {
         overview: {
-          totalOperations: 15847,
-          successRate: 94.7,
-          avgProcessingTime: 3240,
-          costPerOperation: 0.0234
+          totalOperations: 0,
+          successRate: 0,
+          avgProcessingTime: 0,
+          costPerOperation: 0
         },
         categorization: {
-          totalCourses: 1247,
-          categorizedCourses: 1189,
-          accuracyRate: 96.8
+          totalCourses: 0,
+          categorizedCourses: 0,
+          accuracyRate: 0
         },
         enhancement: {
-          totalQuestions: 14600,
-          enhancedQuestions: 13892,
-          qualityRating: 4.6
+          totalQuestions: 0,
+          enhancedQuestions: 0,
+          qualityRating: 0
         },
         userEngagement: {
-          activeUsers: 2847,
-          completionRate: 87.3,
-          userSatisfaction: 4.4
+          activeUsers: 0,
+          completionRate: 0,
+          userSatisfaction: 0
         }
       };
 
-      setMetrics(mockMetrics);
+      setMetrics(emptyMetrics);
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Failed to load performance metrics:', error);

@@ -51,13 +51,9 @@ const AuthModal = ({
         if (password !== confirmPassword) {
           throw new Error('Passwords do not match');
         }
-        console.log('Attempting sign up...');
         await onSignUpWithEmail(email, password);
-        console.log('Sign up successful!');
       } else {
-        console.log('Attempting sign in...');
         await onSignInWithEmail(email, password);
-        console.log('Sign in successful!');
       }
       
       // Clear form and close modal on success
@@ -67,7 +63,9 @@ const AuthModal = ({
       setError('');
       onClose();
     } catch (err: any) {
-      console.error('Auth error:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Auth error:', err);
+      }
       setError(err.message || 'An error occurred');
     } finally {
       setLoading(false);
@@ -75,17 +73,16 @@ const AuthModal = ({
   };
 
   const handleGoogleSignIn = async () => {
-    console.log('Google sign in clicked');
     setLoading(true);
     setError('');
 
     try {
-      console.log('Attempting Google sign in...');
       await onSignInWithGoogle();
-      console.log('Google sign in successful!');
       onClose();
     } catch (err: any) {
-      console.error('Google sign in error:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Google sign in error:', err);
+      }
       setError(err.message || 'Google sign in failed');
     } finally {
       setLoading(false);
@@ -93,7 +90,6 @@ const AuthModal = ({
   };
 
   const handleClose = () => {
-    console.log('Modal closing...');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
@@ -103,7 +99,6 @@ const AuthModal = ({
   };
 
   const toggleMode = () => {
-    console.log('Toggling mode from', isSignUp ? 'sign up' : 'sign in');
     setIsSignUp(!isSignUp);
     setError('');
     setPassword('');

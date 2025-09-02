@@ -19,7 +19,9 @@ export default function UploadPage() {
       // For now, just show a placeholder - we'll implement parseExcelToQuestions later
       alert("Upload feature coming soon! Please add quizzes manually to Firebase for now.");
     } catch (error) {
-      console.error("Upload error:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Upload error:", error);
+      }
       alert("Upload failed!");
     }
     

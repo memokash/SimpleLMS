@@ -85,7 +85,9 @@ export const sendInvitations = functions.https.onCall(async (data, context) => {
 
     return { success: true, referralCode };
   } catch (error) {
-    console.error('Error sending invitations:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error sending invitations:', error);
+    }
     throw new functions.https.HttpsError('internal', 'Failed to send invitations');
   }
 });
@@ -163,5 +165,4 @@ export const cleanupOldInvitations = functions.pubsub
     });
 
     await batch.commit();
-    console.log(`Cleaned up ${oldInvitations.size} old invitations`);
   });

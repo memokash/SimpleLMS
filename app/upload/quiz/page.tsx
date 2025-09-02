@@ -22,7 +22,9 @@ export default function QuizPage() {
         const quizData = snapshot.docs[0]?.data();
         setQuiz(quizData);
       } catch (error) {
-        console.error("Error loading quiz:", error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Error loading quiz:", error);
+        }
       }
     };
     loadQuiz();

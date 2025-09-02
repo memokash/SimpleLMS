@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
+// TODO: Add Firebase imports when implementing data layer
+// import { collection, query, where, orderBy, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
+// import { db } from '../../lib/firebase';
 import { 
   Library, 
   BookOpen, 
@@ -84,143 +87,44 @@ const ReadingResourcesPage = () => {
   const [sortBy, setSortBy] = useState<'recent' | 'title' | 'progress' | 'rating'>('recent');
   const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with Firebase queries
+  // Load reading resources from Firebase
   useEffect(() => {
-    const mockResources: ReadingResource[] = [
-      {
-        id: '1',
-        title: 'Myocardial Infarction: Current Guidelines and Treatment Protocols',
-        type: 'article',
-        author: 'Dr. Sarah Chen, MD',
-        source: 'Journal of Cardiology',
-        url: 'https://journalofcardiology.com/mi-guidelines-2025',
-        description: 'Comprehensive review of the latest STEMI and NSTEMI management protocols with updated evidence-based recommendations',
-        tags: ['Cardiology', 'MI', 'Guidelines', 'Emergency Medicine'],
-        specialty: 'Cardiology',
-        addedDate: new Date('2025-08-01'),
-        lastAccessed: new Date('2025-08-05'),
-        readingProgress: 75,
-        estimatedReadTime: 45,
-        rating: 4.8,
-        notes: 'Excellent overview of new troponin criteria. Focus on section 3 for exam prep.',
-        isBookmarked: true,
-        isFavorite: true,
-        readingList: 'Cardiology Essentials',
-        priority: 'high'
-      },
-      {
-        id: '2',
-        title: 'Harrison\'s Principles of Internal Medicine - Chapter 15',
-        type: 'book',
-        author: 'Harrison et al.',
-        source: 'McGraw-Hill Medical',
-        fileUrl: '/documents/harrisons-ch15.pdf',
-        fileName: 'Harrisons_Ch15_Diabetes.pdf',
-        description: 'Diabetes Mellitus: Diagnosis, Treatment, and Complications',
-        tags: ['Diabetes', 'Endocrinology', 'Internal Medicine', 'Textbook'],
-        specialty: 'Endocrinology',
-        addedDate: new Date('2025-07-28'),
-        lastAccessed: new Date('2025-08-03'),
-        readingProgress: 45,
-        estimatedReadTime: 120,
-        rating: 4.9,
-        notes: 'Key chapter for understanding T1DM vs T2DM pathophysiology.',
-        isBookmarked: false,
-        isFavorite: true,
-        readingList: 'Board Prep',
-        priority: 'high'
-      },
-      {
-        id: '3',
-        title: 'COVID-19 Variants and Vaccine Efficacy Study',
-        type: 'research',
-        author: 'Johnson et al.',
-        source: 'New England Journal of Medicine',
-        url: 'https://nejm.org/covid-variants-vaccine-2025',
-        description: 'Latest research on COVID-19 variant response to current vaccines and booster recommendations',
-        tags: ['COVID-19', 'Vaccines', 'Public Health', 'Infectious Disease'],
-        specialty: 'Infectious Disease',
-        addedDate: new Date('2025-07-30'),
-        readingProgress: 0,
-        estimatedReadTime: 30,
-        notes: '',
-        isBookmarked: true,
-        isFavorite: false,
-        priority: 'medium'
-      },
-      {
-        id: '4',
-        title: 'Advanced Cardiac Life Support (ACLS) Video Series',
-        type: 'video',
-        author: 'American Heart Association',
-        source: 'AHA Learning Center',
-        url: 'https://aha-learning.com/acls-2025',
-        description: 'Updated ACLS algorithms and procedures for 2025 including new CPR guidelines',
-        tags: ['ACLS', 'CPR', 'Emergency Medicine', 'Resuscitation'],
-        specialty: 'Emergency Medicine',
-        addedDate: new Date('2025-07-25'),
-        lastAccessed: new Date('2025-08-02'),
-        readingProgress: 80,
-        estimatedReadTime: 180,
-        rating: 4.7,
-        notes: 'Watch modules 3-5 for exam. New compression rate protocols.',
-        isBookmarked: false,
-        isFavorite: false,
-        readingList: 'Emergency Prep',
-        priority: 'high'
-      },
-      {
-        id: '5',
-        title: 'Medical Ethics in Modern Practice Podcast',
-        type: 'podcast',
-        author: 'Dr. Ethics Weekly',
-        source: 'Medical Ethics Podcast',
-        url: 'https://medethics.podcast.com/modern-practice-ep15',
-        description: 'Discussion on ethical dilemmas in modern medical practice, informed consent, and patient autonomy',
-        tags: ['Medical Ethics', 'Philosophy', 'Patient Care', 'Professional Development'],
-        specialty: 'Medical Ethics',
-        addedDate: new Date('2025-07-22'),
-        readingProgress: 100,
-        estimatedReadTime: 60,
-        rating: 4.4,
-        notes: 'Great case studies. Reference for ethics rotation.',
-        isBookmarked: false,
-        isFavorite: false,
-        priority: 'low'
-      }
-    ];
+    const loadResources = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        // TODO: Implement Firebase query to fetch user's reading resources
+        // const resourcesQuery = query(
+        //   collection(db, 'readingResources'),
+        //   where('userId', '==', user.uid),
+        //   orderBy('addedDate', 'desc')
+        // );
+        // const resourcesSnapshot = await getDocs(resourcesQuery);
+        // const userResources = resourcesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReadingResource));
+        // setResources(userResources);
 
-    const mockReadingLists: ReadingList[] = [
-      {
-        id: '1',
-        name: 'Cardiology Essentials',
-        description: 'Must-read materials for cardiology rotation',
-        resources: ['1'],
-        createdDate: new Date('2025-07-15'),
-        color: 'red'
-      },
-      {
-        id: '2',
-        name: 'Board Prep',
-        description: 'High-yield materials for board examinations',
-        resources: ['2'],
-        createdDate: new Date('2025-07-10'),
-        color: 'blue'
-      },
-      {
-        id: '3',
-        name: 'Emergency Prep',
-        description: 'Emergency medicine rotation preparation',
-        resources: ['4'],
-        createdDate: new Date('2025-07-20'),
-        color: 'orange'
+        // const listsQuery = query(
+        //   collection(db, 'readingLists'),
+        //   where('userId', '==', user.uid),
+        //   orderBy('createdDate', 'desc')
+        // );
+        // const listsSnapshot = await getDocs(listsQuery);
+        // const userLists = listsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReadingList));
+        // setReadingLists(userLists);
+        
+        // Initialize with empty arrays until Firebase collections are set up
+        setResources([]);
+        setReadingLists([]);
+      } catch (error) {
+        console.error('Error loading reading resources:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    setResources(mockResources);
-    setReadingLists(mockReadingLists);
-    setLoading(false);
-  }, []);
+    loadResources();
+  }, [user]);
 
   const filteredResources = resources.filter(resource => {
     const matchesSearch = resource.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

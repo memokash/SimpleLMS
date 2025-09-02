@@ -301,205 +301,53 @@ const RoundingToolsPage = () => {
   // Team members state
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
-  // Mock patient data - replace with actual EMR integration
+  // Load patient data from EMR integration
   useEffect(() => {
-    const mockPatients: Patient[] = [
-      {
-        id: '1',
-        name: 'John Smith',
-        age: 68,
-        gender: 'M',
-        mrn: 'MRN001234',
-        room: '302A',
-        admissionDate: new Date('2025-08-03'),
-        diagnosis: 'Acute MI, CHF exacerbation',
-        primaryDiagnosis: 'STEMI',
-        status: 'stable',
-        assignedTo: user?.displayName || 'Dr. Current User',
-        attendingPhysician: 'Dr. Sarah Johnson',
-        lastRounded: new Date('2025-08-05T08:30:00'),
-        roundingStatus: 'pending',
-        alerts: ['New labs available', 'Cardiology consult pending'],
-        vitals: {
-          temperature: 98.6,
-          heartRate: 78,
-          bloodPressure: '135/85',
-          respiratoryRate: 16,
-          oxygenSaturation: 96,
-          lastUpdated: new Date('2025-08-06T06:00:00')
-        },
-        labsOrdered: true,
-        imagingOrdered: false,
-        consultsPending: 1,
-        dischargePlanned: false,
-        priority: 'high'
-      },
-      {
-        id: '2',
-        name: 'Maria Rodriguez',
-        age: 45,
-        gender: 'F',
-        mrn: 'MRN005678',
-        room: '304B',
-        admissionDate: new Date('2025-08-04'),
-        diagnosis: 'Diabetic ketoacidosis',
-        primaryDiagnosis: 'DKA',
-        status: 'improving',
-        assignedTo: user?.displayName || 'Dr. Current User',
-        attendingPhysician: 'Dr. Michael Chen',
-        lastRounded: new Date('2025-08-06T07:00:00'),
-        roundingStatus: 'completed',
-        alerts: [],
-        vitals: {
-          temperature: 99.2,
-          heartRate: 88,
-          bloodPressure: '120/75',
-          respiratoryRate: 18,
-          oxygenSaturation: 98,
-          lastUpdated: new Date('2025-08-06T06:30:00')
-        },
-        labsOrdered: true,
-        imagingOrdered: true,
-        consultsPending: 0,
-        dischargePlanned: true,
-        priority: 'medium'
-      },
-      {
-        id: '3',
-        name: 'Robert Wilson',
-        age: 72,
-        gender: 'M',
-        mrn: 'MRN009876',
-        room: '308C',
-        admissionDate: new Date('2025-08-02'),
-        diagnosis: 'Pneumonia, COPD exacerbation',
-        primaryDiagnosis: 'CAP',
-        status: 'critical',
-        assignedTo: user?.displayName || 'Dr. Current User',
-        attendingPhysician: 'Dr. Amanda Rodriguez',
-        lastRounded: new Date('2025-08-05T09:15:00'),
-        roundingStatus: 'in-progress',
-        alerts: ['Critical lab values', 'ICU transfer consideration'],
-        vitals: {
-          temperature: 101.4,
-          heartRate: 110,
-          bloodPressure: '90/60',
-          respiratoryRate: 24,
-          oxygenSaturation: 89,
-          lastUpdated: new Date('2025-08-06T05:45:00')
-        },
-        labsOrdered: true,
-        imagingOrdered: true,
-        consultsPending: 2,
-        dischargePlanned: false,
-        priority: 'high'
-      },
-      {
-        id: '4',
-        name: 'Jennifer Brown',
-        age: 34,
-        gender: 'F',
-        mrn: 'MRN004321',
-        room: '312A',
-        admissionDate: new Date('2025-08-05'),
-        diagnosis: 'Appendicitis s/p appendectomy',
-        primaryDiagnosis: 'Post-op appendectomy',
-        status: 'stable',
-        assignedTo: user?.displayName || 'Dr. Current User',
-        attendingPhysician: 'Dr. Robert Kim',
-        lastRounded: new Date('2025-08-06T08:00:00'),
-        roundingStatus: 'completed',
-        alerts: [],
-        vitals: {
-          temperature: 98.8,
-          heartRate: 72,
-          bloodPressure: '118/70',
-          respiratoryRate: 14,
-          oxygenSaturation: 99,
-          lastUpdated: new Date('2025-08-06T06:15:00')
-        },
-        labsOrdered: false,
-        imagingOrdered: false,
-        consultsPending: 0,
-        dischargePlanned: true,
-        priority: 'low'
-      }
-    ];
+    const loadPatientData = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        
+        // TODO: Replace with actual EMR/EHR integration
+        // const patientsQuery = query(
+        //   collection(db, 'patients'),
+        //   where('assignedTo', '==', user.uid),
+        //   orderBy('admissionDate', 'desc')
+        // );
+        // const patientsSnapshot = await getDocs(patientsQuery);
+        // const patientsData = patientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Patient));
+        // setPatients(patientsData);
 
-    setPatients(mockPatients);
-    
-    // Mock team members
-    const mockTeamMembers: TeamMember[] = [
-      {
-        id: '1',
-        name: 'Dr. Sarah Johnson',
-        role: 'attending',
-        isOnline: true,
-        lastSeen: new Date()
-      },
-      {
-        id: '2', 
-        name: user?.displayName || 'Current User',
-        role: 'student',
-        isOnline: true,
-        lastSeen: new Date()
-      },
-      {
-        id: '3',
-        name: 'Dr. Mike Chen',
-        role: 'resident',
-        isOnline: false,
-        lastSeen: new Date(Date.now() - 300000) // 5 minutes ago
-      },
-      {
-        id: '4',
-        name: 'Sarah RN',
-        role: 'nurse',
-        isOnline: true,
-        lastSeen: new Date()
+        // const teamMembersQuery = query(
+        //   collection(db, 'teamMembers'),
+        //   where('serviceId', '==', currentServiceId)
+        // );
+        // const teamMembersSnapshot = await getDocs(teamMembersQuery);
+        // const teamMembersData = teamMembersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeamMember));
+        // setTeamMembers(teamMembersData);
+
+        // const teamNotesQuery = query(
+        //   collection(db, 'teamNotes'),
+        //   where('userId', '==', user.uid),
+        //   orderBy('submittedDate', 'desc')
+        // );
+        // const teamNotesSnapshot = await getDocs(teamNotesQuery);
+        // const teamNotesData = teamNotesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as HPTemplate | ProgressNote));
+        // setTeamNotes(teamNotesData);
+        
+        // Initialize with empty arrays until EMR integration is set up
+        setPatients([]);
+        setTeamMembers([]);
+        setTeamNotes([]);
+      } catch (error) {
+        console.error('Error loading patient data:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    // Mock team notes
-    const mockTeamNotes: (HPTemplate | ProgressNote)[] = [
-      {
-        id: '1',
-        patientId: '1',
-        studentId: '2',
-        studentName: user?.displayName || 'Current User',
-        submittedDate: new Date(),
-        status: 'submitted',
-        chiefComplaint: 'Chest pain',
-        hpi: '68-year-old male with a history of CAD presents with acute onset chest pain...',
-        reviewOfSystems: 'Positive for chest pain, dyspnea. Negative for fever, nausea...',
-        pastMedicalHistory: 'CAD, HTN, DM2',
-        pastSurgicalHistory: 'None',
-        medications: 'Metformin 1000mg BID, Lisinopril 10mg daily',
-        allergies: 'NKDA',
-        socialHistory: 'Former smoker, quit 5 years ago',
-        familyHistory: 'Father with MI at age 65',
-        physicalExam: 'VS: stable. Gen: mild distress. CV: RRR, no murmurs...',
-        labsImaging: 'Troponin elevated at 0.8. EKG shows ST elevation in leads II, III, aVF',
-        assessment: 'STEMI - inferior wall',
-        plan: 'Emergent cardiac catheterization, dual antiplatelet therapy...',
-        reviews: [
-          {
-            id: '1',
-            reviewerId: '1',
-            reviewerName: 'Dr. Sarah Johnson',
-            reviewerRole: 'attending',
-            grade: 8,
-            comments: 'Good overall structure. Consider more detail in physical exam. Well done on assessment and plan.',
-            reviewDate: new Date()
-          }
-        ],
-        averageGrade: 8
-      } as HPTemplate
-    ];
-    
-    setTeamMembers(mockTeamMembers);
-    setTeamNotes(mockTeamNotes);
-    setLoading(false);
+    };
+
+    loadPatientData();
   }, [user]);
 
   // Initialize patient data template

@@ -118,7 +118,7 @@ const ProfilePage = () => {
   const getPrivacyIcon = (level: PrivacyLevel) => {
     switch (level) {
       case 'public': return <Users className="w-4 h-4 text-green-500" />;
-      case 'friends': return <User className="w-4 h-4 text-yellow-500" />;
+      case 'colleagues': return <User className="w-4 h-4 text-yellow-500" />;
       case 'private': return <EyeOff className="w-4 h-4 text-red-500" />;
       default: return <Eye className="w-4 h-4 text-gray-500" />;
     }

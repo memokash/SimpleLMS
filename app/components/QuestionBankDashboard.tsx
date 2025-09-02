@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { useTheme } from './ThemeContext'; // Re-enable if you have this
+import { useTheme } from './ThemeContext';
+import EnhancedQuizDisplay from './EnhancedQuizDisplay';
 import { 
   getQuestionBankStats, 
   searchQuestions, 
@@ -25,6 +26,7 @@ import {
   Target,
   Play,
   Eye,
+  ArrowLeft,
   ThumbsUp,
   ThumbsDown,
   Bookmark,
@@ -81,7 +83,10 @@ const QuestionBankDashboard = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [viewMode, setViewMode] = useState<'browse' | 'generate' | 'upload'>('browse');
+  const [viewMode, setViewMode] = useState<'browse' | 'generate' | 'upload' | 'preview'>('upload');
+  const [previewQuestions, setPreviewQuestions] = useState<any[]>([]);
+  const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
+  const [selectedPreviewAnswer, setSelectedPreviewAnswer] = useState<number | undefined>();
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   
   // Upload and generation states
@@ -278,24 +283,40 @@ const QuestionBankDashboard = () => {
       setQuestions(initialQuestions);
 
     } catch (error) {
-      console.warn('⚠️ Firebase failed, using mock data fallback:', error);
+      console.warn('⚠️ Firebase failed, initializing with empty data:', error);
       
-      // Update mock stats with populated arrays
-      const updatedMockStats = {
-        ...mockStats,
-        popularQuestions: mockQuestions.slice(0, 3),
-        mostUsedQuestions: mockQuestions.slice(0, 5)
+      // Initialize with empty data structure
+      const emptyStats: ExtendedQuestionBankStats = {
+        totalQuestions: 0,
+        bySpecialty: {},
+        byDifficulty: {},
+        byTopic: {},
+        byCategory: {},
+        recentlyAdded: 0,
+        categories: {},
+        difficulties: {},
+        communityContributions: 0,
+        totalUsers: 0,
+        averageQualityScore: 0,
+        totalQuizzes: 0,
+        popularQuestions: [],
+        aiGeneratedCount: 0,
+        userGeneratedCount: 0,
+        questionsByMonth: {},
+        topContributors: [],
+        mostUsedQuestions: [],
+        lastUpdated: new Date()
       };
       
-      // Use mock data as fallback
-      setStats(updatedMockStats);
-      setQuestions(mockQuestions);
+      // Use empty data structure
+      setStats(emptyStats);
+      setQuestions([]);
       
-      // Set a non-blocking error message
-      setError('Using offline data. Some features may be limited.');
+      // Set error message for no data available
+      setError('No data available. Please ensure Firebase is properly configured.');
       
-      // Clear error after 5 seconds
-      setTimeout(() => setError(null), 5000);
+      // Clear error after 8 seconds
+      setTimeout(() => setError(null), 8000);
       
     } finally {
       setLoading(false);
@@ -554,8 +575,8 @@ const QuestionBankDashboard = () => {
           <div className="py-12">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
               <div className="text-center lg:text-left">
-                <h1 className="text-4xl lg:text-5xl font-bold mb-4">Community Question Bank 🏦</h1>
-                <p className="text-purple-100 text-xl">User-generated questions powered by AI</p>
+                <h1 className="text-4xl lg:text-5xl font-bold mb-4">AI Question Generator 🧠</h1>
+                <p className="text-purple-100 text-xl">Upload your medical content and let AI create practice questions</p>
                 {error && (
                   <div className="mt-3 bg-yellow-500/20 border border-yellow-400/30 rounded-lg p-3">
                     <p className="text-yellow-100 text-sm">⚠️ {error}</p>
@@ -604,17 +625,6 @@ const QuestionBankDashboard = () => {
         <div className="bg-white/70 dark:bg-gray-800/70 dark:shadow-yellow-500/20 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg p-6 mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => setViewMode('browse')}
-              className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
-                viewMode === 'browse'
-                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
-              }`}
-            >
-              <Database className="w-6 h-6" />
-              <span>Browse Questions</span>
-            </button>
-            <button
               onClick={() => setViewMode('upload')}
               className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
                 viewMode === 'upload'
@@ -623,7 +633,18 @@ const QuestionBankDashboard = () => {
               }`}
             >
               <Upload className="w-6 h-6" />
-              <span>Generate Questions</span>
+              <span>Upload Content</span>
+            </button>
+            <button
+              onClick={() => setViewMode('browse')}
+              className={`px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-3 min-w-[200px] justify-center ${
+                viewMode === 'browse'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
+              }`}
+            >
+              <Database className="w-6 h-6" />
+              <span>My Generated Questions</span>
             </button>
             <button
               onClick={() => setViewMode('generate')}
@@ -633,8 +654,8 @@ const QuestionBankDashboard = () => {
                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
               }`}
             >
-              <Shuffle className="w-6 h-6" />
-              <span>Generate Quiz</span>
+              <Brain className="w-6 h-6" />
+              <span>Create Quiz from Questions</span>
             </button>
           </div>
         </div>
@@ -778,22 +799,36 @@ const QuestionBankDashboard = () => {
                     {generationResult.success && generationResult.questions && (
                       <div className="mt-6">
                         <p className="text-sm text-green-700 dark:text-green-300 mb-4 font-medium">
-                          🎉 Generated {generationResult.questions.length} questions and saved to question bank!
+                          🎉 Generated {generationResult.questions.length} questions successfully!
                         </p>
-                        <div className="max-h-48 overflow-y-auto space-y-3">
-                          {(generationResult.questions as QuestionBankQuestion[]).slice(0, 3).map((q: QuestionBankQuestion, index: number) => (
-                            <div
-                              key={index}
-                              className="text-sm text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/30 p-4 rounded-xl"
-                            >
-                              <strong>Q{index + 1}:</strong> {q.question}
-                            </div>
-                          ))}
-                          {generationResult.questions.length > 3 && (
-                            <div className="text-sm text-green-600 dark:text-green-400 font-medium text-center">
-                              ...and {generationResult.questions.length - 3} more questions
-                            </div>
-                          )}
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() => {
+                              setPreviewQuestions(generationResult.questions);
+                              setCurrentPreviewIndex(0);
+                              setSelectedPreviewAnswer(undefined);
+                              setViewMode('preview');
+                            }}
+                            className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-3 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                          >
+                            <Eye className="w-5 h-5" />
+                            Preview Questions
+                          </button>
+                          <button
+                            onClick={() => {
+                              setQuestions(generationResult.questions);
+                              setViewMode('browse');
+                            }}
+                            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                          >
+                            <Database className="w-5 h-5" />
+                            View in Bank
+                          </button>
+                        </div>
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                            💡 Your questions have been saved. You can preview them with AI-enhanced explanations or view them in your question bank.
+                          </p>
                         </div>
                       </div>
                     )}
@@ -814,8 +849,38 @@ const QuestionBankDashboard = () => {
         ) : viewMode === 'browse' ? (
           // Browse Questions Mode - Enhanced with Firebase data + search
           <>
+            {/* Empty State Message for Community Questions */}
+            {stats && stats.totalQuestions === 0 && (
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-xl mb-8 shadow-lg">
+                <div className="flex items-center gap-4">
+                  <Users className="h-8 w-8" />
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Welcome to the AI Question Generator!</h3>
+                    <p className="text-blue-100">
+                      Upload your medical study materials (PDFs, notes, textbooks) and our AI will generate high-quality practice questions.
+                      The AI model is trained by medical education professionals to create clinically relevant questions from your content.
+                    </p>
+                    <div className="mt-4 flex gap-4">
+                      <button
+                        onClick={() => setViewMode('generate')}
+                        className="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                      >
+                        Generate Questions with AI
+                      </button>
+                      <button
+                        onClick={() => setViewMode('upload')}
+                        className="bg-white/20 text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/30 transition-colors border border-white/40"
+                      >
+                        Upload Your Questions
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Stats Overview */}
-            {stats && (
+            {stats && stats.totalQuestions > 0 && (
               <>
                 <SectionSeparator title="Question Bank Overview" icon={BarChart3} color="blue" />
                 

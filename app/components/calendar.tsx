@@ -68,75 +68,45 @@ const CalendarRotationsPage = () => {
     setMounted(true);
   }, []);
 
-  // Mock data - replace with Firebase queries
+  // Load calendar data
   useEffect(() => {
-    const mockRotations: Rotation[] = [
-      {
-        id: '1',
-        title: 'Internal Medicine Rotation',
-        specialty: 'Internal Medicine',
-        hospital: 'Tampa General Hospital',
-        startDate: new Date('2025-08-01'),
-        endDate: new Date('2025-08-31'),
-        supervisor: 'Dr. Michael Johnson',
-        notes: 'Focus on diabetes management and hypertension protocols',
-        files: ['IM_Guidelines.pdf', 'Patient_Cases.docx'],
-        color: 'blue',
-        completed: false,
-        rating: 4.5
-      },
-      {
-        id: '2',
-        title: 'Cardiology Rotation',
-        specialty: 'Cardiology',
-        hospital: 'Moffitt Heart Institute',
-        startDate: new Date('2025-09-01'),
-        endDate: new Date('2025-09-30'),
-        supervisor: 'Dr. Sarah Chen',
-        notes: 'Emphasis on ECG interpretation and cardiac catheterization',
-        files: ['Cardiology_Handbook.pdf'],
-        color: 'red',
-        completed: false
-      },
-      {
-        id: '3',
-        title: 'Emergency Medicine',
-        specialty: 'Emergency Medicine',
-        hospital: 'Tampa General ED',
-        startDate: new Date('2025-07-01'),
-        endDate: new Date('2025-07-31'),
-        supervisor: 'Dr. Amanda Rodriguez',
-        notes: 'Completed - Great exposure to trauma cases',
-        files: ['EM_Protocols.pdf', 'Trauma_Cases.docx', 'Final_Evaluation.pdf'],
-        color: 'orange',
-        completed: true,
-        rating: 4.8
-      }
-    ];
+    const loadCalendarData = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        
+        // TODO: Replace with Firebase queries
+        // const rotationsQuery = query(
+        //   collection(db, 'rotations'),
+        //   where('userId', '==', user.uid),
+        //   orderBy('startDate', 'desc')
+        // );
+        // const rotationsSnapshot = await getDocs(rotationsQuery);
+        // const rotationsData = rotationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Rotation));
+        // setRotations(rotationsData);
 
-    const mockEvents: CalendarEvent[] = [
-      {
-        id: '1',
-        title: 'Cardiology Orientation',
-        date: new Date('2025-08-15'),
-        time: '9:00 AM',
-        type: 'meeting',
-        description: 'Meet with Dr. Chen for rotation orientation'
-      },
-      {
-        id: '2',
-        title: 'USMLE Step 2 Exam',
-        date: new Date('2025-08-20'),
-        time: '8:00 AM',
-        type: 'exam',
-        description: 'USMLE Step 2 CK examination'
-      }
-    ];
+        // const eventsQuery = query(
+        //   collection(db, 'calendarEvents'),
+        //   where('userId', '==', user.uid),
+        //   orderBy('date', 'asc')
+        // );
+        // const eventsSnapshot = await getDocs(eventsQuery);
+        // const eventsData = eventsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as CalendarEvent));
+        // setEvents(eventsData);
 
-    setRotations(mockRotations);
-    setEvents(mockEvents);
-    setLoading(false);
-  }, []);
+        // Initialize with empty arrays until Firebase collections are set up
+        setRotations([]);
+        setEvents([]);
+      } catch (error) {
+        console.error('Error loading calendar data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCalendarData();
+  }, [user]);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();

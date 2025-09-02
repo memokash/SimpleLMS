@@ -44,33 +44,18 @@ export default function QualityAssuranceSystem() {
   const loadReviewItems = async () => {
     setIsLoading(true);
     try {
-      // Mock data - replace with actual Firebase query
-      const mockItems: ReviewItem[] = [
-        {
-          id: '1',
-          type: 'explanation',
-          courseId: 'course_001',
-          courseName: 'Cardiology Fundamentals',
-          questionText: 'What is the most common cause of acute myocardial infarction?',
-          aiCorrectExplanation: 'Acute myocardial infarction is most commonly caused by coronary artery thrombosis...',
-          aiIncorrectExplanation: 'The other options represent less common causes...',
-          status: 'pending',
-          submittedAt: new Date(Date.now() - 86400000),
-          category: 'Cardiology'
-        },
-        {
-          id: '2',
-          type: 'categorization',
-          courseId: 'course_002',
-          courseName: 'Advanced Dermatology',
-          aiCategory: 'Dermatology',
-          status: 'pending',
-          submittedAt: new Date(Date.now() - 172800000),
-          category: 'Dermatology'
-        }
-      ];
+      // TODO: Replace with actual Firebase query
+      // const reviewQuery = query(
+      //   collection(db, 'qaReviewItems'),
+      //   where('status', '==', 'pending'),
+      //   orderBy('submittedAt', 'desc')
+      // );
+      // const reviewSnapshot = await getDocs(reviewQuery);
+      // const items = reviewSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReviewItem));
+      // setReviewItems(items);
 
-      setReviewItems(mockItems);
+      // Initialize with empty array until Firebase collection is set up
+      setReviewItems([]);
     } catch (error) {
       console.error('Failed to load review items:', error);
     } finally {

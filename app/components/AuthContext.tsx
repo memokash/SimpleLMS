@@ -43,36 +43,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // ✅ SIMPLIFIED - Only handle auth state, no automatic redirects
     return onAuthStateChanged(auth, (currentUser) => {
-      console.log('🔍 Auth state changed:', {
-        userExists: !!currentUser,
-        currentPath: pathname
-      });
-      
       setUser(currentUser);
       setLoading(false);
     });
   }, [pathname]);
 
   const signInWithEmail = async (email: string, password: string) => {
-  console.log('🔐 Signing in with email:', email);
   await signInWithEmailAndPassword(auth, email, password);
   router.push('/dashboard');
 };
 
 const signUpWithEmail = async (email: string, password: string) => {
-  console.log('📝 Signing up with email:', email);
   await createUserWithEmailAndPassword(auth, email, password);
   router.push('/dashboard');
 };
 
 const signInWithGoogle = async () => {
-  console.log('🔍 Signing in with Google');
   await signInWithPopup(auth, googleProvider);
   router.push('/dashboard');
 };
 
   const logout = async () => {
-    console.log('👋 Signing out');
     await signOut(auth);
     
     // ✅ Always redirect to home on logout
@@ -88,7 +79,9 @@ const signInWithGoogle = async () => {
       const token = await user.getIdToken();
       return token;
     } catch (error) {
-      console.error('Error getting ID token:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error getting ID token:', error);
+      }
       return null;
     }
   };

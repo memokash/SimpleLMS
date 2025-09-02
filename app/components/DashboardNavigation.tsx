@@ -145,7 +145,9 @@ const DashboardNavigation = () => {
       setShowUserMenu(false);
       router.push('/');
     } catch (error) {
-      console.error('Error signing out:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error signing out:', error);
+      }
       alert('Failed to sign out. Please try again.');
     }
   };

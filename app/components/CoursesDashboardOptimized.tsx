@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 import { getAllCoursesWithProgress, getUserStats } from '../../lib/courseService';
-import { searchQuizLibrary, getLibraryOverview, SearchOptions } from '../../lib/courseSearchService';
+// import { searchQuizLibrary, getLibraryOverview, SearchOptions } from '../../lib/courseSearchService';
 import {
   BookOpen, Star, Target, Clock, CheckCircle, Award, Lock, Crown, 
   ArrowRight, Book, Loader2, AlertCircle, RefreshCw, Sun, Moon,
@@ -69,7 +69,7 @@ const CoursesDashboardOptimized = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   
-  const ITEMS_PER_PAGE = 24; // Increased for tablet - smaller tiles fit more per page
+  const ITEMS_PER_PAGE = 50; // Increased to show more of the 1746 courses
   const FEATURED_COURSE_COUNT = 6;
 
   // Medical categories with icons
@@ -97,70 +97,27 @@ const CoursesDashboardOptimized = () => {
     try {
       setError(null);
       setLoading(true);
-      console.log('🔄 Loading courses from Firebase...');
+      
+      console.log('Loading courses from Firebase...');
 
-      // First try to use enhanced search service
-      try {
-        const libraryOverview = await getLibraryOverview();
-        const searchResults = await searchQuizLibrary({ sortBy: 'popular', limit: 100 });
-        
-        // Transform to our LibraryStats interface
-        const stats: LibraryStats = {
-          totalCourses: libraryOverview.totalQuizzes,
-          totalQuestions: libraryOverview.totalQuestions,
-          categories: Object.fromEntries(
-            Object.entries(libraryOverview.categories).map(([key, value]) => 
-              [key, value.questions]
-            )
-          ),
-          difficulties: libraryOverview.difficulties,
-          avgRating: libraryOverview.avgRating,
-          completionRate: 75.0
-        };
-        
-        setLibraryStats(stats);
-        setCourses(searchResults.quizzes);
-        
-        // Set featured courses (random selection from available courses)
-        const shuffledCourses = [...searchResults.quizzes].sort(() => 0.5 - Math.random());
-        setFeaturedCourses(shuffledCourses.slice(0, 6));
-        setFilteredCourses(searchResults.quizzes);
-        
-        console.log(`✅ Loaded ${searchResults.quizzes.length} courses from enhanced search`);
-        return;
-      } catch (searchError) {
-        console.log('⚠️ Enhanced search failed, falling back to direct Firebase connection:', searchError);
-      }
-
-      // Fallback to direct Firebase connection using CourseService
-      const { getAllCoursesWithProgress } = await import('../../lib/courseService');
-      const directCourses = await getAllCoursesWithProgress(user?.uid || null);
+      // Always get all courses, don't filter by user progress first
+      const { getAllCourses } = await import('../../lib/courseService');
+      let directCourses = await getAllCourses();
+      
+      console.log(`Found ${directCourses.length} courses from Firebase`);
       
       if (directCourses.length === 0) {
-        throw new Error('No courses found in Firebase. Please ensure courses are properly uploaded.');
+        throw new Error('No courses found in Firebase. Database may be empty or permissions issue.');
       }
       
-      // Transform CourseService data to SearchableQuiz format
-      const transformedCourses = directCourses.map((course): Course => ({
-        id: course.id,
-        title: course.title, // Original title
-        courseName: course.courseName, // This contains the Firebase 'NewTitle' field
-        description: course.description,
+      // Use courses directly from Firebase - no transformation needed
+      const coursesToUse = directCourses.map((course): Course => ({
+        ...course,
         category: course.category || 'Medical Knowledge',
         specialty: course.specialty || 'General Medicine',
-        difficulty: course.difficulty,
-        questionCount: course.questionCount,
-        estimatedTime: course.estimatedTime,
-        completed: course.completed,
-        lastScore: course.lastScore,
-        progress: course.progress,
-        instructor: course.instructor,
-        rating: course.rating || (4.0 + Math.random()),
-        studentsEnrolled: course.studentsEnrolled || Math.floor(Math.random() * 500) + 100,
-        isPublic: course.isPublic,
-        tags: course.category ? [course.category, course.specialty] : ['Medical'],
-        createdAt: course.createdAt,
-        updatedAt: course.updatedAt
+        rating: course.rating || 4.5,
+        studentsEnrolled: course.studentsEnrolled || 250,
+        tags: [course.category || 'Medical', course.specialty || 'General'].filter(Boolean)
       }));
       
       // Generate statistics from real data
@@ -170,7 +127,7 @@ const CoursesDashboardOptimized = () => {
       let totalRating = 0;
       let ratedCourses = 0;
       
-      transformedCourses.forEach(course => {
+      coursesToUse.forEach(course => {
         // Categories
         const category = course.category || 'Medical Knowledge';
         categories[category] = (categories[category] || 0) + course.questionCount;
@@ -189,7 +146,7 @@ const CoursesDashboardOptimized = () => {
       });
       
       const stats: LibraryStats = {
-        totalCourses: transformedCourses.length,
+        totalCourses: coursesToUse.length,
         totalQuestions,
         categories,
         difficulties,
@@ -198,18 +155,25 @@ const CoursesDashboardOptimized = () => {
       };
       
       setLibraryStats(stats);
-      setCourses(transformedCourses);
+      setCourses(coursesToUse);
       
       // Set featured courses (random selection from available courses)
-      const shuffledCourses = [...transformedCourses].sort(() => 0.5 - Math.random());
-      setFeaturedCourses(shuffledCourses.slice(0, 6));
-      setFilteredCourses(transformedCourses);
+      const shuffledCourses = coursesToUse.length > 6 
+        ? [...coursesToUse].sort(() => 0.5 - Math.random()).slice(0, 6)
+        : coursesToUse;
+      setFeaturedCourses(shuffledCourses);
+      setFilteredCourses(coursesToUse);
       
-      console.log(`✅ Loaded ${transformedCourses.length} courses with ${totalQuestions.toLocaleString()} total questions`);
 
     } catch (err) {
       console.error('❌ Error loading courses:', err);
-      setError(`Failed to load course library: ${err instanceof Error ? err.message : 'Unknown error'}. Please check your Firebase connection and ensure courses are properly uploaded.`);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to load course library: ${errorMessage}`);
+      
+      // Log additional debugging info
+      console.log('Debug info:');
+      console.log('- User:', user ? user.email : 'Not logged in');
+      console.log('- Error details:', err);
       
       // Reset states on error
       setLibraryStats(null);
@@ -224,27 +188,8 @@ const CoursesDashboardOptimized = () => {
 
   useEffect(() => {
     if (mounted) {
-      // Test Firebase connection first
-      const testConnection = async () => {
-        try {
-          const { testFirebaseConnection } = await import('../../lib/firebase');
-          const result = await testFirebaseConnection();
-          if (result.success) {
-            console.log('✅ Firebase connection verified, loading courses...');
-            loadCoursesData();
-          } else {
-            console.error('❌ Firebase connection failed:', result.message);
-            setError(`Firebase connection failed: ${result.message}`);
-            setLoading(false);
-          }
-        } catch (err) {
-          console.error('❌ Firebase test failed:', err);
-          // Still try to load courses
-          loadCoursesData();
-        }
-      };
-      
-      testConnection();
+      // Directly load courses without testing connection
+      loadCoursesData();
     }
   }, [mounted, user]);
 
@@ -483,7 +428,7 @@ const CoursesDashboardOptimized = () => {
               <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">Expert Explanations</span>
               {libraryStats && (
                 <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-200 dark:border-green-700">
-                  {libraryStats.totalCourses} Courses • {libraryStats.totalQuestions.toLocaleString()} Questions
+                  {libraryStats.totalCourses.toLocaleString()} Quizzes • {libraryStats.totalQuestions.toLocaleString()} Questions
                 </span>
               )}
             </div>
@@ -525,7 +470,7 @@ const CoursesDashboardOptimized = () => {
                     </div>
                   </div>
                   
-                  <h3 className="text-gray-900 group-hover:text-amber-800 font-bold text-sm mb-2 line-clamp-2 leading-tight transition-colors duration-300">
+                  <h3 className="text-gray-900 dark:text-white group-hover:text-amber-800 font-bold text-sm mb-2 line-clamp-2 leading-tight transition-colors duration-300">
                     {course.title}
                   </h3>
                   
@@ -551,7 +496,7 @@ const CoursesDashboardOptimized = () => {
                   </div>
                   
                   <button 
-                    onClick={() => router.push(`/dashboard/etutor/${course.id}`)}
+                    onClick={() => router.push(`/quiz?id=${encodeURIComponent(course.id)}`)}
                     className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-3 py-2 rounded-lg font-semibold shadow-lg hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-xs"
                   >
                     <Play className="h-3 w-3" />
@@ -669,8 +614,9 @@ const CoursesDashboardOptimized = () => {
           {/* Results Summary */}
           <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <span>
-              Showing {paginatedCourses.length} of {filteredCourses.length} courses
+              Showing {paginatedCourses.length} of {filteredCourses.length.toLocaleString()} quizzes
               {searchTerm && ` for "${searchTerm}"`}
+              {courses.length > 0 && ` (Total: ${courses.length.toLocaleString()} available)`}
             </span>
             <span>
               {filteredCourses.reduce((total, course) => total + course.questionCount, 0).toLocaleString()} questions available
@@ -704,7 +650,7 @@ const CoursesDashboardOptimized = () => {
                 </div>
                 
                 <h3 className="text-gray-900 dark:text-white font-bold text-xs mb-2 line-clamp-2 leading-tight">
-                  {course.courseName || course.title}
+                  {course.title}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-xs mb-2 line-clamp-2">
                   {course.description}
@@ -724,7 +670,7 @@ const CoursesDashboardOptimized = () => {
                 </div>
                 
                 <button 
-                  onClick={() => router.push(`/dashboard/etutor/${course.id}`)}
+                  onClick={() => router.push(`/quiz?id=${encodeURIComponent(course.id)}`)}
                   className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-2 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-1 text-xs"
                 >
                   <Play className="h-3 w-3" />
@@ -771,7 +717,7 @@ const CoursesDashboardOptimized = () => {
                   </div>
                   
                   <button 
-                    onClick={() => router.push(`/dashboard/etutor/${course.id}`)}
+                    onClick={() => router.push(`/quiz?id=${encodeURIComponent(course.id)}`)}
                     className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 text-xs"
                   >
                     <Play className="h-3 w-3" />

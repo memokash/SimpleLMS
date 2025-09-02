@@ -52,66 +52,42 @@ const StudyGroupsPage = () => {
   const [activeTab, setActiveTab] = useState<'discover' | 'my-groups' | 'create'>('discover');
   const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with real API calls
+  // Load study groups data
   useEffect(() => {
-    const mockGroups: StudyGroup[] = [
-      {
-        id: '1',
-        name: 'Cardiology Study Circle',
-        description: 'Weekly study sessions focusing on cardiovascular medicine, ECG interpretation, and clinical cases',
-        subject: 'Cardiology',
-        memberCount: 12,
-        maxMembers: 15,
-        isPrivate: false,
-        meetingTime: 'Wednesdays 7:00 PM',
-        location: 'Library Room 204',
-        nextMeeting: new Date('2025-08-13'),
-        createdBy: 'Dr. Sarah Johnson',
-        tags: ['ECG', 'Heart Disease', 'Clinical Cases'],
-        avgRating: 4.8,
-        isMember: true,
-        isOwner: false
-      },
-      {
-        id: '2',
-        name: 'USMLE Step 1 Prep',
-        description: 'Intensive preparation group for USMLE Step 1 with practice questions and review sessions',
-        subject: 'USMLE',
-        memberCount: 25,
-        maxMembers: 30,
-        isPrivate: false,
-        meetingTime: 'Daily 6:00 AM',
-        location: 'Virtual (Zoom)',
-        nextMeeting: new Date('2025-08-07'),
-        createdBy: 'Michael Chen',
-        tags: ['USMLE', 'Step 1', 'Practice Questions'],
-        avgRating: 4.9,
-        isMember: false,
-        isOwner: false
-      },
-      {
-        id: '3',
-        name: 'Anatomy & Physiology Masters',
-        description: 'Deep dive into human anatomy and physiology with cadaver lab sessions',
-        subject: 'Anatomy',
-        memberCount: 8,
-        maxMembers: 12,
-        isPrivate: true,
-        meetingTime: 'Tuesdays 3:00 PM',
-        location: 'Anatomy Lab',
-        nextMeeting: new Date('2025-08-12'),
-        createdBy: 'Emma Wilson',
-        tags: ['Anatomy', 'Physiology', 'Cadaver Lab'],
-        avgRating: 4.7,
-        isMember: true,
-        isOwner: true
+    const loadStudyGroups = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        
+        // TODO: Replace with Firebase queries
+        // const studyGroupsQuery = query(
+        //   collection(db, 'studyGroups'),
+        //   where('isPrivate', '==', false),
+        //   orderBy('createdAt', 'desc')
+        // );
+        // const studyGroupsSnapshot = await getDocs(studyGroupsQuery);
+        // const publicGroups = studyGroupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StudyGroup));
+        
+        // const myGroupsQuery = query(
+        //   collection(db, 'studyGroups'),
+        //   where('members', 'array-contains', user.uid)
+        // );
+        // const myGroupsSnapshot = await getDocs(myGroupsQuery);
+        // const userGroups = myGroupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as StudyGroup));
+        
+        // Initialize with empty arrays until Firebase collections are set up
+        setStudyGroups([]);
+        setMyGroups([]);
+      } catch (error) {
+        console.error('Error loading study groups:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    setStudyGroups(mockGroups);
-    setMyGroups(mockGroups.filter(g => g.isMember));
-    setLoading(false);
-  }, []);
+    loadStudyGroups();
+  }, [user]);
 
   const filteredGroups = studyGroups.filter(group => {
     const matchesSearch = group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -221,8 +197,26 @@ const StudyGroupsPage = () => {
             </div>
 
             {/* Study Groups Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredGroups.map((group) => (
+            {filteredGroups.length === 0 ? (
+              <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">No study groups available</h3>
+                <p className="text-gray-600 mb-6">
+                  {searchTerm || selectedSubject ? 
+                    'No groups match your search criteria. Try adjusting your filters.' : 
+                    'Be the first to create a study group and start building your learning community!'
+                  }
+                </p>
+                <button
+                  onClick={() => setActiveTab('create')}
+                  className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-colors font-semibold"
+                >
+                  Create First Study Group
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredGroups.map((group) => (
                 <div key={group.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden">
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
@@ -292,8 +286,9 @@ const StudyGroupsPage = () => {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 

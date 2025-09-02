@@ -14,7 +14,7 @@ interface Plan {
 
 // Initialize server-side Stripe
 export const stripe = new StripeSDK(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-07-30.basil',
+  apiVersion: '2025-08-27.basil',
 });
 
 // Load Stripe on frontend

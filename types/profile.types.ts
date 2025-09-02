@@ -16,6 +16,9 @@ export interface MedicalProfile {
   location: string;
   interests: string[];
   privacy: PrivacySettings;
+  // These fields exist in firebase.types.ts but not here - adding for consistency
+  isActive: boolean;
+  lastSeen: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,14 +43,17 @@ export interface PrivacySettings {
   showStatus: PrivacyLevel;
 }
 
-export type PrivacyLevel = 'public' | 'friends' | 'private';
+export type PrivacyLevel = 'public' | 'colleagues' | 'private';
 
 export interface Invitation {
   id: string;
+  senderUserId: string;  // Added to match firebase.types.ts
   senderEmail: string;
   senderName: string;
   recipientEmail: string;
   message: string;
-  status: 'pending' | 'sent' | 'failed';
+  referralCode: string;  // Added to match firebase.types.ts
+  status: 'pending' | 'sent' | 'failed' | 'accepted';  // Added 'accepted' status
   sentAt: Date;
+  acceptedAt?: Date;  // Added to match firebase.types.ts
 }

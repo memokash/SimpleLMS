@@ -57,7 +57,9 @@ const AdminSettings = () => {
         }
       });
     } catch (error) {
-      console.error('Failed to load AI statistics:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to load AI statistics:', error);
+      }
     } finally {
       setIsLoading(false);
     }

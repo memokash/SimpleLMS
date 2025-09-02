@@ -62,63 +62,35 @@ const MessagesPage = () => {
     setMounted(true);
   }, []);
 
-  // Mock data - replace with real Firebase queries
+  // Load messages data
   useEffect(() => {
-    const mockConversations: Conversation[] = [
-      {
-        id: '1',
-        participants: ['user1', 'user2'],
-        participantNames: ['Dr. Sarah Johnson'],
-        lastMessage: {
-          id: '1',
-          content: 'Hey, did you finish the cardiology assignment?',
-          senderId: 'user2',
-          senderName: 'Dr. Sarah Johnson',
-          timestamp: new Date('2025-08-06T10:30:00'),
-          read: false,
-          type: 'text'
-        },
-        unreadCount: 2,
-        isGroup: false
-      },
-      {
-        id: '2',
-        participants: ['user1', 'user3', 'user4', 'user5'],
-        participantNames: ['Study Group Alpha'],
-        lastMessage: {
-          id: '2',
-          content: 'Meeting tomorrow at 3 PM in the library',
-          senderId: 'user3',
-          senderName: 'Michael Chen',
-          timestamp: new Date('2025-08-06T09:15:00'),
-          read: true,
-          type: 'text'
-        },
-        unreadCount: 0,
-        isGroup: true,
-        groupName: 'Cardiology Study Group'
-      },
-      {
-        id: '3',
-        participants: ['user1', 'user6'],
-        participantNames: ['Dr. Emily Rodriguez'],
-        lastMessage: {
-          id: '3',
-          content: 'I uploaded the lecture notes to the shared folder',
-          senderId: 'user6',
-          senderName: 'Dr. Emily Rodriguez',
-          timestamp: new Date('2025-08-05T16:45:00'),
-          read: true,
-          type: 'text'
-        },
-        unreadCount: 0,
-        isGroup: false
-      }
-    ];
+    const loadMessagesData = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        setLoading(true);
+        
+        // TODO: Replace with Firebase queries
+        // const conversationsQuery = query(
+        //   collection(db, 'conversations'),
+        //   where('participants', 'array-contains', user.uid),
+        //   orderBy('lastMessageTime', 'desc')
+        // );
+        // const conversationsSnapshot = await getDocs(conversationsQuery);
+        // const conversationsData = conversationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Conversation));
+        // setConversations(conversationsData);
 
-    setConversations(mockConversations);
-    setLoading(false);
-  }, []);
+        // Initialize with empty arrays until Firebase collections are set up
+        setConversations([]);
+      } catch (error) {
+        console.error('Error loading messages data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMessagesData();
+  }, [user]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) {
