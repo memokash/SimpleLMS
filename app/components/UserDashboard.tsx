@@ -302,17 +302,13 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      isDark 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900' 
-        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-    }`}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-6">
         
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
           <div className="space-y-2">
-            <h1 className="text-3xl gradient-title">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Welcome back, {user?.displayName || user?.email?.split('@')[0] || 'Medical Student'}! 👋
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-200">
@@ -321,7 +317,7 @@ export default function UserDashboard() {
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20 shadow-lg">
+            <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-300" />
                 <span className="text-gray-700 dark:text-gray-200 font-medium">Today: 3 sessions</span>
@@ -344,7 +340,7 @@ export default function UserDashboard() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="reactive-tile p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('blue')}`}>
                 <BookOpen className="h-6 w-6" />
@@ -355,7 +351,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Total Courses</p>
           </div>
 
-          <div className="reactive-tile p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('green')}`}>
                 <Award className="h-6 w-6" />
@@ -366,7 +362,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Completed</p>
           </div>
 
-          <div className="reactive-tile p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('purple')}`}>
                 <Target className="h-6 w-6" />
@@ -377,7 +373,7 @@ export default function UserDashboard() {
             <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">In Progress</p>
           </div>
 
-          <div className="reactive-tile p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-xl ${getColorClasses('yellow')}`}>
                 <Gauge className="h-6 w-6" />
@@ -405,7 +401,7 @@ export default function UserDashboard() {
                   const IconComponent = action.icon;
                   return (
                     <Link key={action.href} href={action.href}>
-                      <div className="group reactive-tile p-6 cursor-pointer">
+                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-4">
                           <div className={`p-3 rounded-xl ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300`}>
                             <IconComponent className="h-6 w-6" />
@@ -418,7 +414,7 @@ export default function UserDashboard() {
                               {action.description}
                             </p>
                           </div>
-                          <span className="text-xs bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1 rounded-full font-medium">
+                          <span className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-3 py-1 rounded-full font-medium">
                             {action.badge}
                           </span>
                         </div>
@@ -440,7 +436,7 @@ export default function UserDashboard() {
                   const IconComponent = tool.icon;
                   return (
                     <Link key={tool.href} href={tool.href}>
-                      <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
                         <div className="flex items-center gap-4">
                           <div className={`p-3 rounded-xl ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300`}>
                             <IconComponent className="h-6 w-6" />
@@ -482,7 +478,7 @@ export default function UserDashboard() {
                   const IconComponent = tool.icon;
                   return (
                     <Link key={tool.href} href={tool.href}>
-                      <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
                         <div className="flex items-center gap-4">
                           <div className={`p-3 rounded-xl ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300`}>
                             <IconComponent className="h-6 w-6" />
@@ -492,7 +488,7 @@ export default function UserDashboard() {
                               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                                 {tool.title}
                               </h3>
-                              <span className="text-xs bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full font-medium">
+                              <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-full font-medium">
                                 {tool.badge}
                               </span>
                               {tool.isNew && (

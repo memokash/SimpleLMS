@@ -2,321 +2,367 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import SimpleLMS Design System - Simplified Version */
-@import url('../styles/design-system-simple.css');
+/* Import Modern Design System */
+@import url('./styles/modern-design-system.css');
 
-/* Enhanced Styles for Medical Education App */
+/* Global overflow prevention */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 
-/* Smooth transitions for theme switching */
 * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
-/* Reactive Tiles with Yellow Glow */
-.reactive-tile {
-  @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-yellow-500/30 shadow-lg transition-all duration-300 cursor-pointer;
+/* University-focused Design System */
+
+/* Smooth transitions with reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
 }
 
-.reactive-tile:hover {
-  @apply shadow-xl dark:shadow-yellow-500/40 transform hover:scale-105 border-yellow-400/50 dark:border-yellow-400/60;
-  box-shadow: 0 10px 25px 0 rgba(234, 179, 8, 0.3);
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
-.reactive-tile:active {
-  @apply transform scale-95;
+/* Clean Card Styles - Improved dark mode */
+.card-base {
+  @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200;
 }
 
-/* Gradient Titles */
-.gradient-title {
-  @apply bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 dark:from-yellow-400 dark:via-orange-400 dark:to-red-400 bg-clip-text text-transparent font-bold;
+.card-hover {
+  @apply hover:shadow-md hover:translate-y-[-2px] cursor-pointer;
 }
 
-.gradient-title-primary {
-  @apply bg-gradient-to-r from-blue-600 to-purple-600 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent font-bold;
+.dark .card-hover:hover {
+  @apply bg-gray-700 border-gray-600;
 }
 
-.gradient-title-secondary {
-  @apply bg-gradient-to-r from-green-600 to-blue-600 dark:from-lime-400 dark:to-cyan-400 bg-clip-text text-transparent font-bold;
+.card-interactive {
+  @apply card-base card-hover;
 }
 
-.gradient-title-accent {
-  @apply bg-gradient-to-r from-pink-600 to-violet-600 dark:from-orange-400 dark:to-pink-400 bg-clip-text text-transparent font-bold;
+/* Comprehensive dark mode text visibility */
+.dark .card-base:hover * {
+  color: white !important;
 }
 
-/* Improved Light Theme Contrast */
-.light-theme-text {
-  @apply text-gray-900;
+.dark .card-base:hover .text-gray-600,
+.dark .card-base:hover .text-gray-500,
+.dark .card-base:hover .text-gray-400 {
+  color: #e5e7eb !important; /* gray-200 color */
 }
 
-.light-theme-bg {
-  @apply bg-white;
+/* Dark mode hover states for all interactive elements */
+.dark button:hover,
+.dark a:hover,
+.dark .clickable:hover {
+  color: white;
 }
 
-.light-theme-border {
-  @apply border-gray-300;
+/* Ensure all text in dark mode has minimum contrast - except on landing page */
+body:not(.landing-page) .dark .text-gray-600 {
+  color: #9ca3af; /* gray-400 color */
 }
 
-.light-theme-muted {
-  @apply text-gray-700;
+body:not(.landing-page) .dark .text-gray-700 {
+  color: #d1d5db; /* gray-300 color */
 }
 
-.light-theme-card {
-  @apply bg-white shadow-lg border border-gray-200;
+body:not(.landing-page) .dark .text-gray-800 {
+  color: #e5e7eb; /* gray-200 color */
 }
 
-/* Enhanced Dark Theme */
-.dark .dark-theme-text {
-  @apply text-gray-100;
+body:not(.landing-page) .dark .text-gray-900 {
+  color: #f3f4f6; /* gray-100 color */
 }
 
-.dark .dark-theme-bg {
-  @apply bg-gray-900;
+/* High contrast text for better accessibility */
+.high-contrast-text {
+  color: #000000 !important;
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
-.dark .dark-theme-border {
-  @apply border-gray-700;
+.dark .high-contrast-text {
+  color: #ffffff !important;
+  font-weight: 600;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
-.dark .dark-theme-muted {
-  @apply text-gray-300;
+/* Landing page specific high contrast */
+.landing-text-dark {
+  color: #1a202c !important; /* Very dark gray for landing page */
+  font-weight: 500;
 }
 
-.dark .dark-theme-card {
-  @apply bg-gray-800 shadow-xl shadow-yellow-500/20 border border-yellow-500/30;
+.landing-text-light {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Better button contrast */
+/* Professional Gradients */
+.gradient-primary {
+  @apply bg-gradient-to-r from-blue-600 to-teal-600 dark:from-blue-500 dark:to-teal-500;
+}
+
+.gradient-secondary {
+  @apply bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-500 dark:to-cyan-500;
+}
+
+.gradient-accent {
+  @apply bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400;
+}
+
+/* Text Gradients */
+.text-gradient-primary {
+  @apply bg-gradient-to-r from-blue-600 to-teal-600 dark:from-blue-400 dark:to-teal-400 bg-clip-text text-transparent font-bold;
+}
+
+.text-gradient-secondary {
+  @apply bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-100 bg-clip-text text-transparent font-bold;
+}
+
+/* Button Styles - Improved dark mode contrast */
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md;
 }
 
 .dark .btn-primary {
-  @apply bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-medium;
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
 }
 
 .btn-secondary {
-  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-3 rounded-lg transition-colors duration-200 border border-gray-300;
 }
 
 .dark .btn-secondary {
-  @apply bg-gray-700 hover:bg-gray-600 text-gray-100 border border-gray-600;
+  @apply bg-gray-700 hover:bg-gray-600 text-white border-gray-600;
 }
 
-/* Dark mode yellow glow effect */
-.dark .dark\:shadow-yellow-500\/20 {
-  box-shadow: 0 4px 14px 0 rgba(234, 179, 8, 0.2);
+.btn-accent {
+  @apply bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md;
 }
 
-.dark .dark\:hover\:shadow-yellow-500\/40:hover {
-  box-shadow: 0 10px 25px 0 rgba(234, 179, 8, 0.4);
+.dark .btn-accent {
+  @apply bg-amber-500 hover:bg-amber-600 text-white;
 }
 
-.dark .dark\:border-yellow-500\/30 {
-  border-color: rgba(234, 179, 8, 0.3);
+/* Focus States - Accessibility */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
 }
 
-/* Custom scrollbar styling */
+.focus-visible-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800;
+}
+
+/* Typography Utilities */
+.heading-xl {
+  @apply text-4xl lg:text-5xl font-bold tracking-tight;
+}
+
+.heading-lg {
+  @apply text-3xl lg:text-4xl font-bold tracking-tight;
+}
+
+.heading-md {
+  @apply text-2xl lg:text-3xl font-semibold;
+}
+
+.heading-sm {
+  @apply text-xl lg:text-2xl font-semibold;
+}
+
+.body-lg {
+  @apply text-lg leading-relaxed;
+}
+
+.body-base {
+  @apply text-base leading-relaxed;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  @apply bg-gray-100 dark:bg-gray-800 rounded;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 4px;
+  @apply bg-gray-400 dark:bg-gray-600 rounded hover:bg-gray-500 dark:hover:bg-gray-500;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
+/* Section Spacing */
+.section-padding {
+  @apply py-16 lg:py-20;
 }
 
-/* Dark mode scrollbar */
-.dark ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.container-padding {
+  @apply px-4 sm:px-6 lg:px-8;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(234, 179, 8, 0.4);
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(234, 179, 8, 0.6);
-}
-
-/* Backdrop blur fallback for older browsers */
-@supports not (backdrop-filter: blur(12px)) {
-  .backdrop-blur-sm {
-    background: rgba(255, 255, 255, 0.85);
-  }
-  
-  .dark .backdrop-blur-sm {
-    background: rgba(31, 41, 55, 0.85);
-  }
-}
-
-/* Enhanced hover effects */
-.hover-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.dark .hover-lift:hover {
-  box-shadow: 0 10px 25px rgba(234, 179, 8, 0.3);
-}
-
-/* Floating animation for cards */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.float-animation {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Pulse animation for important elements */
-@keyframes pulse-soft {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.pulse-soft {
-  animation: pulse-soft 2s ease-in-out infinite;
-}
-
-/* Enhanced focus states */
-.focus-ring {
-  transition: all 0.2s ease;
-}
-
-.focus-ring:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px #3b82f6;
-}
-
-.dark .focus-ring:focus {
-  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.6);
-}
-
-/* Progress bar animation */
-.progress-bar {
-  transition: width 0.5s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 2s infinite;
-}
-
-.dark .progress-bar::after {
-  background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.4), transparent);
-}
-
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* Enhanced card hover effects */
-.card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-}
-
-.dark .card-hover:hover {
-  box-shadow: 0 20px 40px rgba(234, 179, 8, 0.3);
-}
-
-/* Loading skeleton animation */
+/* Simple Loading State */
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+  @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
 }
 
-.dark .skeleton {
-  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
-  background-size: 200% 100%;
+/* Badge Styles */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
 }
 
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
+.badge-blue {
+  @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300;
+}
+
+.badge-teal {
+  @apply bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300;
+}
+
+.badge-amber {
+  @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300;
+}
+
+.badge-green {
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+}
+
+.badge-red {
+  @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+}
+
+/* Simple Hover Effects */
+.hover-lift {
+  @apply transition-transform duration-200 hover:translate-y-[-4px];
+}
+
+.hover-scale {
+  @apply transition-transform duration-200 hover:scale-105;
+}
+
+/* Divider */
+.divider {
+  @apply h-px bg-gray-200 dark:bg-gray-700;
+}
+
+/* Background Patterns */
+.bg-dots {
+  background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .bg-dots {
+  background-image: radial-gradient(circle, #374151 1px, transparent 1px);
+}
+
+/* Simple Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  100% {
-    background-position: -200% 0;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Success and error states */
-.success-glow {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }
 
-.error-glow {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dark .success-glow {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
 }
 
-.dark .error-glow {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+/* Success and Error States */
+.state-success {
+  @apply border-green-500 bg-green-50 dark:bg-green-900/20;
 }
 
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .card-hover:hover {
-    transform: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.state-error {
+  @apply border-red-500 bg-red-50 dark:bg-red-900/20;
+}
+
+.state-warning {
+  @apply border-amber-500 bg-amber-50 dark:bg-amber-900/20;
+}
+
+.state-info {
+  @apply border-blue-500 bg-blue-50 dark:bg-blue-900/20;
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  .heading-xl {
+    @apply text-3xl;
   }
   
-  .dark .card-hover:hover {
-    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
+  .heading-lg {
+    @apply text-2xl;
+  }
+  
+  .heading-md {
+    @apply text-xl;
+  }
+  
+  .heading-sm {
+    @apply text-lg;
   }
 }
 
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
   }
+  
+  .card-base {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+}
+
+/* Accessibility - Skip to Content */
+.skip-to-content {
+  @apply absolute left-[-9999px] top-2 z-50 bg-blue-600 text-white px-4 py-2 rounded;
+}
+
+.skip-to-content:focus {
+  @apply left-2;
+}
+
+/* Remove excessive medical-themed styles */
+.medical-title,
+.dna-helix,
+.sparkle-icon::before,
+.sparkle-icon::after,
+.stars-small,
+.stars-medium,
+.stars-large,
+.neon-border,
+.reactive-tile,
+.futuristic-tile {
+  display: none !important;
 }

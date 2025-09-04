@@ -28,6 +28,10 @@ function QuizContent() {
   const quizId = typeof rawQuizId === 'string' && rawQuizId.length < 100 && /^[a-zA-Z0-9\s-_]+$/.test(rawQuizId) 
     ? rawQuizId 
     : 'MSQ Quiz 4';
+  
+  // Get question limit parameter (for quick 10-question mode)
+  const limitParam = searchParams.get('limit');
+  const questionLimit = limitParam === '10' ? 10 : undefined;
 
   if (!user) {
     return (
@@ -93,7 +97,7 @@ function QuizContent() {
           <Moon className="h-5 w-5 text-gray-700" />
         )}
       </button>
-      <QuizApp quizId={quizId} />
+      <QuizApp quizId={quizId} questionLimit={questionLimit} />
     </div>
   );
 }

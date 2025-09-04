@@ -79,9 +79,10 @@ interface QuizProgress {
 
 interface Props {
   quizId: string;
+  questionLimit?: number;
 }
 
-export default function QuizApp({ quizId }: Props) {
+export default function QuizApp({ quizId, questionLimit }: Props) {
   const { user } = useAuth();
   const router = useRouter();
   const { isDark, toggleTheme } = useTheme();
@@ -127,9 +128,23 @@ export default function QuizApp({ quizId }: Props) {
       const quizData = quizSnapshot.data() as QuizData;
       quizData.id = quizSnapshot.id;
 
+      // Apply question limit if specified
+      let questionsToUse = quizData.questions || [];
+      if (questionLimit && questionLimit < questionsToUse.length) {
+        // Randomly select the specified number of questions
+        const shuffled = [...questionsToUse].sort(() => Math.random() - 0.5);
+        questionsToUse = shuffled.slice(0, questionLimit);
+      }
+
       setQuizData(quizData);
-      setQuestions(quizData.questions || []);
-      setTimeLeft(quizData.estimatedTime * 60 || 1200); // Convert minutes to seconds
+      setQuestions(questionsToUse);
+      
+      // Adjust time based on question count
+      const timePerQuestion = 60; // 1 minute per question
+      const totalTime = questionLimit 
+        ? questionLimit * timePerQuestion 
+        : (quizData.estimatedTime * 60 || 1200);
+      setTimeLeft(totalTime);
 
     } catch (err) {
       console.error('Error fetching quiz:', err);
@@ -483,6 +498,11 @@ export default function QuizApp({ quizId }: Props) {
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
                 {quizData?.category} • {questions.length} questions
+                {questionLimit && (
+                  <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full font-semibold">
+                    Quick {questionLimit}-Question Mode
+                  </span>
+                )}
               </p>
             </div>
             

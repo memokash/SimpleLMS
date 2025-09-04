@@ -24,13 +24,15 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>
+      <body className="overflow-x-hidden">
         <AuthProvider>
           <ThemeProvider>
-          <DashboardLayout>
-            {children}
-          </DashboardLayout>
-            <Footer />
+            <div className="min-h-screen w-full overflow-x-hidden">
+              <DashboardLayout>
+                {children}
+              </DashboardLayout>
+              <Footer />
+            </div>
           </ThemeProvider>
         </AuthProvider>
       </body>

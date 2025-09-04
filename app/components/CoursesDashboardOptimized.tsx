@@ -425,7 +425,7 @@ const CoursesDashboardOptimized = () => {
             <div className="flex items-center gap-2 flex-wrap">
               <Sparkles className="h-5 w-5 text-yellow-500" />
               <h2 className="gradient-title text-lg">Featured Smart Quizzes</h2>
-              <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">Expert Explanations</span>
+              <span className="bg-gradient-to-r from-yellow-400 to-amber-400 text-blue-900 px-2 py-1 rounded-full text-xs font-bold shadow-lg">Expert Explanations</span>
               {libraryStats && (
                 <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-200 dark:border-green-700">
                   {libraryStats.totalCourses.toLocaleString()} Quizzes • {libraryStats.totalQuestions.toLocaleString()} Questions
@@ -456,11 +456,11 @@ const CoursesDashboardOptimized = () => {
                 
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-500 shadow-lg group-hover:shadow-yellow-500/50 group-hover:scale-110 transition-all duration-300">
-                      <Brain className="h-4 w-4 text-white group-hover:text-yellow-100" />
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-400 shadow-lg group-hover:shadow-yellow-500/50 group-hover:scale-110 transition-all duration-300">
+                      <Brain className="h-4 w-4 text-blue-900" />
                     </div>
                     <div className="text-right">
-                      <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow">{course.difficulty}</span>
+                      <span className="bg-gradient-to-r from-amber-400 to-yellow-400 text-blue-900 px-2 py-1 rounded-full text-xs font-bold shadow">{course.difficulty}</span>
                       {course.rating && (
                         <div className="flex items-center gap-1 mt-1">
                           <Star className="h-3 w-3 text-yellow-500 fill-current" />
@@ -497,7 +497,7 @@ const CoursesDashboardOptimized = () => {
                   
                   <button 
                     onClick={() => router.push(`/quiz?id=${encodeURIComponent(course.id)}`)}
-                    className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-3 py-2 rounded-lg font-semibold shadow-lg hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-xs"
+                    className="w-full bg-gradient-to-r from-yellow-400 to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-blue-900 px-3 py-2 rounded-lg font-bold shadow-lg hover:shadow-yellow-500/50 transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 text-xs"
                   >
                     <Play className="h-3 w-3" />
                     Start Learning

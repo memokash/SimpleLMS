@@ -3,7 +3,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import DashboardNavigation from './DashboardNavigation';
+import DashboardNavigationEnhanced from './DashboardNavigationEnhanced';
 import { Loader2 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -42,13 +42,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Show DashboardNavigation on all pages except homepage */}
-      {showNavigation && <DashboardNavigation />}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Show Enhanced Dashboard Navigation on all pages except homepage */}
+      {showNavigation && <DashboardNavigationEnhanced />}
       
-      {/* Main Content */}
-      <main className="w-full">
-        {children}
+      {/* Main Content with proper spacing for sidebar */}
+      <main className={`w-full transition-all duration-300 ${showNavigation ? 'lg:ml-64 pt-16 lg:pt-0' : ''}`}>
+        <div className="min-h-screen">
+          {children}
+        </div>
       </main>
     </div>
   );

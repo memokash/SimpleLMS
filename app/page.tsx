@@ -1,30 +1,50 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './components/AuthContext';
 import AuthModal from './components/AuthModal';
-import { TrendingUp, Star, Target, Brain, Award, Zap, Heart, Shield, Microscope, Pill, Bone } from 'lucide-react';
-import Header from './components/Header'; 
+import { TrendingUp, Star, Target, Brain, Award, Zap, Users, BookOpen } from 'lucide-react';
+import HeaderEnhanced from './components/HeaderEnhanced';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { db } from '../lib/firebase'; 
 import {
   ArrowRight,
   CheckCircle,
   BrainCircuit,
   Sparkles,
-  Stethoscope,
   FileText,
-  BookOpen,
-  Users,
   MessageSquare,
   Gauge,
   BarChart3,
-  UserCog
+  UserCog,
+  Clock
 } from 'lucide-react'; 
 
 const HomePage = () => {
   const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // Redirect signed-in users to dashboard
+  useEffect(() => {
+    if (user) {
+      window.location.href = '/dashboard';
+    }
+  }, [user]);
+  interface Quiz {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    difficulty: string;
+    questionCount?: number;
+    questions?: unknown[];
+    estimatedTime?: number;
+  }
 
-  // ✅ ADDED: Header click handlers
+  const [featuredQuizzes, setFeaturedQuizzes] = useState<Quiz[]>([]);
+  const [loadingQuizzes, setLoadingQuizzes] = useState(true);
+
+  // Header click handlers
   const handleSignInClick = () => {
     setShowAuthModal(true);
   };
@@ -33,7 +53,86 @@ const HomePage = () => {
     setShowAuthModal(true);
   };
 
-  // ✅ Enhanced Stripe handlers
+  // Fetch real quizzes from Firebase
+  useEffect(() => {
+    const fetchFeaturedQuizzes = async () => {
+      try {
+        setLoadingQuizzes(true);
+        const quizzesRef = collection(db, 'quizzes');
+        const q = query(quizzesRef, limit(12)); // Fetch more to randomize
+        const querySnapshot = await getDocs(q);
+        
+        const quizzes: Quiz[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          quizzes.push({
+            id: doc.id,
+            title: data.title || '',
+            description: data.description || '',
+            category: data.category || '',
+            difficulty: data.difficulty || '',
+            questionCount: data.questionCount,
+            questions: data.questions,
+            estimatedTime: data.estimatedTime
+          });
+        });
+        
+        // Randomize and take 4 quizzes
+        const shuffled = quizzes.sort(() => Math.random() - 0.5);
+        setFeaturedQuizzes(shuffled.slice(0, 4));
+      } catch (error) {
+        console.error('Error fetching quizzes:', error);
+        // Fallback sample quizzes if Firebase fails
+        setFeaturedQuizzes([
+          {
+            id: 'MSQ Quiz 4',
+            title: 'Cytokines and Interleukins',
+            description: 'Master the complex world of immune system signaling molecules',
+            category: 'Immunology',
+            difficulty: 'Intermediate',
+            questionCount: 25,
+            estimatedTime: 20
+          },
+          {
+            id: 'MSQ-299',
+            title: 'Dermatology for USMLE',
+            description: 'Essential dermatological conditions for board exams',
+            category: 'Dermatology',
+            difficulty: 'Advanced',
+            questionCount: 30,
+            estimatedTime: 25
+          },
+          {
+            id: 'MSQ###-X',
+            title: 'Clinical Challenges',
+            description: 'Complex clinical scenarios in modern medicine',
+            category: 'Clinical Medicine',
+            difficulty: 'Expert',
+            questionCount: 20,
+            estimatedTime: 30
+          },
+          {
+            id: 'CARDIO-101',
+            title: 'Cardiac Physiology',
+            description: 'Fundamental concepts in cardiovascular function',
+            category: 'Cardiology',
+            difficulty: 'Beginner',
+            questionCount: 15,
+            estimatedTime: 15
+          }
+        ]);
+      } finally {
+        setLoadingQuizzes(false);
+      }
+    };
+
+    fetchFeaturedQuizzes();
+    // Refresh quizzes every 30 seconds for variety
+    const interval = setInterval(fetchFeaturedQuizzes, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Stripe handlers
   const handleStripeCheckout = async (priceId: string, planName: string) => {
     if (!user) {
       setShowAuthModal(true);
@@ -80,102 +179,67 @@ const HomePage = () => {
     }
   };
 
-  const specialties = [
-    { name: 'Cardiology', count: 250, color: 'red', icon: Heart, description: 'Heart diseases, ECG interpretation, and cardiac procedures' },
-    { name: 'Neurology', count: 180, color: 'purple', icon: Brain, description: 'Brain disorders, neurological examinations, and treatments' },
-    { name: 'Immunology', count: 220, color: 'blue', icon: Shield, description: 'Immune system, autoimmune diseases, and immunotherapy' },
-    { name: 'Pathology', count: 190, color: 'green', icon: Microscope, description: 'Disease diagnosis, laboratory tests, and pathophysiology' },
-    { name: 'Pharmacology', count: 160, color: 'yellow', icon: Pill, description: 'Drug mechanisms, interactions, and therapeutic applications' },
-    { name: 'Anatomy', count: 200, color: 'pink', icon: Bone, description: 'Human body structure, systems, and anatomical relationships' }
-  ];
 
   const features = [
     {
       icon: BookOpen,
-      title: 'Why It\'s Worth the Monthly Investment',
-      description: '🔁 Centralized Progress: Track every quiz, note, and resource — no matter what rotation or hospital you\'re in.',
+      title: 'Comprehensive Study Materials',
+      description: 'Access thousands of practice questions, study guides, and resources across all subjects.',
       color: 'blue'
     },
     {
       icon: TrendingUp,
-      title: '🌎 Cross-Institutional Access',
-      description: 'Your LMS isn\'t tied to one school — it follows you, not your program. 🧑‍⚕️ Built for All Levels: Medical students, residents, and attendings can all find value here — whether studying or teaching.',
+      title: 'Track Your Progress',
+      description: 'Monitor your learning journey with detailed analytics and performance insights.',
       color: 'green'
     },
     {
       icon: Zap,
-      title: '🧠 Smart Quiz Engine',
-      description: 'Generate or take quizzes tailored to your specialty and weak points.🤝 Community-Driven Learning: Collaborate with real peers — not just abstract discussion boards.',
-      color: 'purple'
+      title: 'Adaptive Learning',
+      description: 'Smart algorithms personalize your study experience based on your strengths and weaknesses.',
+      color: 'amber'
     },
     {
       icon: Target,
       title: 'Study Anywhere',
-      description: 'Access your quizzes on any device - phone, tablet, or computer. Study during commutes or breaks.',
-      color: 'orange'
+      description: 'Access your materials on any device - phone, tablet, or computer. Learn on your schedule.',
+      color: 'teal'
     },
     {
       icon: Award,
-      title: 'Exam-Focused',
-      description: 'Questions mirror the style and difficulty of actual medical school exams and board certifications.',
-      color: 'red'
+      title: 'Exam Preparation',
+      description: 'Practice with questions that mirror actual exam formats and difficulty levels.',
+      color: 'blue'
     },
     {
       icon: Users,
-      title: '🔓 Self-Enroll, No Hassle',
-      description: 'No admin gatekeeping. Join, build your notebook, and track learning from Day 1.',
-      color: 'indigo'
+      title: 'Collaborative Learning',
+      description: 'Join study groups, share notes, and learn together with your peers.',
+      color: 'green'
     }
   ];
 
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
-      red: 'text-red-900 bg-red-50 border-red-200',
-      purple: 'text-purple-900 bg-purple-50 border-purple-200',
-      blue: 'text-blue-900 bg-blue-50 border-blue-200',
-      green: 'text-emerald-900 bg-emerald-50 border-emerald-200',
-      yellow: 'text-yellow-900 bg-yellow-50 border-yellow-200',
-      pink: 'text-pink-900 bg-pink-50 border-pink-200',
-      orange: 'text-orange-900 bg-orange-50 border-orange-200',
-      indigo: 'text-indigo-900 bg-indigo-50 border-indigo-200'
+      blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300',
+      green: 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300',
+      amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300',
+      teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:text-teal-300',
+      gray: 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
     };
-    return colorMap[color] || 'text-gray-900 bg-gray-50 border-gray-200';
+    return colorMap[color] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300';
   };
 
-  // Enhanced Section Separator Component with medical-themed styling
-  const SectionSeparator = ({ title, icon: Icon, color }: { title: string, icon: any, color: string }) => (
-    <div className="relative my-20">
-      {/* Animated starfield background */}
-      <div className="absolute inset-0 overflow-hidden opacity-30">
-        <div className="stars-small"></div>
-        <div className="stars-medium"></div>
-        <div className="stars-large"></div>
-      </div>
-      
-      {/* Medical-themed decorative lines */}
+  // Clean Section Separator Component
+  const SectionSeparator = ({ title }: { title: string }) => (
+    <div className="relative my-16">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-cyan-400/80 via-pink-400/60 via-cyan-400/80 to-transparent"></div>
+        <div className="w-full h-px bg-gray-300 dark:bg-gray-700"></div>
       </div>
-      
-      {/* Center element with medical decorations */}
       <div className="relative flex justify-center">
-        <div className="medical-title px-12 py-8 bg-gradient-to-br from-white/95 to-cyan-50/95 backdrop-blur-xl rounded-3xl border border-cyan-400/40 shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-400/50 transition-all duration-500 hover:scale-105">
-          {/* DNA Helix decoration */}
-          <div className="dna-helix"></div>
-          
-          {/* Medical cross decorations */}
-          <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-pink-500 text-2xl animate-pulse">⚕️</div>
-          <div className="absolute right-6 top-1/2 transform -translate-y-1/2 text-cyan-500 text-2xl animate-pulse">🩺</div>
-          
-          <div className="flex items-center gap-4">
-            <div className={`p-4 rounded-2xl ${getColorClasses(color)} backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 glow-effect`}>
-              <Icon className="h-8 w-8" />
-            </div>
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-              ⭐ ━━━ {title} ━━━ ⭐
-            </h2>
-          </div>
-        </div>
+        <h2 className="px-8 py-4 bg-white dark:bg-gray-900 text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {title}
+        </h2>
       </div>
     </div>
   );
@@ -183,248 +247,84 @@ const HomePage = () => {
   const subscriptionBenefits = [
     {
       icon: BrainCircuit,
-      title: 'Smart Quiz Engine',
-      description: 'Interactive quizzes with AI-generated explanations and >15,000 questions across all disciplines.'
+      title: 'Smart Study System',
+      description: 'Interactive quizzes with detailed explanations across all academic subjects.',
+      link: '/quiz'
     },
     {
       icon: Sparkles,
-      title: 'AI Tutor',
-      description: 'Get customized explanations and study guides tailored to your weak spots.'
-    },
-    {
-      icon: Stethoscope,
-      title: 'Clinical Rounding Tools',
-      description: 'Quick access to templates for H&Ps, procedures, and clinical documentation on the go.'
+      title: 'AI Study Assistant',
+      description: 'Get personalized study recommendations based on your learning patterns.',
+      link: '/dashboard/assistant'
     },
     {
       icon: FileText,
-      title: 'Reading Vault',
-      description: 'Store, annotate, and tag key readings, journal articles, and board resources.'
+      title: 'Document Library',
+      description: 'Store, organize, and annotate your study materials in one place.',
+      link: '/library'
     },
     {
       icon: Users,
       title: 'Study Groups',
-      description: 'Join or build groups by rotation, discipline, or exam date. No more siloed studying.'
+      description: 'Create or join study groups for collaborative learning.',
+      link: '/study-groups'
     },
     {
       icon: MessageSquare,
-      title: 'Peer Chat & Messaging',
-      description: 'Direct communication with peers, mentors, or groups — built right into your dashboard.'
+      title: 'Discussion Forums',
+      description: 'Engage with peers and instructors in subject-specific discussions.',
+      link: '/forums'
+    },
+    {
+      icon: BookOpen,
+      title: 'Course Materials',
+      description: 'Access lecture notes, slides, and supplementary resources.',
+      link: '/courses'
     },
     {
       icon: Gauge,
-      title: 'Progress Tracking',
-      description: 'Track your quiz scores, course completions, and weekly study momentum.'
+      title: 'Progress Dashboard',
+      description: 'Monitor your study progress and achievement milestones.',
+      link: '/dashboard'
     },
     {
       icon: BarChart3,
       title: 'Performance Analytics',
-      description: 'Get visual insights into what topics you\'ve mastered and what needs work.'
+      description: 'Visualize your learning trends and identify areas for improvement.',
+      link: '/analytics'
     },
     {
       icon: UserCog,
-      title: 'Custom Learning Profile',
-      description: 'Personalize your dashboard, themes, and study goals across your career journey.'
+      title: 'Personalized Learning',
+      description: 'Customize your study plan and learning preferences.',
+      link: '/settings'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-cyan-400 relative overflow-hidden">
-      {/* Animated background stars */}
-      <div className="fixed inset-0 z-0">
-        <div className="stars-small"></div>
-        <div className="stars-medium"></div>
-        <div className="stars-large"></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-teal-600 relative overflow-x-hidden">
+      {/* Simple background pattern */}
+      <div className="fixed inset-0 z-0 bg-dots opacity-10 overflow-hidden"></div>
       
-      {/* Custom CSS for stars and glowing effects */}
+      {/* Removed complex animations */}
       <style jsx>{`
-        .stars-small {
-          background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent),
-                           radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.9), transparent),
-                           radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-                           radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
-                           radial-gradient(2px 2px at 160px 30px, #fff, transparent);
-          background-repeat: repeat;
-          background-size: 200px 100px;
-          animation: stars-move 20s linear infinite;
-        }
-        
-        .stars-medium {
-          background-image: radial-gradient(3px 3px at 30px 40px, rgba(0,255,255,1), transparent),
-                           radial-gradient(2px 2px at 80px 20px, rgba(255,255,255,1), transparent),
-                           radial-gradient(3px 3px at 120px 90px, rgba(255,0,255,0.8), transparent);
-          background-repeat: repeat;
-          background-size: 300px 200px;
-          animation: stars-move 30s linear infinite reverse;
-        }
-        
-        .stars-large {
-          background-image: radial-gradient(4px 4px at 50px 60px, rgba(0,255,255,1), transparent),
-                           radial-gradient(3px 3px at 150px 30px, rgba(255,255,255,1), transparent),
-                           radial-gradient(5px 5px at 200px 100px, rgba(255,0,255,0.9), transparent);
-          background-repeat: repeat;
-          background-size: 400px 300px;
-          animation: stars-move 40s linear infinite;
-        }
-        
-        @keyframes stars-move {
-          from { transform: translateY(0px); }
-          to { transform: translateY(-200px); }
-        }
-        
-        .glow-effect {
-          box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-          animation: glow-pulse 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow-pulse {
-          from { box-shadow: 0 0 25px rgba(0, 255, 255, 0.5); }
-          to { box-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
-        }
-        
-        .futuristic-tile {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border: 2px solid rgba(99, 102, 241, 0.3);
-          transition: all 0.4s ease;
-          box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
-        }
-        
-        .futuristic-tile:hover {
-          transform: translateY(-10px) scale(1.02);
-          border-color: rgba(99, 102, 241, 0.6);
-          box-shadow: 0 25px 50px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-          background: rgba(255, 255, 255, 1);
-        }
-        
-        .sparkle-icon {
-          position: relative;
-          display: inline-block;
-        }
-        
-        .sparkle-icon::before,
-        .sparkle-icon::after {
-          content: '✨';
-          position: absolute;
-          animation: sparkle 2s ease-in-out infinite;
-          font-size: 0.8em;
-          opacity: 0.7;
-        }
-        
-        .sparkle-icon::before {
-          top: -8px;
-          right: -8px;
-          animation-delay: 0s;
-        }
-        
-        .sparkle-icon::after {
-          bottom: -8px;
-          left: -8px;
-          animation-delay: 1s;
-        }
-        
-        @keyframes sparkle {
-          0%, 100% { opacity: 0.3; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        
-        .neon-border {
-          border: 2px solid transparent;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) padding-box,
-                      linear-gradient(45deg, #00ffff, #0080ff, #8000ff, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff) border-box;
-          animation: neon-rotate 3s linear infinite;
-        }
-        
-        @keyframes neon-rotate {
-          0% { filter: hue-rotate(0deg); }
-          100% { filter: hue-rotate(360deg); }
-        }
-        
-        .medical-title {
-          position: relative;
-          display: inline-block;
-        }
-        
-        .medical-title::before,
-        .medical-title::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          width: 100px;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #00ffff, #ff0080, #00ffff, transparent);
-          animation: pulse-line 2s ease-in-out infinite;
-        }
-        
-        .medical-title::before {
-          left: -120px;
-        }
-        
-        .medical-title::after {
-          right: -120px;
-          animation-delay: 0.5s;
-        }
-        
-        @keyframes pulse-line {
-          0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
-          50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
-        }
-        
-        .dna-helix {
-          position: absolute;
-          left: -150px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 30px;
-          height: 60px;
-          animation: rotate-dna 3s linear infinite;
-        }
-        
-        .dna-helix::before,
-        .dna-helix::after {
-          content: '';
-          position: absolute;
-          width: 4px;
-          height: 100%;
-          background: linear-gradient(180deg, #00ffff, #ff0080, #00ffff);
-          border-radius: 2px;
-        }
-        
-        .dna-helix::before {
-          left: 0;
-          animation: wave1 2s ease-in-out infinite;
-        }
-        
-        .dna-helix::after {
-          right: 0;
-          animation: wave2 2s ease-in-out infinite;
-        }
-        
-        @keyframes rotate-dna {
-          0% { transform: translateY(-50%) rotateY(0deg); }
-          100% { transform: translateY(-50%) rotateY(360deg); }
-        }
-        
-        @keyframes wave1 {
-          0%, 100% { transform: scaleY(1); }
-          50% { transform: scaleY(1.2); }
-        }
-        
-        @keyframes wave2 {
-          0%, 100% { transform: scaleY(1.2); }
-          50% { transform: scaleY(1); }
+        /* Simplified styles without medical themes */
+        .icon-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
       
-      {/* ✅ ADDED: Homepage Header */}
-      <Header 
+      {/* Enhanced Header with better design */}
+      <HeaderEnhanced 
         onSignInClick={handleSignInClick}
         onSignUpClick={handleSignUpClick}
+        isLandingPage={true}
       />
 
-      {/* Enhanced Hero Section with Books Background */}
-      <section className="relative overflow-hidden min-h-screen lg:min-h-screen flex items-center z-10">
+      {/* Modern Hero Section */}
+      <section className="relative overflow-hidden min-h-screen flex items-center z-10">
         {/* Books Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
@@ -433,41 +333,41 @@ const HomePage = () => {
           }}
         ></div>
         
-        {/* Lighter Gradient Overlay for Better Image Visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 via-purple-900/20 to-indigo-900/30"></div>
+        {/* Modern Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"></div>
         
-        {/* Floating badges - Enhanced futuristic styling */}
-        <div className="hidden lg:block absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-300 text-slate-900 px-8 py-4 rounded-full font-bold text-lg shadow-2xl shadow-yellow-500/50 z-20 glow-effect">
-         🩺 Master Every Stage of Your Medical Training — All in One Place
+        {/* Modern Floating Badges */}
+        <div className="hidden lg:block absolute top-20 right-10 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium text-sm border border-white/20 z-20">
+          ✨ 15,000+ Practice Questions
         </div>
-        <div className="hidden lg:block absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-blue-900 px-8 py-4 rounded-full font-semibold text-lg shadow-2xl shadow-blue-500/50 border border-yellow-400/50 z-20">
-          🧠 AI-Powered Smart Learning
+        <div className="hidden lg:block absolute bottom-20 left-10 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium text-sm border border-white/20 z-20">
+          🎓 Trusted by 10,000+ Students
         </div>
         
         {/* Content */}
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center z-10">
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-yellow-300 drop-shadow-2xl">
-                Medical Education LMS
-                <span className="block text-white drop-shadow-2xl">Supporting our doctors of the future</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
+                <span className="text-white">University Learning</span>
+                <span className="block text-gradient-primary">Made Simple</span>
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl text-white leading-relaxed max-w-3xl mx-auto drop-shadow-xl bg-slate-900/50 backdrop-blur-sm rounded-2xl p-6 border border-yellow-300/30">
-                From med school to residency, fellowship and beyond, streamline your learning, stay connected across institutions, and easily pass your in school exams with AI-powered quizzes, smart analytics, and real clinical tools.
+              <p className="text-lg sm:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+                Your complete academic companion. Study smarter with AI-powered tools, track your progress, and collaborate with peers across all subjects.
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center">
               <a 
                 href="/quiz" 
-                className="px-8 py-4 lg:px-10 lg:py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 font-bold rounded-2xl text-lg lg:text-xl hover:from-yellow-300 hover:to-orange-400 transition-all transform hover:scale-105 shadow-2xl shadow-yellow-500/50 flex items-center justify-center gap-3 min-h-[48px] glow-effect"
+                className="px-8 py-4 lg:px-10 lg:py-5 bg-white text-violet-600 font-bold rounded-2xl text-lg lg:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3 min-h-[48px]"
               >
-                Try Free Quiz Now 🧠
+                Start Free Trial
                 <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6" />
               </a>
               <button 
                 onClick={() => setShowAuthModal(true)}
-                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-cyan-400 bg-gradient-to-r from-slate-800/50 to-blue-900/50 text-cyan-400 font-semibold rounded-2xl text-lg lg:text-xl hover:bg-gradient-to-r hover:from-cyan-400/20 hover:to-blue-400/20 transition-all shadow-2xl shadow-cyan-500/30 min-h-[48px] backdrop-blur-sm"
+                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-white/30 bg-white/10 backdrop-blur-md text-white font-semibold rounded-2xl text-lg lg:text-xl hover:bg-white/20 transition-all shadow-2xl min-h-[48px]"
               >
                 Sign Up Free
               </button>
@@ -487,41 +387,55 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 🔐 Subscription Benefits Section - Solid background */}
-      <section className="py-20 relative z-10 bg-indigo-100">
+      {/* Modern Features Section */}
+      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
-            🩺 ⭐ ━━━ Features to support your daily medical education journey ━━━ ⭐ 🧠
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+              Everything You Need to Excel
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Comprehensive tools designed for modern medical education
+            </p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {subscriptionBenefits.map(({ icon: Icon, title, description }, i) => (
-              <div
+            {subscriptionBenefits.map(({ icon: Icon, title, description, link }, i) => (
+              <a
                 key={i}
-                className="futuristic-tile rounded-3xl p-8 text-center group"
+                href={link}
+                className="modern-card modern-card-hover p-8 text-center group cursor-pointer block"
               >
                 <div className="flex justify-center mb-6">
-                  <div className="sparkle-icon p-6 rounded-3xl bg-indigo-500 text-white shadow-lg group-hover:shadow-xl transition-all duration-300 glow-effect">
-                    <Icon className="w-12 h-12" />
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/20 dark:to-indigo-900/20 group-hover:scale-110 transition-transform duration-200">
+                    <Icon className="w-8 h-8 text-violet-600 dark:text-violet-400" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-4">{title}</h3>
-                <p className="text-slate-800 text-sm leading-relaxed">{description}</p>
-              </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
+                <span className="text-violet-600 dark:text-violet-400 font-medium text-sm group-hover:underline">
+                  Learn more →
+                </span>
+              </a>
             ))}
           </div>
         </div>
       </section>
     
-      <section className="py-20 relative z-10 bg-blue-100">
+      <section className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
-            🧠 ⚡ ━━━ Quizzes that Teach and Test - Each quiz is a complete mini Course ━━━ ⚡ 📚
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+              Smart Learning System
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              AI-powered quizzes that adapt to your learning style
+            </p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map(({ icon: Icon, title, description }, i) => (
               <div
                 key={i}
-                className="futuristic-tile rounded-3xl p-8 text-center group"
+                className="modern-card modern-card-hover p-8 text-center group"
               >
                 <div className="flex justify-center mb-6">
                   <div className={`sparkle-icon p-6 rounded-3xl ${getColorClasses(features[i].color)} shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
@@ -536,47 +450,139 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 🔄 Rotating Featured Quizzes Section */}
-      <section className="py-20 relative z-10 bg-purple-100">
+      {/* Featured Quizzes Section */}
+      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl font-bold text-center mb-16 text-slate-900">
-            🚀 ⭐ ━━━ Try a Quiz — No Signup Needed ━━━ ⭐ 🎯
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((_, i) => (
-              <div
-                key={i}
-                className="futuristic-tile rounded-2xl p-6 text-center group cursor-pointer"
-                onClick={() => setShowAuthModal(true)}
-              >
-                <div className="sparkle-icon flex justify-center mb-4">
-                  <div className="p-4 rounded-2xl bg-purple-500 text-white shadow-lg">
-                    <BookOpen className="w-8 h-8" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-4">Sample Quiz #{i + 1}</h3>
-                <p className="text-slate-800 text-sm mb-6">
-                  A sneak peek into real board-style questions you can start answering in seconds.
-                </p>
-                <button className="text-sm font-semibold text-purple-800 hover:text-purple-900 underline transition-colors">
-                  Start Free Quiz
-                </button>
+          <div className="text-center mb-12">
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+              Featured Quizzes
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400">
+              Start practicing with our most popular quizzes
+            </p>
+          </div>
+          <p className="text-center text-lg text-slate-800 mb-12">
+            Choose to take the full quiz or try a quick 10-question sample
+          </p>
+          
+          {loadingQuizzes ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-pulse text-center">
+                <Brain className="w-16 h-16 text-purple-500 mx-auto mb-4 animate-bounce" />
+                <p className="text-slate-700">Loading featured quizzes...</p>
               </div>
-            ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredQuizzes.map((quiz, i) => {
+                const getDifficultyColor = (difficulty: string) => {
+                  switch(difficulty?.toLowerCase()) {
+                    case 'beginner': return 'bg-green-100 text-green-800 border-green-300';
+                    case 'intermediate': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+                    case 'advanced': return 'bg-orange-100 text-orange-800 border-orange-300';
+                    case 'expert': return 'bg-red-100 text-red-800 border-red-300';
+                    default: return 'bg-gray-100 text-gray-800 border-gray-300';
+                  }
+                };
+                
+                const getCategoryIcon = (category: string) => {
+                  switch(category?.toLowerCase()) {
+                    case 'science': return Brain;
+                    case 'technology': return Zap;
+                    case 'engineering': return Target;
+                    case 'mathematics': return BarChart3;
+                    case 'business': return TrendingUp;
+                    case 'arts': return Star;
+                    default: return BookOpen;
+                  }
+                };
+                
+                const CategoryIcon = getCategoryIcon(quiz.category);
+                
+                return (
+                  <div
+                    key={quiz.id || i}
+                    className="modern-card modern-card-hover p-6 group flex flex-col"
+                  >
+                    <div className="sparkle-icon flex justify-center mb-4">
+                      <div className="p-4 rounded-2xl bg-purple-500 text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                        <CategoryIcon className="w-8 h-8" />
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-slate-900 mb-2 line-clamp-2">
+                      {quiz.title || `Quiz ${i + 1}`}
+                    </h3>
+                    
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <span className={`text-xs px-2 py-1 rounded-full font-bold border ${getDifficultyColor(quiz.difficulty)}`}>
+                        {quiz.difficulty || 'Mixed'}
+                      </span>
+                      <span className="text-xs px-2 py-1 rounded-full font-semibold bg-purple-100 text-purple-800 border border-purple-300">
+                        {quiz.category || 'General'}
+                      </span>
+                    </div>
+                    
+                    <p className="text-slate-700 text-sm mb-4 flex-grow line-clamp-3">
+                      {quiz.description || 'Test your medical knowledge with this comprehensive quiz.'}
+                    </p>
+                    
+                    <div className="text-xs text-slate-600 mb-4 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-3 h-3" />
+                        <span>{quiz.questionCount || quiz.questions?.length || 20} questions</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3 h-3" />
+                        <span>{quiz.estimatedTime || 20} minutes</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <a 
+                        href={`/quiz?id=${encodeURIComponent(quiz.id)}`}
+                        className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-700 transition-all text-center text-sm block shadow-lg hover:shadow-xl"
+                      >
+                        Take Full Quiz
+                      </a>
+                      <a 
+                        href={`/quiz?id=${encodeURIComponent(quiz.id)}&limit=10`}
+                        className="w-full bg-white dark:bg-gray-800 text-violet-600 dark:text-violet-400 py-2.5 px-4 rounded-xl font-medium border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-center text-sm block"
+                      >
+                        Quick 10 Questions
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          
+          <div className="text-center mt-12">
+            <a 
+              href="/quiz"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-2xl text-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              <BookOpen className="w-5 h-5" />
+              Browse All Quizzes
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Stats Section - Enhanced design */}
-      <section className="py-20 relative z-10 bg-indigo-200">
+      {/* Stats Section */}
+      <section className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900">
-              📊 ⚡ ━━━ Our Impact on Medical Education ━━━ ⚡ 🏆
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+              Proven Results
             </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              Join thousands of successful students
+            </p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+            <div className="text-center modern-card p-8 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-cyan-500 text-white">
                   <BookOpen className="w-8 h-8" />
@@ -585,7 +591,7 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-cyan-800 mb-3">15,000+</div>
               <div className="text-slate-900 font-semibold">Practice Questions</div>
             </div>
-            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+            <div className="text-center modern-card p-8 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-emerald-500 text-white">
                   <TrendingUp className="w-8 h-8" />
@@ -594,7 +600,7 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-emerald-800 mb-3">95%</div>
               <div className="text-slate-900 font-semibold">Pass Rate Improvement</div>
             </div>
-            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+            <div className="text-center modern-card p-8 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-purple-500 text-white">
                   <Users className="w-8 h-8" />
@@ -603,9 +609,9 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-purple-800 mb-3">10,000+</div>
               <div className="text-slate-900 font-semibold">Students Enrolled</div>
             </div>
-            <div className="text-center futuristic-tile rounded-3xl p-8 group">
+            <div className="text-center modern-card p-8 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-yellow-500 text-white">
+                <div className="p-4 rounded-2xl bg-yellow-400 text-blue-900">
                   <Zap className="w-8 h-8" />
                 </div>
               </div>
@@ -616,66 +622,10 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Browse by Medical Specialty Section */}
-      <section className="py-20 relative z-10 bg-blue-200">
+
+      {/* Why Choose Us Section */}
+      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <SectionSeparator title="Medical Specialties" icon={Microscope} color="purple" />
-
-          <div className="text-center mb-16">
-            <p className="text-xl text-slate-900 max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-indigo-300 shadow-lg">
-              Choose from our comprehensive collection of specialty-focused quizzes designed by medical experts
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {specialties.map((specialty, index) => {
-              const IconComponent = specialty.icon;
-              return (
-                <div key={index} className="futuristic-tile rounded-3xl p-8 min-h-[320px] group">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`sparkle-icon p-4 rounded-2xl ${getColorClasses(specialty.color)} shadow-lg group-hover:scale-110 transition-all duration-300`}>
-                        <IconComponent className="h-10 w-10" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-900">{specialty.name}</h3>
-                        <span className={`text-xs px-3 py-1 rounded-full font-semibold ${getColorClasses(specialty.color)} border-2`}>
-                          {specialty.count} questions
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-slate-900 text-sm leading-relaxed mb-6">
-                    {specialty.description}
-                  </p>
-                  <a 
-                    href="/quiz"
-                    className="w-full bg-indigo-600 text-white py-3 px-6 rounded-2xl font-semibold hover:bg-indigo-700 transition-all duration-300 block text-center shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    Start Quiz
-                  </a>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="text-center mt-16">
-            <a 
-              href="/quiz"
-              className="px-12 py-4 bg-indigo-600 text-white font-bold rounded-3xl text-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 glow-effect"
-            >
-              View All Specialties
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Features Section */}
-      <section className="py-20 relative z-10 bg-purple-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <SectionSeparator title="Why Choose Us" icon={Award} color="blue" />
 
           <div className="text-center mb-16">
             <p className="text-xl text-slate-900 max-w-4xl mx-auto bg-white rounded-2xl p-6 border border-purple-300 shadow-lg">
@@ -687,7 +637,7 @@ const HomePage = () => {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <div key={index} className="futuristic-tile rounded-3xl p-8 min-h-[320px] group">
+                <div key={index} className="modern-card modern-card-hover p-8 min-h-[320px] group">
                   <div className="text-center">
                     <div className={`sparkle-icon inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 ${getColorClasses(feature.color)} shadow-lg group-hover:scale-110 transition-all duration-300`}>
                       <IconComponent className="w-10 h-10" />
@@ -704,20 +654,20 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Enhanced Testimonials */}
-      <section className="py-20 bg-indigo-100 relative z-10">
+      {/* Testimonials */}
+      <section className="py-24 bg-white dark:bg-gray-900 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4 text-slate-900">
-              🩺 ⭐ ━━━ What Medical Students Say ━━━ ⭐ 👩‍⚕️
+            <h2 className="text-5xl font-black mb-4 text-gray-900 dark:text-white">
+              Student Success Stories
             </h2>
-            <p className="text-xl text-slate-900 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Join thousands of successful medical students and professionals
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <div className="futuristic-tile rounded-3xl p-8 min-h-[280px] flex flex-col justify-between">
+            <div className="modern-card p-8 min-h-[280px] flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -734,7 +684,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="futuristic-tile rounded-3xl p-8 min-h-[280px] flex flex-col justify-between">
+            <div className="modern-card p-8 min-h-[280px] flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
@@ -754,11 +704,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Enhanced Pricing Section with Working Stripe Integration */}
-      <section id="pricing" className="py-20 relative z-10 bg-blue-100">
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <SectionSeparator title="Choose Your Plan" icon={Target} color="green" />
 
           <div className="text-center mb-16">
             <p className="text-xl text-slate-900 max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-blue-300 shadow-lg">
@@ -768,7 +716,7 @@ const HomePage = () => {
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col">
+            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-gray-500 text-white">
                   <BookOpen className="w-8 h-8" />
@@ -797,15 +745,15 @@ const HomePage = () => {
               </ul>
               <a 
                 href="/quiz"
-                className="w-full bg-gray-600 text-white py-4 rounded-2xl font-semibold hover:bg-gray-700 transition-all duration-300 block text-center shadow-lg"
+                className="w-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 py-4 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 block text-center"
               >
                 Try Free Quiz
               </a>
             </div>
 
-            {/* Pro Plan - Enhanced with border */}
-            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col relative transform scale-105 border-4 border-indigo-500">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-8 py-3 rounded-full text-sm font-bold shadow-lg">
+            {/* Pro Plan - Popular */}
+            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col relative transform scale-105 border-2 border-violet-500">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                 Most Popular
               </div>
               <div className="sparkle-icon flex justify-center mb-4">
@@ -814,7 +762,7 @@ const HomePage = () => {
                 </div>
               </div>
               <h3 className="text-3xl font-bold mb-4 text-indigo-900">Pro</h3>
-              <div className="text-5xl font-bold text-indigo-800 mb-2">$49.99</div>
+              <div className="text-5xl font-bold text-indigo-800 mb-2">$19.99</div>
               <div className="text-slate-800 mb-8 font-medium">per month</div>
               <ul className="text-left space-y-4 mb-8 flex-1">
                 <li className="flex items-center">
@@ -823,11 +771,11 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-emerald-700 mr-3 text-xl">✅</span>
-                  <span className="text-slate-900 font-medium">All 15,000+ questions</span>
+                  <span className="text-slate-900 font-medium">All study materials</span>
                 </li>
                 <li className="flex items-center">
                   <span className="text-emerald-700 mr-3 text-xl">✅</span>
-                  <span className="text-slate-900 font-medium">All medical specialties</span>
+                  <span className="text-slate-900 font-medium">All academic subjects</span>
                 </li>
                 <li className="flex items-center">
                   <span className="text-emerald-700 mr-3 text-xl">✅</span>
@@ -840,21 +788,21 @@ const HomePage = () => {
               </ul>
               <button 
                 onClick={() => handleStripeCheckout('price_1RqE1PEbNlb7nCbs0las6NY5', 'Pro')}
-                className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-semibold hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 glow-effect"
+                className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                {user ? 'Subscribe for $49.99/month' : 'Sign Up to Subscribe'}
+                {user ? 'Subscribe for $19.99/month' : 'Sign Up to Subscribe'}
               </button>
             </div>
 
             {/* Premium Plan */}
-            <div className="futuristic-tile rounded-3xl p-8 text-center min-h-[600px] flex flex-col">
+            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-purple-600 text-white">
                   <Star className="w-8 h-8" />
                 </div>
               </div>
               <h3 className="text-3xl font-bold mb-4 text-purple-900">Premium</h3>
-              <div className="text-5xl font-bold text-purple-800 mb-2">$99</div>
+              <div className="text-5xl font-bold text-purple-800 mb-2">$39.99</div>
               <div className="text-slate-800 mb-8 font-medium">per month</div>
               <ul className="text-left space-y-4 mb-8 flex-1">
                 <li className="flex items-center">
@@ -863,7 +811,7 @@ const HomePage = () => {
                 </li>
                 <li className="flex items-center">
                   <span className="text-emerald-700 mr-3 text-xl">✅</span>
-                  <span className="text-slate-900 font-medium">AI tutor smart tutoring sessions</span>
+                  <span className="text-slate-900 font-medium">AI-powered tutoring sessions</span>
                 </li>
                 <li className="flex items-center">
                   <span className="text-emerald-700 mr-3 text-xl">✅</span>
@@ -880,30 +828,30 @@ const HomePage = () => {
               </ul>
               <button 
                 onClick={() => handleStripeCheckout('price_1RqE4NEbNlb7nCbsKLwEcd3a', 'Premium')}
-                className="w-full bg-purple-600 text-white py-4 rounded-2xl font-semibold hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-amber-500 text-white py-4 rounded-2xl font-semibold hover:bg-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                {user ? 'Subscribe for $99.00/month' : 'Sign Up to Subscribe'}
+                {user ? 'Subscribe for $39.99/month' : 'Sign Up to Subscribe'}
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Enhanced CTA Section */}
-      <section className="bg-purple-100 py-20 relative z-10">
+      {/* CTA Section */}
+      <section className="bg-gradient-to-br from-violet-600 to-indigo-700 py-24 relative z-10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-5xl font-bold mb-6 text-slate-900">
-            Ready to Access 15,000+ expert-crafted questions covering your whole medical education training...?
+          <h2 className="text-5xl font-black mb-6 text-white">
+            Ready to Transform Your Medical Education?
           </h2>
-          <p className="text-xl text-slate-900 mb-8 leading-relaxed font-medium">
+          <p className="text-xl text-white/90 mb-8 leading-relaxed">
             Join thousands of medical students, residents, mastering their exams with the most comprehensive question bank available.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/quiz"
-              className="bg-yellow-500 text-slate-900 px-10 py-5 rounded-3xl text-lg font-bold hover:bg-yellow-400 transition-all transform hover:scale-105 shadow-lg glow-effect"
+              className="bg-white text-violet-600 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl"
             >
-              Start Free Trial Now 🧠
+              Start Free Trial
             </a>
             <button 
               onClick={() => setShowAuthModal(true)}

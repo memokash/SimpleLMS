@@ -24,6 +24,7 @@ import {
   Upload,
   Settings,
   Bell,
+  Shield,
   Star,
   Eye,
   MessageCircle,
@@ -541,7 +542,7 @@ const RoundingToolsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <Stethoscope className="h-12 w-12 text-purple-600 animate-pulse mx-auto mb-4" />
           <p className="text-gray-600">Loading patient list...</p>
@@ -553,7 +554,7 @@ const RoundingToolsPage = () => {
   // H&P Template View
   if (viewMode === 'hp-template' && selectedPatient) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -569,7 +570,7 @@ const RoundingToolsPage = () => {
                 <FileText className="h-8 w-8" />
                 <div>
                   <h1 className="text-2xl font-bold">History & Physical Template</h1>
-                  <p className="text-blue-100">{selectedPatient.name} - Room {selectedPatient.room}</p>
+                  <p className="text-blue-50">{selectedPatient.name} - Room {selectedPatient.room}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -731,7 +732,7 @@ const RoundingToolsPage = () => {
                   <button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-xl transition-colors">
                     Save Draft
                   </button>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl transition-colors font-semibold">
+                  <button className="bg-blue-800 hover:bg-blue-900 text-white px-6 py-2 rounded-xl transition-colors font-semibold">
                     Submit for Review
                   </button>
                 </div>
@@ -746,7 +747,7 @@ const RoundingToolsPage = () => {
   // Progress Note View
   if (viewMode === 'progress-note' && selectedPatient) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -762,7 +763,7 @@ const RoundingToolsPage = () => {
                 <Edit className="h-8 w-8" />
                 <div>
                   <h1 className="text-2xl font-bold">Progress Note</h1>
-                  <p className="text-purple-100">{selectedPatient.name} - {new Date().toLocaleDateString()}</p>
+                  <p className="text-blue-50">{selectedPatient.name} - {new Date().toLocaleDateString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -817,7 +818,7 @@ const RoundingToolsPage = () => {
                 </label>
                 <textarea
                   placeholder="Patient's subjective complaints, symptoms, and concerns. Include interval history since last note..."
-                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-32"
+                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
                 />
               </div>
 
@@ -833,21 +834,21 @@ const RoundingToolsPage = () => {
                     <input
                       type="text"
                       placeholder="T: 98.6°F, BP: 120/80, HR: 72, RR: 16, O2: 98% RA"
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800 mb-2">Physical Examination</h4>
                     <textarea
                       placeholder="Focused physical examination findings relevant to patient's condition..."
-                      className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-24"
+                      className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-24"
                     />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-800 mb-2">Laboratory/Imaging Results</h4>
                     <textarea
                       placeholder="New laboratory values, imaging results, and other diagnostic studies since last note..."
-                      className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-24"
+                      className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-24"
                     />
                   </div>
                 </div>
@@ -861,7 +862,7 @@ const RoundingToolsPage = () => {
                 </label>
                 <textarea
                   placeholder="Clinical assessment of patient's current status. Address each active problem with your clinical reasoning..."
-                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-32"
+                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
                 />
               </div>
 
@@ -873,7 +874,7 @@ const RoundingToolsPage = () => {
                 </label>
                 <textarea
                   placeholder="Detailed plan for each problem including:&#10;• Diagnostic workup&#10;• Therapeutic interventions&#10;• Monitoring parameters&#10;• Goals of care&#10;• Disposition planning"
-                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-40"
+                  className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-40"
                 />
               </div>
             </div>
@@ -888,7 +889,7 @@ const RoundingToolsPage = () => {
                   <button className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-xl transition-colors">
                     Save Draft
                   </button>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-xl transition-colors font-semibold">
+                  <button className="bg-blue-800 hover:bg-blue-900 text-white px-6 py-2 rounded-xl transition-colors font-semibold">
                     Submit Note
                   </button>
                 </div>
@@ -903,7 +904,7 @@ const RoundingToolsPage = () => {
   // Team Notes View
   if (viewMode === 'team-notes') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-orange-50 via-red-50 to-pink-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -991,7 +992,7 @@ const RoundingToolsPage = () => {
                           <div className="text-xs text-gray-600">Grade</div>
                         </div>
                       )}
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition-colors">
+                      <button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-xl transition-colors">
                         Review & Grade
                       </button>
                     </div>
@@ -1109,7 +1110,7 @@ const RoundingToolsPage = () => {
   // Remote Rounding View
   if (viewMode === 'remote-rounding') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-purple-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-red-50 via-pink-50 to-purple-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -1220,7 +1221,7 @@ const RoundingToolsPage = () => {
                     <button 
                       onClick={() => setIsScreenSharing(!isScreenSharing)}
                       className={`p-3 rounded-full transition-colors ${
-                        isScreenSharing ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-600 hover:bg-gray-700'
+                        isScreenSharing ? 'bg-blue-500 hover:bg-blue-800' : 'bg-gray-600 hover:bg-gray-700'
                       }`}
                     >
                       <Monitor className="h-5 w-5 text-white" />
@@ -1363,9 +1364,9 @@ const RoundingToolsPage = () => {
   // Patient Detail View
   if (viewMode === 'patient-detail' && selectedPatient && patientData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-x-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white shadow-xl">
+        <div className="bg-blue-800 text-white shadow-xl overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -1379,7 +1380,7 @@ const RoundingToolsPage = () => {
                 <Stethoscope className="h-8 w-8" />
                 <div>
                   <h1 className="text-2xl font-bold">{selectedPatient.name}</h1>
-                  <p className="text-purple-100">Room {selectedPatient.room} • {selectedPatient.primaryDiagnosis}</p>
+                  <p className="text-blue-50">Room {selectedPatient.room} • {selectedPatient.primaryDiagnosis}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -1408,14 +1409,14 @@ const RoundingToolsPage = () => {
                 </button>
                 <button 
                   onClick={() => setViewMode('hp-template')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition-colors flex items-center gap-2 font-semibold"
+                  className="bg-blue-500 hover:bg-blue-800 text-white px-4 py-2 rounded-xl transition-colors flex items-center gap-2 font-semibold"
                 >
                   <FileText className="h-4 w-4" />
                   H&P Template
                 </button>
                 <button 
                   onClick={() => setViewMode('progress-note')}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-xl transition-colors flex items-center gap-2 font-semibold"
+                  className="bg-purple-500 hover:bg-blue-800 text-white px-4 py-2 rounded-xl transition-colors flex items-center gap-2 font-semibold"
                 >
                   <Edit className="h-4 w-4" />
                   Progress Note
@@ -1473,7 +1474,7 @@ const RoundingToolsPage = () => {
                         value={patientData.chiefComplaint}
                         onChange={(e) => updatePatientData('chiefComplaint', e.target.value)}
                         placeholder="Patient's main complaint in their own words..."
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
@@ -1482,7 +1483,7 @@ const RoundingToolsPage = () => {
                         value={patientData.historyOfPresentIllness}
                         onChange={(e) => updatePatientData('historyOfPresentIllness', e.target.value)}
                         placeholder="Detailed chronological account of the current illness..."
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-32"
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-32"
                       />
                     </div>
                   </div>
@@ -1515,7 +1516,7 @@ const RoundingToolsPage = () => {
                           value={patientData.physicalExam.general}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, general: e.target.value})}
                           placeholder="Overall appearance, distress level..."
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -1523,7 +1524,7 @@ const RoundingToolsPage = () => {
                         <textarea
                           value={patientData.physicalExam.vitals}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, vitals: e.target.value})}
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -1532,7 +1533,7 @@ const RoundingToolsPage = () => {
                           value={patientData.physicalExam.cardiovascular}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, cardiovascular: e.target.value})}
                           placeholder="Heart sounds, murmurs, JVD..."
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -1541,7 +1542,7 @@ const RoundingToolsPage = () => {
                           value={patientData.physicalExam.respiratory}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, respiratory: e.target.value})}
                           placeholder="Breath sounds, effort..."
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -1550,7 +1551,7 @@ const RoundingToolsPage = () => {
                           value={patientData.physicalExam.abdominal}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, abdominal: e.target.value})}
                           placeholder="Bowel sounds, tenderness..."
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -1559,7 +1560,7 @@ const RoundingToolsPage = () => {
                           value={patientData.physicalExam.neurological}
                           onChange={(e) => updatePatientData('physicalExam', {...patientData.physicalExam, neurological: e.target.value})}
                           placeholder="Mental status, motor, sensory..."
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </div>
@@ -1598,7 +1599,7 @@ const RoundingToolsPage = () => {
                               updatePatientData('assessment', newAssessment);
                             }}
                             placeholder="Problem/Diagnosis"
-                            className="flex-1 font-semibold text-lg p-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="flex-1 font-semibold text-lg p-2 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                           <button
                             onClick={() => {
@@ -1621,7 +1622,7 @@ const RoundingToolsPage = () => {
                                 updatePatientData('assessment', newAssessment);
                               }}
                               placeholder="Clinical reasoning for this problem..."
-                              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                           <div>
@@ -1634,7 +1635,7 @@ const RoundingToolsPage = () => {
                                 updatePatientData('assessment', newAssessment);
                               }}
                               placeholder="Specific management plan..."
-                              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                           </div>
                         </div>
@@ -1790,7 +1791,7 @@ const RoundingToolsPage = () => {
   // Practice Mode View
   if (viewMode === 'practice-mode' && selectedPatient) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 text-white shadow-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -1806,7 +1807,7 @@ const RoundingToolsPage = () => {
                 <Brain className="h-8 w-8" />
                 <div>
                   <h1 className="text-2xl font-bold">AI Practice Mode</h1>
-                  <p className="text-blue-100">{selectedPatient.name} - Practice Presentation</p>
+                  <p className="text-blue-50">{selectedPatient.name} - Practice Presentation</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -1906,7 +1907,7 @@ const RoundingToolsPage = () => {
                     <button
                       onClick={() => setCurrentQuestion(Math.min(aiQuestions.length - 1, currentQuestion + 1))}
                       disabled={currentQuestion === aiQuestions.length - 1}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-blue-800 text-white rounded-lg hover:bg-blue-900 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Next Question
                     </button>
@@ -2012,34 +2013,34 @@ const RoundingToolsPage = () => {
 
   // Main Patient List View (unchanged from original)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 text-white shadow-xl">
+      <div className="bg-blue-800 text-white shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Stethoscope className="h-12 w-12" />
               <div>
                 <h1 className="text-4xl font-bold mb-2">Patient List & Rounding Tools</h1>
-                <p className="text-purple-100 text-xl">Manage your patients and prepare for rounds</p>
+                <p className="text-blue-50 text-xl">Manage your patients and prepare for rounds</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="text-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
                 <div className="text-2xl font-bold">{patients.length}</div>
-                <p className="text-purple-100 text-sm">Total Patients</p>
+                <p className="text-blue-50 text-sm">Total Patients</p>
               </div>
               <div className="text-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
                 <div className="text-2xl font-bold text-red-300">
                   {patients.filter(p => p.priority === 'high').length}
                 </div>
-                <p className="text-purple-100 text-sm">High Priority</p>
+                <p className="text-blue-50 text-sm">High Priority</p>
               </div>
               <div className="text-center bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
                 <div className="text-2xl font-bold text-green-300">
                   {patients.filter(p => p.roundingStatus === 'completed').length}
                 </div>
-                <p className="text-purple-100 text-sm">Rounded Today</p>
+                <p className="text-blue-50 text-sm">Rounded Today</p>
               </div>
               <button
                 onClick={() => setViewMode('add-patient')}
@@ -2064,7 +2065,7 @@ const RoundingToolsPage = () => {
                 placeholder="Search patients by name, MRN, room, or diagnosis..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
               />
             </div>
             
@@ -2072,7 +2073,7 @@ const RoundingToolsPage = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
               >
                 <option value="all">All Status</option>
                 <option value="stable">Stable</option>
@@ -2084,7 +2085,7 @@ const RoundingToolsPage = () => {
               <select
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
-                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
               >
                 <option value="all">All Priority</option>
                 <option value="high">High Priority</option>
@@ -2095,7 +2096,7 @@ const RoundingToolsPage = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
               >
                 <option value="room">Sort by Room</option>
                 <option value="name">Sort by Name</option>
@@ -2103,7 +2104,7 @@ const RoundingToolsPage = () => {
                 <option value="status">Sort by Status</option>
               </select>
 
-              <button className="flex items-center gap-2 bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-colors">
+              <button className="flex items-center gap-2 bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition-colors">
                 <Filter className="h-4 w-4" />
                 Advanced
               </button>
@@ -2246,25 +2247,294 @@ const RoundingToolsPage = () => {
         </div>
 
         {sortedPatients.length === 0 && (
-          <div className="text-center py-20">
-            <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
-              <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">No patients found</h3>
-              <p className="text-gray-600 mb-6">
-                {searchTerm || filterStatus !== 'all' || filterPriority !== 'all' 
-                  ? 'Try adjusting your search criteria or filters'
-                  : 'Add your first patient to get started with rounding tools'
-                }
-              </p>
-              {!searchTerm && filterStatus === 'all' && filterPriority === 'all' && (
-                <button
-                  onClick={() => setViewMode('add-patient')}
-                  className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-colors font-semibold"
-                >
-                  Add First Patient
-                </button>
-              )}
+          <div className="space-y-8">
+            {/* No Patients Message */}
+            <div className="text-center py-12">
+              <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
+                <Stethoscope className="h-16 w-16 text-gray-400 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">No patients found</h3>
+                <p className="text-gray-600 mb-6">
+                  {searchTerm || filterStatus !== 'all' || filterPriority !== 'all' 
+                    ? 'Try adjusting your search criteria or filters'
+                    : 'Add your first patient to get started with rounding tools'
+                  }
+                </p>
+                {!searchTerm && filterStatus === 'all' && filterPriority === 'all' && (
+                  <button
+                    onClick={() => setViewMode('add-patient')}
+                    className="bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition-colors font-semibold"
+                  >
+                    Add First Patient
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Tools Preview Section */}
+            {!searchTerm && filterStatus === 'all' && filterPriority === 'all' && (
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <Target className="h-8 w-8 text-blue-600" />
+                  Available Rounding Tools
+                </h2>
+                <p className="text-gray-600 mb-8">
+                  Once you add patients, you'll have access to these powerful clinical tools:
+                </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+                  {/* Main Tool Cards - Compact with onClick */}
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access H&P Templates');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-purple-100 rounded-lg mb-3 inline-block">
+                      <FileText className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">H&P Templates</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      History & Physical documentation
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Procedure Notes');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-orange-100 rounded-lg mb-3 inline-block">
+                      <Clipboard className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Procedure Notes</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Documentation & consent forms
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Progress Notes');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-red-100 rounded-lg mb-3 inline-block">
+                      <Activity className="h-5 w-5 text-red-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Progress Notes</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      SOAP note templates
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access AI Practice Mode');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-green-100 rounded-lg mb-3 inline-block">
+                      <Brain className="h-5 w-5 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">AI Practice</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Presentation feedback
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Discharge Planning');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-blue-100 rounded-lg mb-3 inline-block">
+                      <MessageSquare className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Discharge Plans</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Summaries & instructions
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Virtual Rounds');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-indigo-100 rounded-lg mb-3 inline-block">
+                      <Video className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Virtual Rounds</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Remote collaboration
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Vitals Tracking');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-cyan-100 rounded-lg mb-3 inline-block">
+                      <Heart className="h-5 w-5 text-cyan-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Vitals Tracking</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Real-time monitoring
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Lab Results');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-emerald-100 rounded-lg mb-3 inline-block">
+                      <BarChart3 className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Lab Results</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Integration & trending
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Please add a patient first to access Team Handoffs');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-yellow-100 rounded-lg mb-3 inline-block">
+                      <Users className="h-5 w-5 text-yellow-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Team Handoffs</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Communication tools
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Voice-to-Text feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-pink-100 rounded-lg mb-3 inline-block">
+                      <Mic className="h-5 w-5 text-pink-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Voice-to-Text</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Dictation support
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Smart Alerts feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-violet-100 rounded-lg mb-3 inline-block">
+                      <Bell className="h-5 w-5 text-violet-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Smart Alerts</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Critical notifications
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Schedule Management feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-teal-100 rounded-lg mb-3 inline-block">
+                      <Calendar className="h-5 w-5 text-teal-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Schedule Mgmt</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Rounds planning
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('HIPAA-compliant storage is enabled for all patient data');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-rose-100 rounded-lg mb-3 inline-block">
+                      <Shield className="h-5 w-5 text-rose-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">HIPAA Security</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Compliant storage
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Data Export feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-amber-100 rounded-lg mb-3 inline-block">
+                      <Database className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Data Export</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Reports & analytics
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('Offline Mode feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-lime-100 rounded-lg mb-3 inline-block">
+                      <Wifi className="h-5 w-5 text-lime-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Offline Mode</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Work without internet
+                    </p>
+                  </div>
+
+                  <div 
+                    onClick={() => {
+                      alert('PDF Export feature coming soon!');
+                    }}
+                    className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow hover:scale-105 cursor-pointer"
+                  >
+                    <div className="p-2 bg-slate-100 rounded-lg mb-3 inline-block">
+                      <Download className="h-5 w-5 text-slate-600" />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">PDF Export</h3>
+                    <p className="text-xs text-gray-600 line-clamp-2">
+                      Download documents
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-8 text-center">
+                  <button
+                    onClick={() => setViewMode('add-patient')}
+                    className="bg-blue-800 text-white px-8 py-4 rounded-xl hover:bg-blue-900 transition-colors font-semibold text-lg inline-flex items-center gap-2"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Add Your First Patient to Get Started
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
