@@ -9,7 +9,7 @@ import {
   MessageSquare,
   UserPlus
 } from 'lucide-react';
-import { MedicalProfile } from '../../../types/profile.types';
+import { MedicalProfile } from '../../../types/database.types';
 
 interface ColleagueCardProps {
   colleague: MedicalProfile;

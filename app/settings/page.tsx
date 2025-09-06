@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useTheme } from '../components/ThemeContext';
+import DeviceManagement from '../components/DeviceManagement';
 import { 
   Settings, 
   User, 
@@ -21,7 +22,8 @@ import {
   AlertCircle,
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  Monitor
 } from 'lucide-react';
 
 interface NotificationSettings {
@@ -107,6 +109,7 @@ const SettingsPage = () => {
 
   const tabs = [
     { id: 'account', name: 'Account', icon: User },
+    { id: 'devices', name: 'Devices', icon: Monitor },
     { id: 'subscription', name: 'Subscription', icon: Globe },
     { id: 'notifications', name: 'Notifications', icon: Bell },
     { id: 'privacy', name: 'Privacy', icon: Shield },
@@ -235,6 +238,13 @@ const SettingsPage = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Device Settings */}
+            {activeTab === 'devices' && (
+              <div className="space-y-6">
+                <DeviceManagement />
               </div>
             )}
 

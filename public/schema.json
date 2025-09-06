@@ -1,0 +1,108 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://medicalschoolquizzes.com/#organization",
+      "name": "MedicalSchoolQuizzes",
+      "url": "https://medicalschoolquizzes.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://medicalschoolquizzes.com/logo.png"
+      },
+      "sameAs": [
+        "https://twitter.com/medschoolquiz",
+        "https://facebook.com/medicalschoolquizzes",
+        "https://linkedin.com/company/medicalschoolquizzes"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-support-number",
+        "contactType": "customer support",
+        "availableLanguage": "English"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://medicalschoolquizzes.com/#website",
+      "url": "https://medicalschoolquizzes.com",
+      "name": "MedicalSchoolQuizzes",
+      "description": "Comprehensive medical education platform for USMLE preparation and medical school success",
+      "publisher": {
+        "@id": "https://medicalschoolquizzes.com/#organization"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://medicalschoolquizzes.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "EducationalOrganization",
+      "name": "MedicalSchoolQuizzes",
+      "url": "https://medicalschoolquizzes.com",
+      "description": "Online medical education platform providing comprehensive quiz-based learning for medical students",
+      "areaServed": "Worldwide",
+      "educationalCredentialAwarded": "Certificate of Completion",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Medical Education Courses",
+        "itemListElement": [
+          {
+            "@type": "Course",
+            "name": "USMLE Step 1 Preparation",
+            "description": "Comprehensive preparation course for USMLE Step 1",
+            "provider": {
+              "@id": "https://medicalschoolquizzes.com/#organization"
+            }
+          },
+          {
+            "@type": "Course",
+            "name": "USMLE Step 2 CK Preparation",
+            "description": "Complete study program for USMLE Step 2 Clinical Knowledge",
+            "provider": {
+              "@id": "https://medicalschoolquizzes.com/#organization"
+            }
+          },
+          {
+            "@type": "Course",
+            "name": "Medical School Course Review",
+            "description": "Subject-specific review for medical school coursework",
+            "provider": {
+              "@id": "https://medicalschoolquizzes.com/#organization"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What subscription plans are available?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We offer three plans: Basic ($19/month) with core features, Premium ($39/month) with AI tutor and analytics, and Pro ($59/month) with unlimited access to all features including custom quiz generation and priority support."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many devices can I use simultaneously?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can be signed in on up to 2 devices at the same time. This allows you to study on both your laptop and mobile device."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which medical exams do you cover?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We provide comprehensive preparation for USMLE Steps 1, 2 CK, and 3, COMLEX Levels 1, 2, and 3, medical school course exams, and specialty board reviews."
+          }
+        }
+      ]
+    }
+  ]
+}

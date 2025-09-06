@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 import { ProfileService } from '../../services/profileService';
-import { MedicalProfile } from '../../types/profile.types';
+import { MedicalProfile } from '../../types/database.types';
 
 export const useProfile = () => {
   const [profile, setProfile] = useState<MedicalProfile | null>(null);

@@ -1,10 +1,11 @@
-// app/components/AuthModal.tsx - Replace your current file with this
+// app/components/AuthModal.tsx
 
 "use client";
 
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
+// Component props interface - specific to this component
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -211,6 +212,28 @@ const AuthModal = ({
                 placeholder="Confirm your password"
                 disabled={loading}
               />
+            </div>
+          )}
+
+          {/* Privacy Policy Agreement for Sign Up */}
+          {isSignUp && (
+            <div className="flex items-start space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="privacy-agreement"
+                required
+                className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="privacy-agreement" className="text-sm text-gray-600">
+                I agree to the{' '}
+                <a href="/privacy" target="_blank" className="text-blue-600 hover:underline">
+                  Privacy Policy
+                </a>
+                {' '}and{' '}
+                <a href="/terms" target="_blank" className="text-blue-600 hover:underline">
+                  Terms of Service
+                </a>
+              </label>
             </div>
           )}
 

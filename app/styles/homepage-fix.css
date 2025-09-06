@@ -1,0 +1,95 @@
+/* Homepage Text Visibility Fix - High Contrast for Dark Backgrounds */
+
+/* Ensure all text on dark backgrounds has proper contrast */
+.text-on-dark {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Fix for gradient backgrounds */
+.gradient-section h1,
+.gradient-section h2,
+.gradient-section h3,
+.gradient-section p,
+.gradient-section span {
+  color: #FFFFFF !important;
+  font-weight: 500;
+}
+
+/* Hero section text fixes */
+.hero-section * {
+  color: #FFFFFF !important;
+}
+
+.hero-section .text-gray-200,
+.hero-section .text-gray-300,
+.hero-section .text-gray-400 {
+  color: #F3F4F6 !important;
+}
+
+/* Dark background sections */
+.bg-gray-900 *,
+.bg-gray-800 *,
+.bg-blue-900 *,
+.bg-blue-800 *,
+.bg-gradient-to-r * {
+  color: #FFFFFF !important;
+}
+
+/* Specific fixes for common problem areas */
+.bg-gradient-to-r .text-gray-600,
+.bg-gradient-to-r .text-gray-500,
+.bg-gradient-to-br .text-gray-600,
+.bg-gradient-to-br .text-gray-500 {
+  color: #E5E7EB !important;
+}
+
+/* Button text on dark backgrounds */
+.bg-gradient-to-r button,
+.bg-gradient-to-br button {
+  color: #1F2937 !important;
+  background-color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+.bg-gradient-to-r button:hover,
+.bg-gradient-to-br button:hover {
+  background-color: #F3F4F6 !important;
+}
+
+/* Card text on dark backgrounds */
+.dark-card h3,
+.dark-card p {
+  color: #FFFFFF !important;
+}
+
+/* Feature cards */
+.feature-card-dark {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.feature-card-dark * {
+  color: #FFFFFF !important;
+}
+
+/* Stats section */
+.stats-dark span,
+.stats-dark p {
+  color: #FFFFFF !important;
+}
+
+/* Override any problematic text colors */
+.text-blue-600,
+.text-blue-700,
+.text-teal-600,
+.text-teal-700 {
+  color: #60A5FA !important; /* Lighter blue for dark backgrounds */
+}
+
+/* Ensure badges are readable */
+.badge-on-dark {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}

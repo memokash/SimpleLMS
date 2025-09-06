@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { useTheme } from '../components/ThemeContext';
 import { ProfileService } from '../../services/profileService';
-import { MedicalProfile } from '../../types/profile.types';
+import { MedicalProfile } from '../../types/database.types';
 import { 
   Users, 
   Search, 

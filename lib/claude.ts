@@ -1,5 +1,6 @@
 // Save as: lib/claude.ts
 import Anthropic from '@anthropic-ai/sdk';
+import { logger } from './logger';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -24,7 +25,7 @@ export async function callClaude(prompt: string): Promise<string> {
     
     throw new Error('Unexpected response format from Claude');
   } catch (error) {
-    console.error('Error calling Claude:', error);
+    logger.error('Error calling Claude:', error);
     throw error;
   }
 }

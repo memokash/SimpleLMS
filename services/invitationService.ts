@@ -14,8 +14,9 @@ import { httpsCallable } from 'firebase/functions';
 import { db } from '../lib/firebase';
 import { getFunctions } from 'firebase/functions';
 
+import { Invitation } from '../types/database.types';
+
 const functions = getFunctions();
-import { Invitation } from '../types/firebase.types';
 
 export class InvitationService {
   // Send invitations (calls Firebase Function)

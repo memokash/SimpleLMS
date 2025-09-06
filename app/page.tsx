@@ -302,7 +302,7 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-teal-600 relative overflow-x-hidden">
+    <div className="min-h-screen bg-blue-600 relative overflow-x-hidden">
       {/* Simple background pattern */}
       <div className="fixed inset-0 z-0 bg-dots opacity-10 overflow-hidden"></div>
       
@@ -334,7 +334,7 @@ const HomePage = () => {
         ></div>
         
         {/* Modern Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/40"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
         
         {/* Modern Floating Badges */}
         <div className="hidden lg:block absolute top-20 right-10 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium text-sm border border-white/20 z-20">
@@ -345,7 +345,7 @@ const HomePage = () => {
         </div>
         
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 text-center z-10">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 text-center z-10">
           <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
             <div className="space-y-4 lg:space-y-6">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
@@ -372,8 +372,20 @@ const HomePage = () => {
                 Sign Up Free
               </button>
             </div>
+            
+            {/* Privacy Policy Link */}
+            <p className="mt-4 text-sm text-white/80 text-center">
+              By signing up, you agree to our{' '}
+              <a href="/privacy" className="text-white underline hover:text-white/90">
+                Privacy Policy
+              </a>
+              {' '}and{' '}
+              <a href="/terms" className="text-white underline hover:text-white/90">
+                Terms of Service
+              </a>
+            </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-8 text-base lg:text-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 lg:gap-4 text-base lg:text-lg mt-6">
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-400" />
                 <span className="drop-shadow-xl text-gray-200">No credit card required</span>
@@ -388,7 +400,7 @@ const HomePage = () => {
       </section>
 
       {/* Modern Features Section */}
-      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
+      <section className="py-12 relative z-10 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
@@ -398,15 +410,15 @@ const HomePage = () => {
               Comprehensive tools designed for modern medical education
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {subscriptionBenefits.map(({ icon: Icon, title, description, link }, i) => (
               <a
                 key={i}
                 href={link}
-                className="modern-card modern-card-hover p-8 text-center group cursor-pointer block"
+                className="modern-card modern-card-hover p-4 text-center group cursor-pointer block"
               >
                 <div className="flex justify-center mb-6">
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/20 dark:to-indigo-900/20 group-hover:scale-110 transition-transform duration-200">
+                  <div className="p-4 rounded-2xl bg-indigo-100 dark:bg-indigo-900/20 group-hover:scale-110 transition-transform duration-200">
                     <Icon className="w-8 h-8 text-violet-600 dark:text-violet-400" />
                   </div>
                 </div>
@@ -421,7 +433,7 @@ const HomePage = () => {
         </div>
       </section>
     
-      <section className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
+      <section className="py-12 relative z-10 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
@@ -431,11 +443,11 @@ const HomePage = () => {
               AI-powered quizzes that adapt to your learning style
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map(({ icon: Icon, title, description }, i) => (
               <div
                 key={i}
-                className="modern-card modern-card-hover p-8 text-center group"
+                className="modern-card modern-card-hover p-4 text-center group"
               >
                 <div className="flex justify-center mb-6">
                   <div className={`sparkle-icon p-6 rounded-3xl ${getColorClasses(features[i].color)} shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
@@ -451,17 +463,17 @@ const HomePage = () => {
       </section>
 
       {/* Featured Quizzes Section */}
-      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
+      <section className="py-12 relative z-10 bg-indigo-600 dark:bg-indigo-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+            <h2 className="text-5xl font-black text-white mb-4">
               Featured Quizzes
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
+            <p className="text-xl text-white/90">
               Start practicing with our most popular quizzes
             </p>
           </div>
-          <p className="text-center text-lg text-slate-800 mb-12">
+          <p className="text-center text-lg text-white mb-12">
             Choose to take the full quiz or try a quick 10-question sample
           </p>
           
@@ -541,7 +553,7 @@ const HomePage = () => {
                     <div className="space-y-2">
                       <a 
                         href={`/quiz?id=${encodeURIComponent(quiz.id)}`}
-                        className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-700 transition-all text-center text-sm block shadow-lg hover:shadow-xl"
+                        className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium hover:bg-indigo-700 transition-all text-center text-sm block shadow-lg hover:shadow-xl"
                       >
                         Take Full Quiz
                       </a>
@@ -561,7 +573,7 @@ const HomePage = () => {
           <div className="text-center mt-12">
             <a 
               href="/quiz"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold rounded-2xl text-lg hover:from-violet-700 hover:to-indigo-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl text-lg hover:bg-indigo-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
             >
               <BookOpen className="w-5 h-5" />
               Browse All Quizzes
@@ -571,18 +583,18 @@ const HomePage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
+      <section className="py-12 relative z-10 bg-blue-700 dark:bg-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
+            <h2 className="text-5xl font-black text-white mb-4">
               Proven Results
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">
               Join thousands of successful students
             </p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center modern-card p-8 group hover-lift">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-cyan-500 text-white">
                   <BookOpen className="w-8 h-8" />
@@ -591,7 +603,7 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-cyan-800 mb-3">15,000+</div>
               <div className="text-slate-900 font-semibold">Practice Questions</div>
             </div>
-            <div className="text-center modern-card p-8 group hover-lift">
+            <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-emerald-500 text-white">
                   <TrendingUp className="w-8 h-8" />
@@ -600,7 +612,7 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-emerald-800 mb-3">95%</div>
               <div className="text-slate-900 font-semibold">Pass Rate Improvement</div>
             </div>
-            <div className="text-center modern-card p-8 group hover-lift">
+            <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-purple-500 text-white">
                   <Users className="w-8 h-8" />
@@ -609,7 +621,7 @@ const HomePage = () => {
               <div className="text-5xl font-bold text-purple-800 mb-3">10,000+</div>
               <div className="text-slate-900 font-semibold">Students Enrolled</div>
             </div>
-            <div className="text-center modern-card p-8 group hover-lift">
+            <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-yellow-400 text-blue-900">
                   <Zap className="w-8 h-8" />
@@ -624,7 +636,7 @@ const HomePage = () => {
 
 
       {/* Why Choose Us Section */}
-      <section className="py-24 relative z-10 bg-white dark:bg-gray-900">
+      <section className="py-12 relative z-10 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-16">
@@ -633,11 +645,11 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <div key={index} className="modern-card modern-card-hover p-8 min-h-[320px] group">
+                <div key={index} className="modern-card modern-card-hover p-4 min-h-[200px] group">
                   <div className="text-center">
                     <div className={`sparkle-icon inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 ${getColorClasses(feature.color)} shadow-lg group-hover:scale-110 transition-all duration-300`}>
                       <IconComponent className="w-10 h-10" />
@@ -654,58 +666,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-white dark:bg-gray-900 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              Student Success Stories
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Join thousands of successful medical students and professionals
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="modern-card p-8 min-h-[280px] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />
-                  ))}
-                </div>
-                <p className="text-slate-900 mb-6 italic text-lg leading-relaxed font-medium">
-                  "MedEdLMS Pro helped me identify my weak areas in immunology. The explanations are clear and the questions are challenging but fair."
-                </p>
-              </div>
-              <div>
-                <div className="font-bold text-indigo-800 text-lg">Sarah M.</div>
-                <div className="text-slate-800 text-sm font-medium">3rd Year Medical Student</div>
-              </div>
-            </div>
-
-            <div className="modern-card p-8 min-h-[280px] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />
-                  ))}
-                </div>
-                <p className="text-slate-900 mb-6 italic text-lg leading-relaxed font-medium">
-                  "The progress tracking feature is amazing. I can see exactly which topics I need to focus on before my board exams."
-                </p>
-              </div>
-              <div>
-                <div className="font-bold text-indigo-800 text-lg">Alex R.</div>
-                <div className="text-slate-800 text-sm font-medium">4th Year Medical Student</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 relative z-10 bg-gray-50 dark:bg-gray-800">
+      <section id="pricing" className="py-12 relative z-10 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-16">
@@ -714,9 +677,9 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {/* Free Plan */}
-            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col">
+            <div className="modern-card p-4 text-center min-h-[400px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-gray-500 text-white">
                   <BookOpen className="w-8 h-8" />
@@ -752,8 +715,8 @@ const HomePage = () => {
             </div>
 
             {/* Pro Plan - Popular */}
-            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col relative transform scale-105 border-2 border-violet-500">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+            <div className="modern-card p-4 text-center min-h-[400px] flex flex-col relative transform scale-105 border-2 border-violet-500">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                 Most Popular
               </div>
               <div className="sparkle-icon flex justify-center mb-4">
@@ -788,14 +751,14 @@ const HomePage = () => {
               </ul>
               <button 
                 onClick={() => handleStripeCheckout('price_1RqE1PEbNlb7nCbs0las6NY5', 'Pro')}
-                className="w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $19.99/month' : 'Sign Up to Subscribe'}
               </button>
             </div>
 
             {/* Premium Plan */}
-            <div className="modern-card p-8 text-center min-h-[600px] flex flex-col">
+            <div className="modern-card p-4 text-center min-h-[400px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
                 <div className="p-4 rounded-2xl bg-purple-600 text-white">
                   <Star className="w-8 h-8" />
@@ -838,7 +801,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-br from-violet-600 to-indigo-700 py-24 relative z-10">
+      <section className="bg-indigo-700 py-12 relative z-10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-5xl font-black mb-6 text-white">
             Ready to Transform Your Medical Education?

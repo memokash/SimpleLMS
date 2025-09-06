@@ -20,7 +20,7 @@ import {
   deleteObject 
 } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
-import { MedicalProfile } from '../types/profile.types';
+import { MedicalProfile } from '../types/database.types';
 
 export class ProfileService {
   // Get user profile

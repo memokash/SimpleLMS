@@ -1,5 +1,5 @@
-import CoursesDashboardOptimized from '../components/CoursesDashboardOptimized';
+import CoursesClient from './courses-client';
 
 export default function CoursesPage() {
-  return <CoursesDashboardOptimized />;
+  return <CoursesClient />;
 }

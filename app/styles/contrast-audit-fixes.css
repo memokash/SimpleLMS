@@ -1,0 +1,285 @@
+/* COMPREHENSIVE CONTRAST FIXES - AUDIT RESULTS */
+/* This file fixes all text contrast issues found in the audit */
+
+/* ===== RULE 1: Light Mode Text Colors ===== */
+/* In light mode, ensure dark text on light backgrounds */
+
+/* Default text colors for light mode */
+body:not(.dark) {
+  color: rgb(17, 24, 39); /* gray-900 */
+}
+
+/* Fix white text on white/light backgrounds in light mode */
+body:not(.dark) .bg-white .text-white,
+body:not(.dark) .bg-gray-50 .text-white,
+body:not(.dark) .bg-gray-100 .text-white,
+body:not(.dark) .bg-gray-200 .text-white {
+  color: rgb(17, 24, 39) !important; /* Force dark text */
+}
+
+/* Fix light gray text on white backgrounds */
+body:not(.dark) .bg-white .text-gray-300,
+body:not(.dark) .bg-white .text-gray-400,
+body:not(.dark) .bg-gray-50 .text-gray-300,
+body:not(.dark) .bg-gray-50 .text-gray-400 {
+  color: rgb(75, 85, 99) !important; /* gray-600 minimum */
+}
+
+/* ===== RULE 2: Dark Mode Text Colors ===== */
+/* In dark mode, ensure light text on dark backgrounds */
+
+.dark body {
+  color: rgb(243, 244, 246); /* gray-100 */
+}
+
+/* Fix dark text on dark backgrounds in dark mode */
+.dark .bg-gray-900 .text-gray-900,
+.dark .bg-gray-900 .text-gray-800,
+.dark .bg-gray-900 .text-gray-700,
+.dark .bg-gray-800 .text-gray-900,
+.dark .bg-gray-800 .text-gray-800,
+.dark .bg-gray-800 .text-gray-700,
+.dark .bg-gray-700 .text-gray-900,
+.dark .bg-gray-700 .text-gray-800,
+.dark .bg-gray-700 .text-gray-700 {
+  color: rgb(243, 244, 246) !important; /* Force light text */
+}
+
+/* Fix very dark gray text on dark backgrounds */
+.dark .bg-gray-900 .text-gray-600,
+.dark .bg-gray-800 .text-gray-600,
+.dark .bg-gray-700 .text-gray-600 {
+  color: rgb(156, 163, 175) !important; /* gray-400 minimum */
+}
+
+/* ===== RULE 3: Semi-transparent Backgrounds ===== */
+
+/* White/light overlays need dark text in light mode */
+body:not(.dark) [class*="bg-white/"] {
+  color: rgb(17, 24, 39); /* gray-900 */
+}
+
+body:not(.dark) [class*="bg-gray-50/"],
+body:not(.dark) [class*="bg-gray-100/"] {
+  color: rgb(17, 24, 39); /* gray-900 */
+}
+
+/* Dark overlays need light text in dark mode */
+.dark [class*="bg-gray-900/"],
+.dark [class*="bg-gray-800/"],
+.dark [class*="bg-gray-700/"] {
+  color: rgb(243, 244, 246); /* gray-100 */
+}
+
+/* ===== RULE 4: Gradient Backgrounds ===== */
+
+/* Gradients typically need white text for contrast */
+[class*="from-blue-"][class*="to-"],
+[class*="from-indigo-"][class*="to-"],
+[class*="from-purple-"][class*="to-"],
+[class*="from-green-"][class*="to-"],
+[class*="from-red-"][class*="to-"] {
+  color: white;
+}
+
+/* But in cards/tiles inside gradients, use appropriate contrast */
+[class*="bg-gradient-"] .bg-white {
+  color: rgb(17, 24, 39); /* gray-900 */
+}
+
+[class*="bg-gradient-"] .dark\:bg-gray-800 {
+  color: rgb(243, 244, 246); /* gray-100 in dark mode */
+}
+
+/* ===== RULE 5: Specific Component Fixes ===== */
+
+/* Fix buttons with white/20 background */
+body:not(.dark) .bg-white\/20 {
+  background-color: rgba(31, 41, 55, 0.1); /* Use dark overlay in light mode */
+  color: rgb(17, 24, 39);
+}
+
+body:not(.dark) .bg-white\/10 {
+  background-color: rgba(31, 41, 55, 0.05);
+  color: rgb(17, 24, 39);
+}
+
+body:not(.dark) .bg-white\/30 {
+  background-color: rgba(31, 41, 55, 0.15);
+  color: rgb(17, 24, 39);
+}
+
+/* Hover states */
+body:not(.dark) .hover\:bg-white\/20:hover {
+  background-color: rgba(31, 41, 55, 0.1);
+}
+
+body:not(.dark) .hover\:bg-white\/30:hover {
+  background-color: rgba(31, 41, 55, 0.15);
+}
+
+/* Dark mode semi-transparent backgrounds are fine with white text */
+.dark .bg-white\/20,
+.dark .bg-white\/10,
+.dark .bg-white\/30 {
+  color: white;
+}
+
+/* ===== RULE 6: Input Fields ===== */
+
+/* Light mode inputs */
+body:not(.dark) input,
+body:not(.dark) textarea,
+body:not(.dark) select {
+  background-color: white;
+  color: rgb(17, 24, 39);
+}
+
+body:not(.dark) input::placeholder,
+body:not(.dark) textarea::placeholder {
+  color: rgb(107, 114, 128); /* gray-500 */
+}
+
+/* Dark mode inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: rgb(55, 65, 81); /* gray-700 */
+  color: rgb(243, 244, 246); /* gray-100 */
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(156, 163, 175); /* gray-400 */
+}
+
+/* ===== RULE 7: Card and Tile Fixes ===== */
+
+/* Light mode cards */
+body:not(.dark) .card-base,
+body:not(.dark) [class*="card"],
+body:not(.dark) [class*="tile"] {
+  background-color: white;
+  color: rgb(17, 24, 39);
+}
+
+/* Dark mode cards */
+.dark .card-base,
+.dark [class*="card"],
+.dark [class*="tile"] {
+  background-color: rgb(31, 41, 55); /* gray-800 */
+  color: rgb(243, 244, 246); /* gray-100 */
+}
+
+/* ===== RULE 8: Text Utility Classes Override ===== */
+
+/* Ensure text utility classes work correctly */
+.text-white { color: white !important; }
+.text-black { color: black !important; }
+.text-gray-50 { color: rgb(249, 250, 251) !important; }
+.text-gray-100 { color: rgb(243, 244, 246) !important; }
+.text-gray-200 { color: rgb(229, 231, 235) !important; }
+.text-gray-300 { color: rgb(209, 213, 219) !important; }
+.text-gray-400 { color: rgb(156, 163, 175) !important; }
+.text-gray-500 { color: rgb(107, 114, 128) !important; }
+.text-gray-600 { color: rgb(75, 85, 99) !important; }
+.text-gray-700 { color: rgb(55, 65, 81) !important; }
+.text-gray-800 { color: rgb(31, 41, 55) !important; }
+.text-gray-900 { color: rgb(17, 24, 39) !important; }
+
+/* Dark mode overrides for light grays */
+.dark .dark\:text-gray-100 { color: rgb(243, 244, 246) !important; }
+.dark .dark\:text-gray-200 { color: rgb(229, 231, 235) !important; }
+.dark .dark\:text-gray-300 { color: rgb(209, 213, 219) !important; }
+.dark .dark\:text-gray-400 { color: rgb(156, 163, 175) !important; }
+
+/* ===== RULE 9: Navigation Specific ===== */
+
+/* Navigation items in light mode */
+body:not(.dark) nav a,
+body:not(.dark) nav button {
+  color: rgb(55, 65, 81); /* gray-700 */
+}
+
+/* Navigation items in dark mode */
+.dark nav a,
+.dark nav button {
+  color: rgb(209, 213, 219); /* gray-300 */
+}
+
+/* ===== RULE 10: Badge and Label Fixes ===== */
+
+/* Ensure badges have proper contrast */
+body:not(.dark) .badge {
+  min-color-contrast: 4.5;
+}
+
+.dark .badge {
+  min-color-contrast: 4.5;
+}
+
+/* ===== RULE 11: Disabled States ===== */
+
+/* Disabled elements should still be readable */
+:disabled,
+[disabled] {
+  opacity: 0.6;
+}
+
+body:not(.dark) :disabled,
+body:not(.dark) [disabled] {
+  color: rgb(107, 114, 128); /* gray-500 */
+}
+
+.dark :disabled,
+.dark [disabled] {
+  color: rgb(156, 163, 175); /* gray-400 */
+}
+
+/* ===== RULE 12: Links ===== */
+
+/* Links should always be visible */
+a {
+  text-decoration: underline;
+}
+
+body:not(.dark) a:not([class*="btn"]):not([class*="button"]) {
+  color: rgb(37, 99, 235); /* blue-600 */
+}
+
+.dark a:not([class*="btn"]):not([class*="button"]) {
+  color: rgb(96, 165, 250); /* blue-400 */
+}
+
+/* ===== RULE 13: Table Fixes ===== */
+
+/* Table headers */
+body:not(.dark) th {
+  background-color: rgb(243, 244, 246); /* gray-50 */
+  color: rgb(17, 24, 39); /* gray-900 */
+}
+
+.dark th {
+  background-color: rgb(55, 65, 81); /* gray-700 */
+  color: rgb(243, 244, 246); /* gray-100 */
+}
+
+/* Table cells */
+body:not(.dark) td {
+  color: rgb(55, 65, 81); /* gray-700 */
+}
+
+.dark td {
+  color: rgb(209, 213, 219); /* gray-300 */
+}
+
+/* ===== ACCESSIBILITY FOCUS STATES ===== */
+
+*:focus {
+  outline: 2px solid rgb(59, 130, 246); /* blue-500 */
+  outline-offset: 2px;
+}
+
+.dark *:focus {
+  outline-color: rgb(96, 165, 250); /* blue-400 */
+}

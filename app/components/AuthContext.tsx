@@ -13,6 +13,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { auth, googleProvider } from '../../lib/firebase';
+import { DeviceManager } from '../../lib/deviceManager';
 
 interface AuthContextType {
   user: User | null;
@@ -42,28 +43,65 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // ✅ SIMPLIFIED - Only handle auth state, no automatic redirects
-    return onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    return onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        // Check device limit when auth state changes
+        const deviceCheck = await DeviceManager.registerDevice(currentUser.uid);
+        if (!deviceCheck.allowed) {
+          alert(deviceCheck.message);
+          await signOut(auth);
+          setUser(null);
+        } else {
+          setUser(currentUser);
+        }
+      } else {
+        setUser(currentUser);
+      }
       setLoading(false);
     });
   }, [pathname]);
 
   const signInWithEmail = async (email: string, password: string) => {
-  await signInWithEmailAndPassword(auth, email, password);
-  router.push('/dashboard');
-};
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Check device limit
+    const deviceCheck = await DeviceManager.registerDevice(userCredential.user.uid);
+    if (!deviceCheck.allowed) {
+      await signOut(auth);
+      throw new Error(deviceCheck.message || 'Maximum device limit reached');
+    }
+    
+    router.push('/dashboard');
+  };
 
-const signUpWithEmail = async (email: string, password: string) => {
-  await createUserWithEmailAndPassword(auth, email, password);
-  router.push('/dashboard');
-};
+  const signUpWithEmail = async (email: string, password: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Register device for new user
+    await DeviceManager.registerDevice(userCredential.user.uid);
+    
+    router.push('/dashboard');
+  };
 
-const signInWithGoogle = async () => {
-  await signInWithPopup(auth, googleProvider);
-  router.push('/dashboard');
-};
+  const signInWithGoogle = async () => {
+    const userCredential = await signInWithPopup(auth, googleProvider);
+    
+    // Check device limit
+    const deviceCheck = await DeviceManager.registerDevice(userCredential.user.uid);
+    if (!deviceCheck.allowed) {
+      await signOut(auth);
+      throw new Error(deviceCheck.message || 'Maximum device limit reached');
+    }
+    
+    router.push('/dashboard');
+  };
 
   const logout = async () => {
+    // Remove device session before signing out
+    if (user) {
+      await DeviceManager.removeDevice(user.uid);
+    }
+    
     await signOut(auth);
     
     // ✅ Always redirect to home on logout

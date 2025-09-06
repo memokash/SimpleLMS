@@ -45,70 +45,70 @@ const DashboardNavigationEnhanced = () => {
       label: 'Dashboard', 
       href: '/dashboard', 
       icon: Home,
-      color: 'from-blue-600 to-blue-500'
+      color: 'bg-blue-600'
     },
     { 
-      label: 'Courses', 
-      href: '/dashboard/courses', 
+      label: 'Medical School Quizzes', 
+      href: '/courses', 
       icon: BookOpen,
-      color: 'from-indigo-600 to-purple-600',
-      badge: 'New'
+      color: 'bg-indigo-600',
+      badge: '15K+'
     },
     { 
-      label: 'Quiz Library', 
-      href: '/quiz', 
+      label: 'Community Question Bank', 
+      href: '/question-bank', 
       icon: Brain,
-      color: 'from-blue-600 to-indigo-600',
-      badge: '15K+'
+      color: 'bg-purple-600',
+      badge: 'User Created'
     },
     { 
       label: 'AI Tutor', 
       href: '/dashboard/etutor', 
       icon: Sparkles,
-      color: 'from-purple-600 to-indigo-600'
+      color: 'bg-purple-600'
     },
     { 
       label: 'Study Groups', 
       href: '/study-groups', 
       icon: Users,
-      color: 'from-blue-600 to-purple-600'
+      color: 'bg-blue-600'
     },
     { 
       label: 'Messages', 
       href: '/messages', 
       icon: MessageSquare,
-      color: 'from-indigo-600 to-blue-600',
+      color: 'bg-indigo-600',
       badge: '3'
     },
     { 
       label: 'Resources', 
       href: '/reading-resources', 
       icon: FileText,
-      color: 'from-blue-600 to-indigo-600'
+      color: 'bg-blue-600'
     },
     { 
       label: 'Rounding Tools', 
       href: '/rounding-tools', 
       icon: Stethoscope,
-      color: 'from-purple-600 to-blue-600'
+      color: 'bg-purple-600'
     },
     { 
       label: 'Analytics', 
       href: '/performance-analytics', 
       icon: BarChart3,
-      color: 'from-indigo-600 to-purple-600'
+      color: 'bg-indigo-600'
     },
     { 
       label: 'Profile', 
       href: '/profile', 
       icon: User,
-      color: 'from-blue-600 to-indigo-600'
+      color: 'bg-blue-600'
     },
     { 
       label: 'Settings', 
       href: '/settings', 
       icon: Settings,
-      color: 'from-slate-600 to-slate-700'
+      color: 'bg-gray-600'
     }
   ];
 
@@ -116,8 +116,8 @@ const DashboardNavigationEnhanced = () => {
 
   return (
     <>
-      {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700">
+      {/* Mobile Header - Only show on small screens */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-16 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between h-full px-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -125,18 +125,18 @@ const DashboardNavigationEnhanced = () => {
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold text-blue-600 dark:text-blue-400">
             MedEd Dashboard
           </h1>
           <div className="w-10"></div>
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar - Show on medium screens and up (768px+) */}
       <aside className={`
-        hidden lg:flex flex-col fixed left-0 top-0 h-full z-30
+        hidden md:flex flex-col fixed left-0 top-0 h-full z-30
         transition-all duration-300 
-        ${collapsed ? 'w-20' : 'w-64'}
+        ${collapsed ? 'w-16' : 'w-48'}
         bg-white dark:bg-gray-900
         border-r border-gray-200 dark:border-gray-700
         shadow-lg
@@ -150,7 +150,7 @@ const DashboardNavigationEnhanced = () => {
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </div>
               <div>
-                <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">
                   MedEd LMS
                 </h2>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Study Dashboard</p>
@@ -176,7 +176,7 @@ const DashboardNavigationEnhanced = () => {
                     flex items-center space-x-3 px-3 py-3 rounded-xl
                     transition-all duration-300 group relative
                     ${isActive(item.href)
-                      ? 'bg-gradient-to-r ' + item.color + ' text-white shadow-md'
+                      ? item.color + ' text-white shadow-md'
                       : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
                     }
                     ${collapsed ? 'justify-center' : ''}
@@ -200,7 +200,7 @@ const DashboardNavigationEnhanced = () => {
                           px-2 py-1 rounded-full text-xs font-bold
                           ${isActive(item.href)
                             ? 'bg-white/20 text-white'
-                            : 'bg-gradient-to-r ' + item.color + ' text-white'
+                            : item.color + ' text-white'
                           }
                         `}>
                           {item.badge}
@@ -236,17 +236,17 @@ const DashboardNavigationEnhanced = () => {
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
               <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
                   M
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Medical Student</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Premium Member</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">User</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-600 dark:text-gray-400">Study Streak</span>
-                <span className="font-bold text-orange-500">🔥 7 days</span>
+                <span className="text-gray-600 dark:text-gray-400">Status</span>
+                <span className="font-bold text-green-500">Active</span>
               </div>
             </div>
           </div>
@@ -255,7 +255,7 @@ const DashboardNavigationEnhanced = () => {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="md:hidden fixed inset-0 z-50 flex">
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)}></div>
           <div className="relative w-80 max-w-full bg-white dark:bg-gray-900 h-full shadow-xl overflow-y-auto">
             {/* Mobile Menu Header */}
@@ -263,7 +263,7 @@ const DashboardNavigationEnhanced = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <span className="text-3xl">🩺</span>
-                  <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">
                     MedEd Dashboard
                   </h2>
                 </div>
@@ -288,7 +288,7 @@ const DashboardNavigationEnhanced = () => {
                         flex items-center space-x-3 px-3 py-3 rounded-xl
                         transition-all duration-300
                         ${isActive(item.href)
-                          ? 'bg-gradient-to-r ' + item.color + ' text-white shadow-lg'
+                          ? item.color + ' text-white shadow-lg'
                           : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200'
                         }
                       `}
@@ -300,7 +300,7 @@ const DashboardNavigationEnhanced = () => {
                           px-2 py-1 rounded-full text-xs font-bold
                           ${isActive(item.href)
                             ? 'bg-white/20 text-white'
-                            : 'bg-gradient-to-r ' + item.color + ' text-white'
+                            : item.color + ' text-white'
                           }
                         `}>
                           {item.badge}

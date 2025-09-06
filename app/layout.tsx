@@ -1,6 +1,7 @@
 // app/layout.tsx
 import { ThemeProvider } from './components/ThemeContext';
 import './globals.css';
+import './styles/contrast-audit-fixes.css';
 import { AuthProvider } from './components/AuthContext';
 import Footer from './components/Footer';
 import DashboardLayout from './components/DashboardLayout';
@@ -9,7 +10,40 @@ import type { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: 'MedicalSchoolQuizzes - Master Medical School With Smart Quizzes',
-  description: 'Practice with expert-crafted medical questions. Track progress and effortlessly pass your exams.',
+  description: 'Practice with expert-crafted medical questions. Track progress and effortlessly pass your exams. Comprehensive USMLE prep, study tools, and AI-powered learning for medical students.',
+  keywords: 'medical school quizzes, USMLE prep, medical education, Step 1, Step 2 CK, COMLEX, medical student resources, question bank, AI tutor, medical exam preparation',
+  authors: [{ name: 'MedicalSchoolQuizzes Team' }],
+  creator: 'MedicalSchoolQuizzes',
+  publisher: 'MedicalSchoolQuizzes',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    title: 'MedicalSchoolQuizzes - Master Medical School With Smart Quizzes',
+    description: 'Practice with expert-crafted medical questions. Track progress and effortlessly pass your exams.',
+    url: 'https://medicalschoolquizzes.com',
+    siteName: 'MedicalSchoolQuizzes',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MedicalSchoolQuizzes - Master Medical School With Smart Quizzes',
+    description: 'Practice with expert-crafted medical questions. Track progress and effortlessly pass your exams.',
+    creator: '@medschoolquiz',
+  },
+  alternates: {
+    canonical: 'https://medicalschoolquizzes.com',
+  },
+  category: 'education',
 };
 
 export const viewport: Viewport = {

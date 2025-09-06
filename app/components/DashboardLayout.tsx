@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {showNavigation && <DashboardNavigationEnhanced />}
       
       {/* Main Content with proper spacing for sidebar */}
-      <main className={`w-full transition-all duration-300 ${showNavigation ? 'lg:ml-64 pt-16 lg:pt-0' : ''}`}>
+      <main className={`w-full transition-all duration-300 ${showNavigation ? 'md:ml-48 pt-16 md:pt-0' : ''}`}>
         <div className="min-h-screen">
           {children}
         </div>

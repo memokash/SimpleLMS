@@ -45,6 +45,8 @@ const nextConfig = {
   // Environment-specific settings
   env: {
     CUSTOM_KEY: process.env.NODE_ENV,
+    STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID,
+    STRIPE_PREMIUM_PRICE_ID: process.env.STRIPE_PREMIUM_PRICE_ID,
   },
 
   // Build-time optimizations
