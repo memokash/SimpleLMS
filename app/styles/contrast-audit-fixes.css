@@ -207,6 +207,41 @@ body:not(.dark) nav button {
   color: rgb(209, 213, 219); /* gray-300 */
 }
 
+/* Mobile/Tablet Navigation Fix - Ensure text is always visible */
+@media (max-width: 767px) {
+  /* Mobile header on white background needs dark text */
+  body:not(.dark) .fixed.bg-white nav,
+  body:not(.dark) .fixed.bg-white button,
+  body:not(.dark) .fixed.bg-white span,
+  body:not(.dark) .fixed.bg-white div {
+    color: rgb(55, 65, 81) !important; /* gray-700 */
+  }
+  
+  /* Mobile menu overlay text must be dark on white background */
+  body:not(.dark) .fixed.inset-0.z-50 .bg-white a:not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-purple"]),
+  body:not(.dark) .fixed.inset-0.z-50 .bg-white span:not([class*="bg-blue"]):not([class*="bg-indigo"]):not([class*="bg-purple"]),
+  body:not(.dark) .fixed.inset-0.z-50 .bg-white svg {
+    color: rgb(55, 65, 81) !important; /* gray-700 */
+  }
+  
+  /* Except for colored elements like badges and active items */
+  body:not(.dark) .fixed.bg-white .text-blue-600,
+  body:not(.dark) .fixed.bg-white .text-blue-500,
+  body:not(.dark) .fixed.bg-white .text-blue-400,
+  body:not(.dark) .fixed.inset-0.z-50 .text-blue-600,
+  body:not(.dark) .fixed.inset-0.z-50 .text-blue-500,
+  body:not(.dark) .fixed.inset-0.z-50 .text-blue-400 {
+    color: rgb(37, 99, 235) !important; /* Keep blue text blue */
+  }
+  
+  /* Active navigation items should keep their colors */
+  body:not(.dark) .fixed.inset-0.z-50 [class*="bg-blue-600"],
+  body:not(.dark) .fixed.inset-0.z-50 [class*="bg-indigo-600"],
+  body:not(.dark) .fixed.inset-0.z-50 [class*="bg-purple-600"] {
+    color: white !important;
+  }
+}
+
 /* ===== RULE 10: Badge and Label Fixes ===== */
 
 /* Ensure badges have proper contrast */

@@ -324,7 +324,7 @@ const HomePage = () => {
       />
 
       {/* Modern Hero Section */}
-      <section className="relative overflow-hidden min-h-screen flex items-center z-10">
+      <section className="relative overflow-hidden min-h-[400px] md:min-h-[500px] lg:min-h-screen flex items-center z-10 py-12 md:py-16">
         {/* Books Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80"
