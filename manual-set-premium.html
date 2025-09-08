@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Premium Tier - SimpleLMS</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            display: none;
+        }
+        .user-info h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .user-info p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .tier-badge.free {
+            background: #6c757d;
+            color: white;
+        }
+        .tier-badge.pro {
+            background: #28a745;
+            color: white;
+        }
+        .tier-badge.premium {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 SimpleLMS - Set Premium Tier</h1>
+        
+        <p style="color: #666; margin-bottom: 30px;">
+            This tool allows you to manually set a user account to Premium tier for testing purposes.
+        </p>
+
+        <div id="userInfo" class="user-info">
+            <h3>Current User</h3>
+            <p><strong>Email:</strong> <span id="currentEmail"></span></p>
+            <p><strong>Name:</strong> <span id="currentName"></span></p>
+            <p><strong>Current Tier:</strong> <span id="currentTier"></span></p>
+        </div>
+
+        <input type="email" id="emailInput" placeholder="Enter user email address" />
+        
+        <button id="checkUserBtn" onclick="checkUser()">Check User Status</button>
+        <button id="setPremiumBtn" onclick="setPremiumTier()" style="display: none;">Set to Premium Tier</button>
+        
+        <div id="status" class="status"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            getDocs, 
+            updateDoc, 
+            doc,
+            getDoc
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyByhZbl3e4R_cmT64i-rhkYp9eEclCeDUw",
+            authDomain: "simplelms-4b6a9.firebaseapp.com",
+            projectId: "simplelms-4b6a9",
+            storageBucket: "simplelms-4b6a9.firebasestorage.app",
+            messagingSenderId: "889926395152",
+            appId: "1:889926395152:web:c80d8a67c2e90e2e017c37",
+            measurementId: "G-R8BQ1YCK9R"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let currentUserId = null;
+        let currentUserData = null;
+
+        // Check if user is signed in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('status').className = 'status info';
+                document.getElementById('status').textContent = `Signed in as: ${user.email}`;
+            }
+        });
+
+        window.checkUser = async function() {
+            const email = document.getElementById('emailInput').value.trim();
+            
+            if (!email) {
+                showStatus('Please enter an email address', 'error');
+                return;
+            }
+
+            document.getElementById('checkUserBtn').disabled = true;
+            showStatus('Checking user...', 'info');
+
+            try {
+                // Query users by email
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('email', '==', email)
+                );
+                
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                if (usersSnapshot.empty) {
+                    showStatus(`No user found with email: ${email}`, 'error');
+                    document.getElementById('userInfo').style.display = 'none';
+                    document.getElementById('setPremiumBtn').style.display = 'none';
+                } else {
+                    const userDoc = usersSnapshot.docs[0];
+                    currentUserId = userDoc.id;
+                    currentUserData = userDoc.data();
+                    
+                    // Display user info
+                    document.getElementById('currentEmail').textContent = currentUserData.email || email;
+                    document.getElementById('currentName').textContent = currentUserData.displayName || 'Not set';
+                    
+                    const tier = currentUserData.subscriptionTier || 'free';
+                    document.getElementById('currentTier').innerHTML = 
+                        `<span class="tier-badge ${tier}">${tier.toUpperCase()}</span>`;
+                    
+                    document.getElementById('userInfo').style.display = 'block';
+                    
+                    if (tier === 'premium') {
+                        showStatus('User already has Premium tier!', 'success');
+                        document.getElementById('setPremiumBtn').style.display = 'none';
+                    } else {
+                        showStatus(`User found with ${tier} tier. Click "Set to Premium Tier" to upgrade.`, 'info');
+                        document.getElementById('setPremiumBtn').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking user:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+            } finally {
+                document.getElementById('checkUserBtn').disabled = false;
+            }
+        };
+
+        window.setPremiumTier = async function() {
+            if (!currentUserId) {
+                showStatus('No user selected', 'error');
+                return;
+            }
+
+            document.getElementById('setPremiumBtn').disabled = true;
+            showStatus('Setting premium tier...', 'info');
+
+            try {
+                // Update user to premium tier
+                await updateDoc(doc(db, 'users', currentUserId), {
+                    subscriptionTier: 'premium',
+                    subscriptionStatus: 'active',
+                    subscriptionCurrentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+                    updatedAt: new Date()
+                });
+
+                showStatus('✅ Successfully updated user to Premium tier! User can now access all quizzes.', 'success');
+                
+                // Update displayed tier
+                document.getElementById('currentTier').innerHTML = 
+                    '<span class="tier-badge premium">PREMIUM</span>';
+                
+                document.getElementById('setPremiumBtn').style.display = 'none';
+                
+                // Clear input
+                document.getElementById('emailInput').value = '';
+                
+            } catch (error) {
+                console.error('Error setting premium tier:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+            } finally {
+                document.getElementById('setPremiumBtn').disabled = false;
+            }
+        };
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        // Auto-check if email is provided in URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailParam = urlParams.get('email');
+        if (emailParam) {
+            document.getElementById('emailInput').value = emailParam;
+            setTimeout(() => checkUser(), 500);
+        }
+    </script>
+</body>
+</html>

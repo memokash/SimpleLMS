@@ -417,6 +417,11 @@ export class CourseService {
    */
   static async getUserStats(userId: string): Promise<UserStats> {
     try {
+      // First get user's tier from users collection
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      const userData = userDoc.exists() ? userDoc.data() : null;
+      const userTier = userData?.subscriptionTier || 'free';
+      
       const progressQuery = query(
         collection(db, 'userProgress'),
         where('userId', '==', userId)
@@ -435,7 +440,8 @@ export class CourseService {
         lastActivity: null,
         rank: 'Beginner',
         badges: [],
-        achievements: []
+        achievements: [],
+        tier: userTier as 'free' | 'pro' | 'premium'
       };
       
       let totalScoreSum = 0;
