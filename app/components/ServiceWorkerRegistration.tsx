@@ -40,7 +40,7 @@ export default function ServiceWorkerRegistration() {
       window.addEventListener('online', () => {
         console.log('Back online! Syncing data...');
         // Trigger background sync
-        navigator.serviceWorker.ready.then((registration) => {
+        navigator.serviceWorker.ready.then((registration: any) => {
           if ('sync' in registration) {
             return registration.sync.register('sync-patient-data');
           }
