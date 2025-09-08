@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Search,
   GraduationCap,
   Target,
   Zap,
@@ -65,11 +66,18 @@ const DashboardNavigationEnhanced = () => {
     
     // Learning Content
     { 
-      label: 'Courses', 
+      label: 'Quiz Library', 
       href: '/courses', 
       icon: BookOpen,
       color: 'bg-indigo-600',
-      badge: 'New'
+      badge: 'Indexed'
+    },
+    { 
+      label: 'Search', 
+      href: '/search', 
+      icon: Search,
+      color: 'bg-green-600',
+      badge: 'Fast'
     },
     { 
       label: 'Qbank', 

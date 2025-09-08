@@ -1,53 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { useRouter } from 'next/navigation';
-import { 
-  BookOpen, Clock, Users, Award, ChevronRight, Search, Filter,
-  Brain, Heart, Stethoscope, Microscope, Pill, Baby, Syringe,
-  Activity, Eye, Bone, RefreshCw, Grid, List, CheckCircle,
-  GraduationCap, Star, TrendingUp, Lightbulb, FileText
-} from 'lucide-react';
-
-// Medical category mapping
-const medicalCategories = {
-  all: { name: 'All Courses', icon: BookOpen, color: 'bg-blue-500' },
-  cardiology: { name: 'Cardiology', icon: Heart, color: 'bg-red-500' },
-  neurology: { name: 'Neurology', icon: Brain, color: 'bg-purple-500' },
-  pediatrics: { name: 'Pediatrics', icon: Baby, color: 'bg-pink-500' },
-  surgery: { name: 'Surgery', icon: Syringe, color: 'bg-green-500' },
-  internal: { name: 'Internal Medicine', icon: Stethoscope, color: 'bg-blue-600' },
-  pathology: { name: 'Pathology', icon: Microscope, color: 'bg-yellow-600' },
-  pharmacology: { name: 'Pharmacology', icon: Pill, color: 'bg-indigo-500' },
-  emergency: { name: 'Emergency', icon: Activity, color: 'bg-orange-500' },
-  radiology: { name: 'Radiology', icon: Eye, color: 'bg-gray-600' },
-  orthopedics: { name: 'Orthopedics', icon: Bone, color: 'bg-stone-600' },
-};
-
-interface Quiz {
-  id: string;
-  title: string;
-  description?: string;
-  category: string;
-  specialty?: string;
-  difficulty: string;
-  questionCount: number;
-  hasExplanations: boolean;
-  estimatedTime?: number;
-  completions?: number;
-  averageScore?: number;
-  tags?: string[];
-  courseName?: string;
-}
+import QuizLibraryOptimized from '../components/QuizLibraryOptimized';
 
 export default function CoursesClient() {
-  const router = useRouter();
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  return <QuizLibraryOptimized />;
+}
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
