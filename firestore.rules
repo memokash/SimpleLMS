@@ -22,18 +22,38 @@ service cloud.firestore {
     }
     
     function hasSubscription(plan) {
-      return request.auth != null &&
-        exists(/databases/$(database)/documents/subscriptions/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/subscriptions/$(request.auth.uid)).data.plan == plan &&
-        get(/databases/$(database)/documents/subscriptions/$(request.auth.uid)).data.status == 'active';
+      return request.auth != null && (
+        // Check users collection for tier
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionTier == plan &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'active') ||
+        // Fallback to subscriptions collection for backward compatibility
+        (exists(/databases/$(database)/documents/subscriptions/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/subscriptions/$(request.auth.uid)).data.plan == plan &&
+         get(/databases/$(database)/documents/subscriptions/$(request.auth.uid)).data.status == 'active')
+      );
     }
     
     function hasProOrPremium() {
-      return hasSubscription('pro') || hasSubscription('premium');
+      return request.auth != null && (
+        // Check users collection for tier
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionTier in ['pro', 'premium'] &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'active') ||
+        // Fallback to subscriptions collection
+        hasSubscription('pro') || hasSubscription('premium')
+      );
     }
     
     function hasPremium() {
-      return hasSubscription('premium');
+      return request.auth != null && (
+        // Check users collection for tier
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionTier == 'premium' &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'active') ||
+        // Fallback to subscriptions collection
+        hasSubscription('premium')
+      );
     }
     
     function isProfilePublic(userId) {
