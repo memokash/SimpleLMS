@@ -8,6 +8,10 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        'xs': '475px',
+        '2xs': '360px',
+      },
       colors: {
         // Custom color palette for professional look
         primary: {

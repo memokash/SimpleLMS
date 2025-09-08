@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,13 +12,27 @@
 
 /* === BASE TEXT COLORS === */
 
-/* Default body text */
+/* Default body text - Enhanced contrast with lighter font */
 body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 300; /* Light weight for body text */
   color: rgb(17, 24, 39); /* gray-900 for light mode */
+  background-color: rgb(255, 255, 255); /* white background */
+  letter-spacing: 0.01em; /* Slight spacing for readability */
 }
 
 .dark {
-  color: rgb(243, 244, 246); /* gray-100 for dark mode */
+  color: rgb(255, 251, 0); /* bright yellow for maximum contrast */
+  background-color: rgb(17, 24, 39); /* gray-900 background */
+}
+
+/* Remove underlines from all links */
+a {
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: none !important;
 }
 
 
@@ -51,9 +67,22 @@ html, body {
   }
 }
 
-/* Clean Card Styles - Improved dark mode */
+/* Clean Card Styles - Solid colors only */
 .card-base {
   @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200;
+}
+
+/* Remove all gradients globally */
+.bg-gradient-to-r,
+.bg-gradient-to-l,
+.bg-gradient-to-t,
+.bg-gradient-to-b,
+.bg-gradient-to-br,
+.bg-gradient-to-bl,
+.bg-gradient-to-tr,
+.bg-gradient-to-tl {
+  background-image: none !important;
+  background: inherit !important;
 }
 
 .card-hover {
@@ -70,38 +99,101 @@ html, body {
 
 /* Comprehensive dark mode text visibility */
 .dark .card-base:hover * {
-  color: white !important;
+  color: rgb(254, 249, 195) !important; /* yellow-100 */
 }
 
 .dark .card-base:hover .text-gray-600,
 .dark .card-base:hover .text-gray-500,
 .dark .card-base:hover .text-gray-400 {
-  color: #e5e7eb !important; /* gray-200 color */
+  color: rgb(254, 240, 138) !important; /* yellow-200 */
 }
 
 /* Dark mode hover states for all interactive elements */
 .dark button:hover,
 .dark a:hover,
 .dark .clickable:hover {
-  color: white;
+  color: rgb(254, 249, 195); /* yellow-100 on hover */
 }
 
-/* Ensure all text in dark mode has minimum contrast - except on landing page */
-body:not(.landing-page) .dark .text-gray-600 {
-  color: #9ca3af; /* gray-400 color */
+/* Enhanced text contrast for better readability */
+/* Light mode text colors */
+.text-gray-500 {
+  color: rgb(75, 85, 99) !important; /* gray-600 for better contrast */
 }
 
-body:not(.landing-page) .dark .text-gray-700 {
-  color: #d1d5db; /* gray-300 color */
+.text-gray-600 {
+  color: rgb(55, 65, 81) !important; /* gray-700 for better contrast */
 }
 
-body:not(.landing-page) .dark .text-gray-800 {
-  color: #e5e7eb; /* gray-200 color */
+.text-gray-700 {
+  color: rgb(31, 41, 55) !important; /* gray-800 for better contrast */
 }
 
-body:not(.landing-page) .dark .text-gray-900 {
-  color: #f3f4f6; /* gray-100 color */
+/* Dark mode text colors - Bright yellow for maximum visibility */
+.dark .text-gray-200 {
+  color: rgb(255, 251, 0) !important; /* bright yellow */
 }
+
+.dark .text-gray-300 {
+  color: rgb(255, 255, 100) !important; /* bright yellow-white */
+}
+
+.dark .text-gray-400 {
+  color: rgb(255, 251, 0) !important; /* bright yellow */
+}
+
+.dark .text-gray-500 {
+  color: rgb(255, 235, 0) !important; /* slightly dimmer yellow */
+}
+
+.dark .text-gray-600 {
+  color: rgb(255, 255, 100) !important; /* bright yellow-white */
+}
+
+.dark .text-gray-700 {
+  color: rgb(255, 255, 150) !important; /* very bright yellow */
+}
+
+/* Typography system with lighter weights */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400; /* Regular weight for headings */
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1.125rem; }
+
+/* Dark mode headings and important text */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: rgb(255, 255, 0) !important; /* pure bright yellow for headings */
+  font-weight: 300; /* Even lighter in dark mode */
+}
+
+.dark .text-gray-900 {
+  color: rgb(255, 255, 0) !important; /* pure bright yellow */
+}
+
+/* Font weight utilities override */
+.font-bold {
+  font-weight: 500 !important; /* Medium instead of bold */
+}
+
+.font-semibold {
+  font-weight: 400 !important; /* Regular instead of semibold */
+}
+
+.font-medium {
+  font-weight: 400 !important; /* Regular for medium */
+}
+
+.font-normal {
+  font-weight: 300 !important; /* Light for normal */
+}
+
 
 /* High contrast text for better accessibility */
 .high-contrast-text {

@@ -1,0 +1,57 @@
+{
+  "name": "SimpleLMS Medical Education Platform",
+  "short_name": "SimpleLMS",
+  "description": "Comprehensive medical education and clinical rounding tools",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "medical", "health"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View your dashboard"
+    },
+    {
+      "name": "Courses",
+      "url": "/courses-dashboard",
+      "description": "Access medical courses"
+    },
+    {
+      "name": "Rounding Tools",
+      "url": "/rounding-tools",
+      "description": "Clinical rounding tools"
+    },
+    {
+      "name": "Question Bank",
+      "url": "/question-bank",
+      "description": "Practice questions"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ]
+}

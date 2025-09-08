@@ -33,7 +33,8 @@ import {
   MapPin,
   Clipboard,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  ChevronRight
 } from 'lucide-react';
 
 interface UserStats {
@@ -57,6 +58,9 @@ export default function UserDashboard() {
     avgScore: 87.5
   });
 
+  // View density state
+  const [viewDensity, setViewDensity] = useState<'compact' | 'comfortable' | 'spacious'>('compact');
+
   // Safe theme state with fallback
   const [isDark, setIsDark] = useState(false);
   const toggleTheme = () => {
@@ -71,13 +75,17 @@ export default function UserDashboard() {
     }
   };
 
-  // Load initial theme from localStorage
+  // Load initial theme and density from localStorage
   useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
           setIsDark(true);
+        }
+        const savedDensity = localStorage.getItem('viewDensity') as 'compact' | 'comfortable' | 'spacious';
+        if (savedDensity) {
+          setViewDensity(savedDensity);
         }
       }
     } catch (error) {
@@ -290,133 +298,206 @@ export default function UserDashboard() {
 
   const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
-      indigo: 'text-indigo-600 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/40',
-      yellow: 'text-yellow-600 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900/40',
-      purple: 'text-purple-600 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/40',
-      green: 'text-green-600 dark:text-green-300 bg-green-100 dark:bg-green-900/40',
-      blue: 'text-blue-600 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40',
-      red: 'text-red-600 dark:text-red-300 bg-red-100 dark:bg-red-900/40',
-      pink: 'text-pink-600 dark:text-pink-300 bg-pink-100 dark:bg-pink-900/40'
+      indigo: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30',
+      yellow: 'text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30',
+      purple: 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30',
+      green: 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30',
+      blue: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30',
+      red: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30',
+      pink: 'text-pink-700 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30'
     };
-    return colorMap[color] || 'text-gray-600 dark:text-gray-200 bg-gray-100 dark:bg-gray-900/40';
+    return colorMap[color] || 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/30';
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="w-full px-3 sm:px-4 lg:px-6 pr-3 sm:pr-4 lg:pr-8 py-4 lg:py-6">
         
         {/* Header Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Welcome back, {user?.displayName || user?.email?.split('@')[0] || 'Medical Student'}! 👋
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-200">
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
               Ready to continue your medical education journey?
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-300" />
-                <span className="text-gray-700 dark:text-gray-200 font-medium">Today: 3 sessions</span>
-              </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Density Toggle */}
+            <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <button
+                onClick={() => { setViewDensity('compact'); localStorage.setItem('viewDensity', 'compact'); }}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-l-lg transition-colors ${
+                  viewDensity === 'compact' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Compact
+              </button>
+              <button
+                onClick={() => { setViewDensity('comfortable'); localStorage.setItem('viewDensity', 'comfortable'); }}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                  viewDensity === 'comfortable' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Normal
+              </button>
+              <button
+                onClick={() => { setViewDensity('spacious'); localStorage.setItem('viewDensity', 'spacious'); }}
+                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-r-lg transition-colors ${
+                  viewDensity === 'spacious' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Spacious
+              </button>
             </div>
             
             <button
               onClick={toggleTheme}
-              className="p-3 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="p-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200"
               aria-label="Toggle theme"
             >
               {isDark ? (
-                <Sun className="h-5 w-5 text-yellow-500" />
+                <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
-                <Moon className="h-5 w-5 text-gray-700" />
+                <Moon className="h-4 w-4 text-gray-700" />
               )}
             </button>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${getColorClasses('blue')}`}>
-                <BookOpen className="h-6 w-6" />
+        <div className={`grid grid-cols-2 lg:grid-cols-4 ${
+          viewDensity === 'compact' ? 'gap-2 sm:gap-3 mb-4' : 
+          viewDensity === 'comfortable' ? 'gap-4 mb-6' : 
+          'gap-6 mb-8'
+        }`}>
+          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
+            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`rounded-lg ${getColorClasses('blue')} ${
+                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
+              }`}>
+                <BookOpen className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
               </div>
-              <TrendingUp className="h-5 w-5 text-green-500" />
+              {viewDensity !== 'compact' && <TrendingUp className="h-4 w-4 text-green-500" />}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{stats.totalCourses}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Total Courses</p>
+            <h3 className={`font-bold text-gray-900 dark:text-white ${
+              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
+            }`}>{stats.totalCourses}</h3>
+            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
+              viewDensity === 'compact' ? 'text-sm' : 'text-base'
+            }`}>Total Courses</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${getColorClasses('green')}`}>
-                <Award className="h-6 w-6" />
+          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
+            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`rounded-lg ${getColorClasses('green')} ${
+                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
+              }`}>
+                <Award className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
               </div>
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">+5</span>
+              {viewDensity !== 'compact' && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">+5</span>}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{stats.completed}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Completed</p>
+            <h3 className={`font-bold text-gray-900 dark:text-white ${
+              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
+            }`}>{stats.completed}</h3>
+            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
+              viewDensity === 'compact' ? 'text-sm' : 'text-base'
+            }`}>Completed</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${getColorClasses('purple')}`}>
-                <Target className="h-6 w-6" />
+          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
+            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`rounded-lg ${getColorClasses('purple')} ${
+                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
+              }`}>
+                <Target className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
               </div>
-              <Activity className="h-5 w-5 text-blue-500" />
+              {viewDensity !== 'compact' && <Activity className="h-4 w-4 text-blue-500" />}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{stats.inProgress}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">In Progress</p>
+            <h3 className={`font-bold text-gray-900 dark:text-white ${
+              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
+            }`}>{stats.inProgress}</h3>
+            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
+              viewDensity === 'compact' ? 'text-sm' : 'text-base'
+            }`}>In Progress</p>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl ${getColorClasses('yellow')}`}>
-                <Gauge className="h-6 w-6" />
+          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
+            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+          }`}>
+            <div className="flex items-center justify-between mb-2">
+              <div className={`rounded-lg ${getColorClasses('yellow')} ${
+                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
+              }`}>
+                <Gauge className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
               </div>
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">↗ 8%</span>
+              {viewDensity !== 'compact' && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">↗ 8%</span>}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{Math.round(stats.avgScore)}%</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-200 font-medium">Avg Score</p>
+            <h3 className={`font-bold text-gray-900 dark:text-white ${
+              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
+            }`}>{Math.round(stats.avgScore)}%</h3>
+            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
+              viewDensity === 'compact' ? 'text-sm' : 'text-base'
+            }`}>Avg Score</p>
           </div>
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className={`grid grid-cols-1 lg:grid-cols-2 ${
+          viewDensity === 'compact' ? 'gap-4' : viewDensity === 'comfortable' ? 'gap-6' : 'gap-8'
+        }`}>
           
           {/* Left Column */}
-          <div className="space-y-8">
+          <div className={viewDensity === 'compact' ? 'space-y-4' : viewDensity === 'comfortable' ? 'space-y-6' : 'space-y-8'}>
             {/* Quick Actions */}
             <div>
-              <h2 className="text-2xl gradient-title-primary mb-6 flex items-center gap-3">
-                <Zap className="h-6 w-6 text-yellow-500" />
+              <h2 className={`gradient-title-primary flex items-center gap-2 ${
+                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
+              }`}>
+                <Zap className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
                 Quick Actions
               </h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className={`grid grid-cols-1 ${
+                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
+              }`}>
                 {quickActions.map((action) => {
                   const IconComponent = action.icon;
                   return (
                     <Link key={action.href} href={action.href}>
-                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-3 rounded-xl ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300`}>
-                            <IconComponent className="h-6 w-6" />
+                      <div className={`group bg-white dark:bg-gray-800 rounded-lg cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700 ${
+                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`rounded-lg ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300 ${
+                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
+                          }`}>
+                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
                           </div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className={`font-bold text-gray-900 dark:text-white ${
+                              viewDensity === 'compact' ? 'text-base mb-0.5' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
+                            }`}>
                               {action.title}
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-200 text-sm">
-                              {action.description}
-                            </p>
+                            {viewDensity !== 'compact' && (
+                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-1 ${
+                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
+                              }`}>
+                                {action.description}
+                              </p>
+                            )}
                           </div>
-                          <span className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 px-3 py-1 rounded-full font-medium">
-                            {action.badge}
-                          </span>
+                          <ChevronRight className={`text-gray-400 flex-shrink-0 ${
+                            viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'
+                          }`} />
                         </div>
                       </div>
                     </Link>
@@ -427,34 +508,50 @@ export default function UserDashboard() {
 
             {/* Study Tools */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                <Brain className="h-6 w-6 text-purple-500" />
+              <h2 className={`font-bold text-gray-900 dark:text-white flex items-center gap-2 ${
+                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
+              }`}>
+                <Brain className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
                 Study Tools
               </h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className={`grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-1 ${
+                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
+              }`}>
                 {studyTools.map((tool) => {
                   const IconComponent = tool.icon;
                   return (
                     <Link key={tool.href} href={tool.href}>
-                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-3 rounded-xl ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300`}>
-                            <IconComponent className="h-6 w-6" />
+                      <div className={`group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${
+                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                      }`}>
+                        <div className={`flex items-center ${
+                          viewDensity === 'compact' ? 'gap-2' : 'gap-3'
+                        }`}>
+                          <div className={`rounded-lg ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ${
+                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
+                          }`}>
+                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <h3 className={`font-bold text-gray-900 dark:text-white line-clamp-1 ${
+                                viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg' : 'text-xl'
+                              }`}>
                                 {tool.title}
                               </h3>
-                              {tool.isNew && (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                              {tool.isNew && viewDensity !== 'compact' && (
+                                <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
                                   New
                                 </span>
                               )}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-200 text-sm">
-                              {tool.description}
-                            </p>
+                            {viewDensity !== 'compact' && (
+                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 mt-1 ${
+                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
+                              }`}>
+                                {tool.description}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -466,40 +563,60 @@ export default function UserDashboard() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-8">
+          <div className={viewDensity === 'compact' ? 'space-y-4' : viewDensity === 'comfortable' ? 'space-y-6' : 'space-y-8'}>
             {/* Community Tools */}
             <div>
-              <h2 className="text-2xl gradient-title-secondary mb-6 flex items-center gap-3">
-                <Users className="h-6 w-6 text-green-500" />
+              <h2 className={`gradient-title-secondary flex items-center gap-2 ${
+                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
+              }`}>
+                <Users className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
                 Community Tools
               </h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className={`grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-1 ${
+                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
+              }`}>
                 {communityTools.map((tool) => {
                   const IconComponent = tool.icon;
                   return (
                     <Link key={tool.href} href={tool.href}>
-                      <div className="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-3 rounded-xl ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300`}>
-                            <IconComponent className="h-6 w-6" />
+                      <div className={`group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${
+                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                      }`}>
+                        <div className={`flex items-center ${
+                          viewDensity === 'compact' ? 'gap-2' : 'gap-3'
+                        }`}>
+                          <div className={`rounded-lg ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ${
+                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
+                          }`}>
+                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h3 className={`font-bold text-gray-900 dark:text-white line-clamp-1 ${
+                                viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg' : 'text-xl'
+                              }`}>
                                 {tool.title}
                               </h3>
-                              <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-2 py-1 rounded-full font-medium">
-                                {tool.badge}
-                              </span>
-                              {tool.isNew && (
-                                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-medium">
-                                  New
-                                </span>
+                              {viewDensity !== 'compact' && (
+                                <>
+                                  <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+                                    {tool.badge}
+                                  </span>
+                                  {tool.isNew && (
+                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
+                                      New
+                                    </span>
+                                  )}
+                                </>
                               )}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-200 text-sm">
-                              {tool.description}
-                            </p>
+                            {viewDensity !== 'compact' && (
+                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 mt-1 ${
+                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
+                              }`}>
+                                {tool.description}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -511,42 +628,70 @@ export default function UserDashboard() {
 
             {/* Performance & Settings */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                <BarChart3 className="h-6 w-6 text-blue-500" />
+              <h2 className={`font-bold text-gray-900 dark:text-white flex items-center gap-2 ${
+                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
+              }`}>
+                <BarChart3 className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
                 Performance & Settings
               </h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className={`grid grid-cols-1 ${
+                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
+              }`}>
                 <Link href="/performance-analytics">
-                  <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-xl ${getColorClasses('green')}`}>
-                        <BarChart3 className="h-6 w-6" />
+                  <div className={`group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
+                    viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                  }`}>
+                    <div className={`flex items-center ${
+                      viewDensity === 'compact' ? 'gap-2' : 'gap-3'
+                    }`}>
+                      <div className={`rounded-lg ${getColorClasses('green')} ${
+                        viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
+                      }`}>
+                        <BarChart3 className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-bold text-gray-900 dark:text-white ${
+                          viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
+                        }`}>
                           Performance Analytics
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-200 text-sm">
-                          Detailed insights into your learning progress and quiz performance
-                        </p>
+                        {viewDensity !== 'compact' && (
+                          <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 ${
+                            viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
+                          }`}>
+                            Detailed insights into your learning progress
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
                 </Link>
 
                 <Link href="/settings">
-                  <div className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-xl ${getColorClasses('blue')}`}>
-                        <UserCog className="h-6 w-6" />
+                  <div className={`group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
+                    viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                  }`}>
+                    <div className={`flex items-center ${
+                      viewDensity === 'compact' ? 'gap-2' : 'gap-3'
+                    }`}>
+                      <div className={`rounded-lg ${getColorClasses('blue')} ${
+                        viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
+                      }`}>
+                        <UserCog className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-bold text-gray-900 dark:text-white ${
+                          viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
+                        }`}>
                           Account Settings
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-200 text-sm">
-                          Manage your profile, preferences, and account settings
-                        </p>
+                        {viewDensity !== 'compact' && (
+                          <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 ${
+                            viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
+                          }`}>
+                            Manage your profile and preferences
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

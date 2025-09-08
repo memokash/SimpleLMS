@@ -42,12 +42,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Show Enhanced Dashboard Navigation on all pages except homepage */}
       {showNavigation && <DashboardNavigationEnhanced />}
       
       {/* Main Content with proper spacing for sidebar */}
-      <main className={`w-full transition-all duration-300 ${showNavigation ? 'md:ml-48 pt-16 md:pt-0' : ''}`}>
+      <main className={`w-full transition-all duration-300 ${showNavigation ? 'md:ml-64 pt-16 md:pt-0' : ''}`}>
         <div className="min-h-screen">
           {children}
         </div>

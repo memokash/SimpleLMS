@@ -72,7 +72,7 @@ const DashboardNavigationEnhanced = () => {
       badge: 'New'
     },
     { 
-      label: 'Question Bank', 
+      label: 'Qbank', 
       href: '/question-bank', 
       icon: Brain,
       color: 'bg-purple-600',
@@ -160,7 +160,7 @@ const DashboardNavigationEnhanced = () => {
       <aside className={`
         hidden md:flex flex-col fixed left-0 top-0 h-full z-30
         transition-all duration-300 
-        ${collapsed ? 'w-16' : 'w-48'}
+        ${collapsed ? 'w-16' : 'w-64'}
         bg-white dark:bg-gray-900
         border-r border-gray-200 dark:border-gray-700
         shadow-lg
@@ -198,13 +198,16 @@ const DashboardNavigationEnhanced = () => {
                   href={item.href}
                   className={`
                     flex items-center space-x-3 px-3 py-3 rounded-xl
-                    transition-all duration-300 group relative
+                    transition-all duration-300 group relative no-underline
                     ${isActive(item.href)
-                      ? item.color + ' text-white shadow-md'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+                      ? 'bg-blue-600 dark:bg-blue-700 text-white shadow-md'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700'
                     }
                     ${collapsed ? 'justify-center' : ''}
                   `}
+                  style={{ 
+                    color: isActive(item.href) ? 'white' : (typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? 'rgb(255, 251, 0)' : '')
+                  }}
                 >
                   <div className={`
                     p-2 rounded-lg transition-all duration-300
@@ -224,9 +227,12 @@ const DashboardNavigationEnhanced = () => {
                           px-2 py-1 rounded-full text-xs font-bold
                           ${isActive(item.href)
                             ? 'bg-white/20 text-white'
-                            : item.color + ' text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700'
                           }
-                        `}>
+                        `}
+                        style={{ 
+                          color: isActive(item.href) ? 'white' : (typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? 'rgb(255, 255, 0)' : '')
+                        }}>
                           {item.badge}
                         </span>
                       )}

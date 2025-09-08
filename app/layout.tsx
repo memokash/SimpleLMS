@@ -5,6 +5,7 @@ import './styles/contrast-audit-fixes.css';
 import { AuthProvider } from './components/AuthContext';
 import Footer from './components/Footer';
 import DashboardLayout from './components/DashboardLayout';
+import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 
@@ -58,10 +59,16 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className="overflow-x-hidden">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+      </head>
+      <body className="overflow-x-hidden bg-white dark:bg-gray-900 text-gray-900">
+        <ServiceWorkerRegistration />
         <AuthProvider>
           <ThemeProvider>
-            <div className="min-h-screen w-full overflow-x-hidden">
+            <div className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-gray-900">
               <DashboardLayout>
                 {children}
               </DashboardLayout>

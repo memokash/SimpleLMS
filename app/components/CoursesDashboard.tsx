@@ -62,6 +62,7 @@ const CoursesDashboard = () => {
   const [selectedTier, setSelectedTier] = useState('');
   const [sortBy, setSortBy] = useState('title');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewDensity, setViewDensity] = useState<'compact' | 'comfortable' | 'spacious'>('compact');
   const [isDark, setIsDark] = useState(false);
 
   // Theme management
@@ -73,12 +74,16 @@ const CoursesDashboard = () => {
     }
   };
 
-  // Load theme from localStorage
+  // Load theme and density from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const savedTheme = localStorage.getItem('courses-theme');
       if (savedTheme === 'dark') {
         setIsDark(true);
+      }
+      const savedDensity = localStorage.getItem('coursesDensity') as 'compact' | 'comfortable' | 'spacious';
+      if (savedDensity) {
+        setViewDensity(savedDensity);
       }
     }
   }, []);
@@ -272,72 +277,85 @@ const CoursesDashboard = () => {
   return (
     <div className={`min-h-screen transition-all duration-500 ${
       isDark 
-        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900' 
-        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+        ? 'bg-gray-900' 
+        : 'bg-white'
     }`}>
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="w-full px-3 sm:px-4 lg:px-6 pr-3 sm:pr-4 lg:pr-8 py-4 lg:py-6">
         
         {/* Enhanced Header */}
-        <div className="relative mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-indigo-600/20 rounded-3xl backdrop-blur-xl"></div>
-          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-gray-700/30">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg">
-                    <BookOpen className="h-8 w-8 text-white" />
+        <div className="relative mb-6">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-indigo-600/10 rounded-xl backdrop-blur-sm"></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow">
+                    <BookOpen className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                      Medical Course Library ✨
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                      Medical Course Library
                     </h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300">
-                      {filteredCourses.length} courses • Real Firebase data
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {filteredCourses.length} courses available
                     </p>
                   </div>
                 </div>
                 
-                {/* User Stats */}
-                {user && userStats && (
-                  <div className="flex flex-wrap gap-4">
-                    <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl px-4 py-2 border border-green-200/30 dark:border-green-700/30">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        <span className="text-gray-700 dark:text-gray-200 font-semibold">
-                          Avg Score: {userStats.averageScore}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="bg-gradient-to-r from-blue-500/20 to-indigo-500/20 backdrop-blur-sm rounded-xl px-4 py-2 border border-blue-200/30 dark:border-blue-700/30">
-                      <div className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-gray-700 dark:text-gray-200 font-semibold">
-                          Started: {userStats.coursesStarted}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl px-4 py-2 border border-purple-200/30 dark:border-purple-700/30">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Crown className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                        <span className="text-gray-700 dark:text-gray-200 font-semibold">
-                          Rank: {userStats.rank}
-                        </span>
-                      </div>
-                    </div>
+                {/* User Stats - Compact */}
+                {user && userStats && viewDensity !== 'compact' && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full">
+                      Avg: {userStats.averageScore}%
+                    </span>
+                    <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full">
+                      Started: {userStats.coursesStarted}
+                    </span>
+                    <span className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full">
+                      {userStats.rank}
+                    </span>
                   </div>
                 )}
               </div>
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                {/* Density Toggle */}
+                <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <button
+                    onClick={() => { setViewDensity('compact'); localStorage.setItem('coursesDensity', 'compact'); }}
+                    className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-l-lg transition-colors ${
+                      viewDensity === 'compact' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Compact
+                  </button>
+                  <button
+                    onClick={() => { setViewDensity('comfortable'); localStorage.setItem('coursesDensity', 'comfortable'); }}
+                    className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                      viewDensity === 'comfortable' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Normal
+                  </button>
+                  <button
+                    onClick={() => { setViewDensity('spacious'); localStorage.setItem('coursesDensity', 'spacious'); }}
+                    className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-r-lg transition-colors ${
+                      viewDensity === 'spacious' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Spacious
+                  </button>
+                </div>
+                
                 <button
                   onClick={toggleTheme}
-                  className="p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-white/20 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                  className="p-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200"
                   aria-label="Toggle theme"
                 >
                   {isDark ? (
-                    <Sun className="h-6 w-6 text-yellow-500 group-hover:rotate-45 transition-transform duration-300" />
+                    <Sun className="h-4 w-4 text-yellow-500" />
                   ) : (
-                    <Moon className="h-6 w-6 text-gray-700 group-hover:rotate-12 transition-transform duration-300" />
+                    <Moon className="h-4 w-4 text-gray-700" />
                   )}
                 </button>
               </div>
@@ -346,27 +364,27 @@ const CoursesDashboard = () => {
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="mb-8">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-white/20 dark:border-gray-700/30">
+        <div className="mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-lg border border-gray-200 dark:border-gray-700">
             {/* Search Bar */}
-            <div className="relative mb-6">
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search courses by title, specialty, or description..."
+                placeholder="Search courses..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 border border-gray-200/50 dark:border-gray-600/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-lg backdrop-blur-sm"
+                className="w-full pl-10 pr-3 py-2 border border-gray-200/50 dark:border-gray-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm backdrop-blur-sm"
               />
             </div>
 
             {/* Filter Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap gap-2">
                 <select
                   value={selectedSpecialty}
                   onChange={(e) => setSelectedSpecialty(e.target.value)}
-                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
+                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
                 >
                   <option value="">All Specialties</option>
                   {uniqueSpecialties.map(specialty => (
@@ -377,9 +395,9 @@ const CoursesDashboard = () => {
                 <select
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
+                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
                 >
-                  <option value="">All Difficulties</option>
+                  <option value="">All Levels</option>
                   {uniqueDifficulties.map(difficulty => (
                     <option key={difficulty} value={difficulty}>{difficulty}</option>
                   ))}
@@ -388,10 +406,10 @@ const CoursesDashboard = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
+                  className="border border-gray-200/50 dark:border-gray-600/50 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/70 dark:bg-gray-700/70 text-gray-900 dark:text-white backdrop-blur-sm"
                 >
                   <option value="title">A-Z</option>
-                  <option value="rating">Highest Rated</option>
+                  <option value="rating">Top Rated</option>
                   <option value="difficulty">Difficulty</option>
                 </select>
               </div>
@@ -419,83 +437,107 @@ const CoursesDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid ${
+            viewDensity === 'compact' ? 'gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 
+            viewDensity === 'comfortable' ? 'gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 
+            'gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}>
             {filteredCourses.map(course => (
               <div
                 key={course.id}
-                className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/30 hover:shadow-3xl hover:border-white/30 dark:hover:border-gray-600/50 transition-all duration-500 hover:scale-[1.02] overflow-hidden"
+                className={`group relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden ${
+                  viewDensity === 'spacious' ? 'hover:scale-[1.02]' : ''
+                }`}
               >
                 {/* Course content */}
-                <div className="relative p-8">
-                  <div className="flex items-start justify-between mb-4">
+                <div className={`relative ${
+                  viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
+                }`}>
+                  <div className={`flex items-start justify-between ${
+                    viewDensity === 'compact' ? 'mb-2' : 'mb-3'
+                  }`}>
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      <h3 className={`font-bold text-gray-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 ${
+                        viewDensity === 'compact' ? 'text-sm mb-1' : viewDensity === 'comfortable' ? 'text-base mb-2' : 'text-lg mb-2'
+                      }`}>
                         {course.title || course.courseName}
                       </h3>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        <span className={`bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-semibold ${
+                          viewDensity === 'compact' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-0.5 text-xs'
+                        }`}>
                           {course.specialty || course.category}
                         </span>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          course.difficulty === 'Beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                          course.difficulty === 'Intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                          'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                        }`}>
-                          {course.difficulty}
-                        </span>
+                        {viewDensity !== 'compact' && (
+                          <span className={`rounded-full font-semibold px-2.5 py-0.5 text-xs ${
+                            course.difficulty === 'Beginner' ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' :
+                            course.difficulty === 'Intermediate' ? 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' :
+                            'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                          }`}>
+                            {course.difficulty}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right ml-4">
-                      <div className="flex items-center text-yellow-400 mb-1">
-                        <Star className="h-4 w-4 mr-1 fill-current" />
-                        <span className="font-bold text-gray-900 dark:text-white">{course.rating?.toFixed(1) || '4.5'}</span>
+                    {viewDensity !== 'compact' && (
+                      <div className="text-right ml-2">
+                        <div className="flex items-center text-yellow-400">
+                          <Star className="h-3 w-3 mr-0.5 fill-current" />
+                          <span className="font-bold text-gray-900 dark:text-white text-sm">{course.rating?.toFixed(1) || '4.5'}</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed line-clamp-3">
-                    {course.description}
-                  </p>
+                  {viewDensity !== 'compact' && (
+                    <p className={`text-gray-700 dark:text-gray-300 leading-relaxed ${
+                      viewDensity === 'comfortable' ? 'text-sm mb-3 line-clamp-2' : 'text-sm mb-4 line-clamp-3'
+                    }`}>
+                      {course.description}
+                    </p>
+                  )}
 
                   {/* Metadata */}
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-gray-50/80 dark:bg-gray-700/50 rounded-xl p-3">
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        <Target className="h-4 w-4 mr-2" />
-                        Questions
-                      </div>
-                      <div className="font-bold text-gray-900 dark:text-white">{course.questionCount}</div>
-                    </div>
-                    <div className="bg-gray-50/80 dark:bg-gray-700/50 rounded-xl p-3">
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        <Clock className="h-4 w-4 mr-2" />
-                        Duration
-                      </div>
-                      <div className="font-bold text-gray-900 dark:text-white">{course.estimatedTime}</div>
-                    </div>
+                  <div className={`flex justify-between text-xs text-gray-700 dark:text-gray-400 font-medium ${
+                    viewDensity === 'compact' ? 'mb-2' : 'mb-3'
+                  }`}>
+                    <span className="flex items-center">
+                      <Target className="h-3 w-3 mr-1" />
+                      {course.questionCount} questions
+                    </span>
+                    <span className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {course.estimatedTime}
+                    </span>
                   </div>
 
                   {/* Action Button */}
                   <button
                     onClick={() => handleStartQuiz(course.id)}
-                    className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center"
+                    className={`w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center ${
+                      viewDensity === 'compact' ? 'px-3 py-2 text-sm' : viewDensity === 'comfortable' ? 'px-4 py-2.5 text-sm' : 'px-5 py-3 text-base'
+                    }`}
                   >
-                    <Play className="mr-3 h-6 w-6" />
+                    <Play className={viewDensity === 'compact' ? 'h-3 w-3 mr-1.5' : 'h-4 w-4 mr-2'} />
                     Start Course
-                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
+                    {viewDensity !== 'compact' && (
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+                    )}
                   </button>
 
                   {/* Progress Indicator */}
-                  {(course.progress || 0) > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-200/50 dark:border-gray-600/50">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                          <Activity className="h-4 w-4" />
-                          <span className="font-semibold">Progress: {course.progress || 0}%</span>
+                  {(course.progress || 0) > 0 && viewDensity !== 'compact' && (
+                    <div className={`border-t border-gray-200/50 dark:border-gray-600/50 ${
+                      viewDensity === 'comfortable' ? 'mt-3 pt-3' : 'mt-4 pt-4'
+                    }`}>
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                          <Activity className="h-3 w-3" />
+                          <span className="font-medium">Progress: {course.progress || 0}%</span>
                         </div>
                         {course.lastScore && (
-                          <span className="font-bold text-gray-900 dark:text-white">
-                            Last Score: {course.lastScore}%
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            Score: {course.lastScore}%
                           </span>
                         )}
                       </div>
