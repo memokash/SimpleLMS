@@ -61,14 +61,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#07294D" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
-      <body className="overflow-x-hidden bg-white dark:bg-gray-900 text-gray-900">
+      <body className="overflow-x-hidden bg-white dark:bg-primary-700 text-body">
         <ServiceWorkerRegistration />
         <AuthProvider>
           <ThemeProvider>
-            <div className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-gray-900">
+            <div className="min-h-screen w-full overflow-x-hidden bg-white dark:bg-primary-700">
               <DashboardLayout>
                 {children}
               </DashboardLayout>

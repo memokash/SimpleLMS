@@ -16,25 +16,45 @@ import {
   Gauge,
   UserCog,
   Loader2,
-  Sun,
-  Moon,
   TrendingUp,
   Award,
   Target,
-  Zap,
   Calendar,
   Activity,
   Brain,
   BarChart3,
   MessageSquare,
   Users,
-  Library,
-  UserCheck,
-  MapPin,
+  ChevronRight,
+  Bell,
+  Clock,
+  Video,
+  Mic,
+  Settings,
+  HelpCircle,
   Clipboard,
-  AlertCircle,
-  RefreshCw,
-  ChevronRight
+  Heart,
+  Thermometer,
+  Shield,
+  Database,
+  Mail,
+  Home,
+  MapPin,
+  DollarSign,
+  Plane,
+  Coffee,
+  Car,
+  Utensils,
+  Dumbbell,
+  Music,
+  ShoppingCart,
+  Building,
+  School,
+  Briefcase,
+  HeartHandshake,
+  Flame,
+  Package,
+  MessageCircle
 } from 'lucide-react';
 
 interface UserStats {
@@ -46,11 +66,8 @@ interface UserStats {
 
 export default function UserDashboard() {
   const { user } = useAuth();
-  
-  // Production-safe state management
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<UserStats>({
     totalCourses: 12,
     completed: 8,
@@ -58,642 +75,559 @@ export default function UserDashboard() {
     avgScore: 87.5
   });
 
-  // View density state
-  const [viewDensity, setViewDensity] = useState<'compact' | 'comfortable' | 'spacious'>('compact');
+  // Study streak tracking
+  const [studyStreak, setStudyStreak] = useState(7);
+  const [weeklyGoal, setWeeklyGoal] = useState({ current: 15, target: 20 });
+  const [weakTopics, setWeakTopics] = useState(['Pharmacology', 'Pathology']);
 
-  // Safe theme state with fallback
-  const [isDark, setIsDark] = useState(false);
-  const toggleTheme = () => {
-    try {
-      setIsDark(!isDark);
-      // Save to localStorage if available
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      }
-    } catch (error) {
-      console.warn('Theme toggle failed:', error);
-    }
-  };
-
-  // Load initial theme and density from localStorage
-  useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-          setIsDark(true);
-        }
-        const savedDensity = localStorage.getItem('viewDensity') as 'compact' | 'comfortable' | 'spacious';
-        if (savedDensity) {
-          setViewDensity(savedDensity);
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to load theme from localStorage:', error);
-    }
-  }, []);
-
-  // Safe hook alternatives with error handling
+  // Get current date info
+  const today = new Date();
+  const currentMonth = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const currentDay = today.getDate();
+  
   useEffect(() => {
     const initializeDashboard = async () => {
       try {
         setMounted(true);
-        setError(null);
-
-        // Load real user stats from Firebase
-        try {
-          if (user?.uid) {
-            const realStats = await getUserStats(user.uid);
-            if (realStats) {
-              setStats({
-                totalCourses: (realStats.coursesStarted + realStats.coursesCompleted) || 0,
-                completed: realStats.coursesCompleted || 0,
-                inProgress: realStats.coursesStarted || 0,
-                avgScore: realStats.averageScore || 0
-              });
-            }
+        if (user?.uid) {
+          const realStats = await getUserStats(user.uid);
+          if (realStats) {
+            setStats({
+              totalCourses: (realStats.coursesStarted + realStats.coursesCompleted) || 0,
+              completed: realStats.coursesCompleted || 0,
+              inProgress: realStats.coursesStarted || 0,
+              avgScore: realStats.averageScore || 0
+            });
           }
-        } catch (statsError) {
-          console.warn('Failed to load user stats, using defaults:', statsError);
-          // Use default empty stats instead of random mock data
-          setStats({
-            totalCourses: 0,
-            completed: 0,
-            inProgress: 0,
-            avgScore: 0
-          });
         }
-
       } catch (error) {
-        console.error('Dashboard initialization failed:', error);
-        setError('Failed to load dashboard data. Using offline mode.');
+        console.warn('Failed to load user stats:', error);
       } finally {
         setLoading(false);
       }
     };
-
     initializeDashboard();
   }, [user]);
 
-  // Error retry function
-  const retryLoad = () => {
-    setError(null);
-    setLoading(true);
-    // Re-run initialization
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  };
-
-  // Don't render until mounted (prevents SSR issues)
-  if (!mounted) {
-    return null;
-  }
-
-  if (loading) {
+  if (!mounted || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
-        <div className="flex items-center text-gray-600 dark:text-gray-200 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+      <div className="min-h-screen flex items-center justify-center bg-light">
+        <div className="flex items-center text-primary bg-white rounded-xl p-6 shadow-lg">
           <Loader2 className="animate-spin h-6 w-6 mr-3" />
-          <span className="text-lg font-medium">Loading your dashboard...</span>
+          <span className="text-lg font-medium">Loading dashboard...</span>
         </div>
       </div>
     );
   }
 
-  // Error boundary component
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg">
-          <div className="text-center">
-            <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Dashboard Error
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {error}
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={retryLoad}
-                className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Try Again
-              </button>
-              <Link
-                href="/courses-dashboard"
-                className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center"
-              >
-                Go to Courses
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const quickActions = [
-    {
-      href: '/courses-dashboard',
-      icon: GraduationCap,
-      title: 'Continue Learning',
-      description: 'Pick up where you left off with your medical studies',
-      color: 'indigo',
-      stats: 'active courses',
-      badge: 'Continue'
-    },
-    {
-      href: '/question-bank',
-      icon: Lightbulb,
-      title: 'Generate Questions',
-      description: 'Create custom practice questions using AI',
-      color: 'yellow',
-      stats: 'AI powered',
-      badge: 'Create'
-    },
-    {
-      href: '/enhanced-quiz-display',
-      icon: BrainCircuit,
-      title: 'Take Quiz',
-      description: 'Start an interactive quiz session',
-      color: 'purple',
-      stats: '156 questions ready',
-      badge: 'Study'
+  // Calendar days generation
+  const generateCalendarDays = () => {
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const days = [];
+    
+    // Add empty cells for days before month starts
+    for (let i = 0; i < firstDay.getDay(); i++) {
+      days.push(null);
     }
-  ];
-
-  const studyTools = [
-    {
-      href: '/dashboard/etutor',
-      icon: Sparkles,
-      title: 'AI Tutor',
-      description: 'Personalized explanations and comprehensive study guides tailored to your learning',
-      stats: 'tutoring available',
-      isNew: true,
-      color: 'pink',
-      badge: 'Continue'
-    },
-    {
-      href: '/rounding-tools',
-      icon: Stethoscope,
-      title: 'Rounding Tools',
-      description: 'Clinical tools for H&P, progress notes, and procedures',
-      stats: '8 cases available',
-      color: 'red',
-      badge: 'Continue'
-    },
-    {
-      href: '/reading-resources',
-      icon: FileText,
-      title: 'Reading Resources',
-      description: 'Save and annotate medical articles and studies',
-      stats: 'Save articles here',
-      color: 'green',
-      badge: 'Continue'
-    },
-    {
-      href: '/enhanced-quiz-display',
-      icon: BookOpen,
-      title: 'Enhanced Quiz',
-      description: 'Interactive quiz system with detailed explanations',
-      stats: '> 15000 questions available',
-      color: 'blue',
-      badge: 'Continue'
+    
+    // Add all days of the month
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push(i);
     }
-  ];
-
-  const communityTools = [
-    {
-      href: '/question-bank',
-      icon: BookOpen,
-      title: 'Community Question Bank',
-      description: 'Collaborative repository of medical education questions generated with well trained medcicine models and shared by peers',
-      stats: 'Community generated questions available',
-      color: 'green',
-      badge: 'Community'
-    },
-    {
-      href: '/study-groups',
-      icon: Users,
-      title: 'Study Groups',
-      description: 'Join or create study groups with fellow medical students and residents',
-      stats: 'active groups',
-      color: 'purple',
-      badge: 'Collaborate'
-    },
-    {
-      href: '/messages',
-      icon: MessageSquare,
-      title: 'Messages & Chat',
-      description: 'Internal messaging system for peer communication and collaboration',
-      stats: '3 new messages',
-      color: 'indigo',
-      badge: 'Chat',
-      isNew: true
-    }
-  ];
-
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, string> = {
-      indigo: 'text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30',
-      yellow: 'text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30',
-      purple: 'text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30',
-      green: 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30',
-      blue: 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30',
-      red: 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30',
-      pink: 'text-pink-700 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/30'
-    };
-    return colorMap[color] || 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/30';
+    
+    return days;
   };
+
+  const calendarDays = generateCalendarDays();
+  
+  // Sample events for calendar
+  const eventsOnDays = [5, 12, 15, 22, 28];
+
+  // Institutional affiliations
+  const userInstitution = 'Johns Hopkins School of Medicine';
+  const userResidency = 'Internal Medicine - PGY-2';
+  const userHospital = 'Johns Hopkins Hospital';
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      <div className="w-full px-3 sm:px-4 lg:px-6 pr-3 sm:pr-4 lg:pr-8 py-4 lg:py-6">
+    <div className="min-h-screen bg-light">
+      <div className="container mx-auto px-4 py-6">
         
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Welcome back, {user?.displayName || user?.email?.split('@')[0] || 'Medical Student'}! 👋
-            </h1>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
-              Ready to continue your medical education journey?
-            </p>
-          </div>
+        {/* Top Section - Profile & Quick Stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Density Toggle */}
-            <div className="flex items-center bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-              <button
-                onClick={() => { setViewDensity('compact'); localStorage.setItem('viewDensity', 'compact'); }}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-l-lg transition-colors ${
-                  viewDensity === 'compact' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                Compact
-              </button>
-              <button
-                onClick={() => { setViewDensity('comfortable'); localStorage.setItem('viewDensity', 'comfortable'); }}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
-                  viewDensity === 'comfortable' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                Normal
-              </button>
-              <button
-                onClick={() => { setViewDensity('spacious'); localStorage.setItem('viewDensity', 'spacious'); }}
-                className={`px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-r-lg transition-colors ${
-                  viewDensity === 'spacious' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
-                }`}
-              >
-                Spacious
-              </button>
+          {/* Profile Card */}
+          <div className="profile-card">
+            <div className="profile-avatar">
+              {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'S'}
             </div>
+            <div className="flex-1">
+              <h1 className="text-lg font-bold text-primary">
+                {user?.displayName || user?.email?.split('@')[0] || 'Medical Student'}
+              </h1>
+              <p className="text-sm text-primary opacity-75">Ready to continue learning</p>
+            </div>
+            <Link href="/settings">
+              <Settings className="h-5 w-5 text-primary opacity-60 hover:opacity-100 cursor-pointer" />
+            </Link>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-4 gap-2">
+            <div className="stat-card">
+              <div className="stat-number">{stats.totalCourses}</div>
+              <div className="stat-label">Courses</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.completed}</div>
+              <div className="stat-label">Complete</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.inProgress}</div>
+              <div className="stat-label">Active</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{Math.round(stats.avgScore)}%</div>
+              <div className="stat-label">Score</div>
+            </div>
+          </div>
+
+          {/* Quick Actions Bar */}
+          <div className="flex gap-2">
+            <Link href="/messages" className="flex-1">
+              <div className="kardex-tile flex items-center justify-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium">3 New</span>
+              </div>
+            </Link>
+            <Link href="/study-groups" className="flex-1">
+              <div className="kardex-tile flex items-center justify-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium">Groups</span>
+              </div>
+            </Link>
+            <Link href="/notifications" className="flex-1">
+              <div className="kardex-tile flex items-center justify-center gap-2">
+                <Bell className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium">Alerts</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          
+          {/* Left Column - Quick Access Tools */}
+          <div className="space-y-4">
             
-            <button
-              onClick={toggleTheme}
-              className="p-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-200"
-              aria-label="Toggle theme"
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-yellow-500" />
-              ) : (
-                <Moon className="h-4 w-4 text-gray-700" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Overview */}
-        <div className={`grid grid-cols-2 lg:grid-cols-4 ${
-          viewDensity === 'compact' ? 'gap-2 sm:gap-3 mb-4' : 
-          viewDensity === 'comfortable' ? 'gap-4 mb-6' : 
-          'gap-6 mb-8'
-        }`}>
-          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
-            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className={`rounded-lg ${getColorClasses('blue')} ${
-                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
-              }`}>
-                <BookOpen className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
+            {/* Study & Performance Analytics */}
+            <div className="dashboard-tile">
+              <h2 className="text-sm font-bold text-primary mb-3">Performance Analytics</h2>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Flame className="h-4 w-4 text-orange-500" />
+                    <span className="text-xs font-medium">Study Streak</span>
+                  </div>
+                  <span className="text-sm font-bold text-orange-600">{studyStreak} days 🔥</span>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-medium text-primary">Weekly Goal</span>
+                    <span className="text-primary">{weeklyGoal.current}/{weeklyGoal.target} hrs</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${(weeklyGoal.current / weeklyGoal.target) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="p-2 bg-red-50 rounded-lg">
+                  <div className="text-xs font-medium text-red-700 mb-1">Weak Topics</div>
+                  <div className="flex gap-1 flex-wrap">
+                    {weakTopics.map(topic => (
+                      <span key={topic} className="text-xs px-2 py-0.5 bg-red-100 text-red-600 rounded-full">
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              {viewDensity !== 'compact' && <TrendingUp className="h-4 w-4 text-green-500" />}
             </div>
-            <h3 className={`font-bold text-gray-900 dark:text-white ${
-              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
-            }`}>{stats.totalCourses}</h3>
-            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
-              viewDensity === 'compact' ? 'text-sm' : 'text-base'
-            }`}>Total Courses</p>
-          </div>
 
-          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
-            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className={`rounded-lg ${getColorClasses('green')} ${
-                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
-              }`}>
-                <Award className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-              </div>
-              {viewDensity !== 'compact' && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">+5</span>}
-            </div>
-            <h3 className={`font-bold text-gray-900 dark:text-white ${
-              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
-            }`}>{stats.completed}</h3>
-            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
-              viewDensity === 'compact' ? 'text-sm' : 'text-base'
-            }`}>Completed</p>
-          </div>
-
-          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
-            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className={`rounded-lg ${getColorClasses('purple')} ${
-                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
-              }`}>
-                <Target className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-              </div>
-              {viewDensity !== 'compact' && <Activity className="h-4 w-4 text-blue-500" />}
-            </div>
-            <h3 className={`font-bold text-gray-900 dark:text-white ${
-              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
-            }`}>{stats.inProgress}</h3>
-            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
-              viewDensity === 'compact' ? 'text-sm' : 'text-base'
-            }`}>In Progress</p>
-          </div>
-
-          <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${
-            viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className={`rounded-lg ${getColorClasses('yellow')} ${
-                viewDensity === 'compact' ? 'p-1.5' : viewDensity === 'comfortable' ? 'p-2' : 'p-3'
-              }`}>
-                <Gauge className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-              </div>
-              {viewDensity !== 'compact' && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">↗ 8%</span>}
-            </div>
-            <h3 className={`font-bold text-gray-900 dark:text-white ${
-              viewDensity === 'compact' ? 'text-xl mb-1' : viewDensity === 'comfortable' ? 'text-2xl mb-1' : 'text-3xl mb-2'
-            }`}>{Math.round(stats.avgScore)}%</h3>
-            <p className={`text-gray-700 dark:text-gray-300 font-medium ${
-              viewDensity === 'compact' ? 'text-sm' : 'text-base'
-            }`}>Avg Score</p>
-          </div>
-        </div>
-
-        {/* Two Column Layout */}
-        <div className={`grid grid-cols-1 lg:grid-cols-2 ${
-          viewDensity === 'compact' ? 'gap-4' : viewDensity === 'comfortable' ? 'gap-6' : 'gap-8'
-        }`}>
-          
-          {/* Left Column */}
-          <div className={viewDensity === 'compact' ? 'space-y-4' : viewDensity === 'comfortable' ? 'space-y-6' : 'space-y-8'}>
-            {/* Quick Actions */}
+            {/* Primary Actions - Kardex Style */}
             <div>
-              <h2 className={`gradient-title-primary flex items-center gap-2 ${
-                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
-              }`}>
-                <Zap className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
-                Quick Actions
-              </h2>
-              <div className={`grid grid-cols-1 ${
-                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
-              }`}>
-                {quickActions.map((action) => {
-                  const IconComponent = action.icon;
-                  return (
-                    <Link key={action.href} href={action.href}>
-                      <div className={`group bg-white dark:bg-gray-800 rounded-lg cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700 ${
-                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-                      }`}>
-                        <div className="flex items-center gap-3">
-                          <div className={`rounded-lg ${getColorClasses(action.color)} group-hover:scale-110 transition-transform duration-300 ${
-                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
-                          }`}>
-                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className={`font-bold text-gray-900 dark:text-white ${
-                              viewDensity === 'compact' ? 'text-base mb-0.5' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
-                            }`}>
-                              {action.title}
-                            </h3>
-                            {viewDensity !== 'compact' && (
-                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-1 ${
-                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
-                              }`}>
-                                {action.description}
-                              </p>
-                            )}
-                          </div>
-                          <ChevronRight className={`text-gray-400 flex-shrink-0 ${
-                            viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'
-                          }`} />
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <h2 className="text-sm font-bold text-primary mb-2">Quick Start</h2>
+              <div className="kardex-grid">
+                <Link href="/courses-dashboard">
+                  <div className="kardex-tile">
+                    <div className="icon-box-blue rounded p-2 mb-2">
+                      <GraduationCap className="h-5 w-5" />
+                    </div>
+                    <div className="text-xs font-medium text-primary">Continue Learning</div>
+                  </div>
+                </Link>
+                
+                <Link href="/question-bank">
+                  <div className="kardex-tile">
+                    <div className="icon-box-yellow rounded p-2 mb-2">
+                      <Lightbulb className="h-5 w-5" />
+                    </div>
+                    <div className="text-xs font-medium text-primary">Questions</div>
+                  </div>
+                </Link>
+                
+                <Link href="/enhanced-quiz-display">
+                  <div className="kardex-tile">
+                    <div className="icon-box-purple rounded p-2 mb-2">
+                      <BrainCircuit className="h-5 w-5" />
+                    </div>
+                    <div className="text-xs font-medium text-primary">Take Quiz</div>
+                  </div>
+                </Link>
+                
+                <Link href="/dashboard/etutor">
+                  <div className="kardex-tile">
+                    <div className="icon-box-pink rounded p-2 mb-2">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <div className="text-xs font-medium text-primary">AI Tutor</div>
+                  </div>
+                </Link>
               </div>
             </div>
 
-            {/* Study Tools */}
+            {/* Clinical Tools - From Rounding Tools */}
             <div>
-              <h2 className={`font-bold text-gray-900 dark:text-white flex items-center gap-2 ${
-                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
-              }`}>
-                <Brain className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
-                Study Tools
-              </h2>
-              <div className={`grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-1 ${
-                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
-              }`}>
-                {studyTools.map((tool) => {
-                  const IconComponent = tool.icon;
-                  return (
-                    <Link key={tool.href} href={tool.href}>
-                      <div className={`group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${
-                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-                      }`}>
-                        <div className={`flex items-center ${
-                          viewDensity === 'compact' ? 'gap-2' : 'gap-3'
-                        }`}>
-                          <div className={`rounded-lg ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ${
-                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
-                          }`}>
-                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <h3 className={`font-bold text-gray-900 dark:text-white line-clamp-1 ${
-                                viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg' : 'text-xl'
-                              }`}>
-                                {tool.title}
-                              </h3>
-                              {tool.isNew && viewDensity !== 'compact' && (
-                                <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
-                                  New
-                                </span>
-                              )}
-                            </div>
-                            {viewDensity !== 'compact' && (
-                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 mt-1 ${
-                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
-                              }`}>
-                                {tool.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <h2 className="text-sm font-bold text-primary mb-2">Clinical Tools</h2>
+              <div className="space-y-2">
+                <Link href="/rounding-tools">
+                  <div className="dashboard-tile flex items-center gap-3">
+                    <div className="icon-box-red rounded p-2">
+                      <Stethoscope className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-primary">Rounding Tools</div>
+                      <div className="text-xs text-primary opacity-75">H&P, Progress Notes</div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-primary opacity-50" />
+                  </div>
+                </Link>
+                
+                <Link href="/patient-tracker">
+                  <div className="dashboard-tile flex items-center gap-3">
+                    <div className="icon-box-green rounded p-2">
+                      <Clipboard className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-primary">Patient Tracker</div>
+                      <div className="text-xs text-primary opacity-75">8 active cases</div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-primary opacity-50" />
+                  </div>
+                </Link>
+                
+                <Link href="/procedures">
+                  <div className="dashboard-tile flex items-center gap-3">
+                    <div className="icon-box-blue rounded p-2">
+                      <Activity className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-primary">Procedures Log</div>
+                      <div className="text-xs text-primary opacity-75">Track procedures</div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-primary opacity-50" />
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* Study Resources */}
+            <div>
+              <h2 className="text-sm font-bold text-primary mb-2">Resources</h2>
+              <div className="kardex-grid">
+                <Link href="/reading-resources">
+                  <div className="kardex-tile">
+                    <FileText className="h-4 w-4 text-primary mb-1" />
+                    <div className="text-xs font-medium text-primary">Articles</div>
+                  </div>
+                </Link>
+                
+                <Link href="/video-library">
+                  <div className="kardex-tile">
+                    <Video className="h-4 w-4 text-primary mb-1" />
+                    <div className="text-xs font-medium text-primary">Videos</div>
+                  </div>
+                </Link>
+                
+                <Link href="/recordings">
+                  <div className="kardex-tile">
+                    <Mic className="h-4 w-4 text-primary mb-1" />
+                    <div className="text-xs font-medium text-primary">Recordings</div>
+                  </div>
+                </Link>
+                
+                <Link href="/database">
+                  <div className="kardex-tile">
+                    <Database className="h-4 w-4 text-primary mb-1" />
+                    <div className="text-xs font-medium text-primary">Database</div>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className={viewDensity === 'compact' ? 'space-y-4' : viewDensity === 'comfortable' ? 'space-y-6' : 'space-y-8'}>
-            {/* Community Tools */}
-            <div>
-              <h2 className={`gradient-title-secondary flex items-center gap-2 ${
-                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
-              }`}>
-                <Users className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
-                Community Tools
-              </h2>
-              <div className={`grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-1 ${
-                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
-              }`}>
-                {communityTools.map((tool) => {
-                  const IconComponent = tool.icon;
-                  return (
-                    <Link key={tool.href} href={tool.href}>
-                      <div className={`group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${
-                        viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-                      }`}>
-                        <div className={`flex items-center ${
-                          viewDensity === 'compact' ? 'gap-2' : 'gap-3'
-                        }`}>
-                          <div className={`rounded-lg ${getColorClasses(tool.color)} group-hover:scale-110 transition-transform duration-300 flex-shrink-0 ${
-                            viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
-                          }`}>
-                            <IconComponent className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <h3 className={`font-bold text-gray-900 dark:text-white line-clamp-1 ${
-                                viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg' : 'text-xl'
-                              }`}>
-                                {tool.title}
-                              </h3>
-                              {viewDensity !== 'compact' && (
-                                <>
-                                  <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
-                                    {tool.badge}
-                                  </span>
-                                  {tool.isNew && (
-                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full font-medium flex-shrink-0">
-                                      New
-                                    </span>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                            {viewDensity !== 'compact' && (
-                              <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 mt-1 ${
-                                viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
-                              }`}>
-                                {tool.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+          {/* Center Column - Main Content */}
+          <div className="space-y-4">
+            
+            {/* Today's Schedule */}
+            <div className="dashboard-tile">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-primary">Today's Schedule</h2>
+                <Clock className="h-4 w-4 text-primary opacity-60" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-green" />
+                  <span className="font-medium">9:00 AM</span>
+                  <span className="text-primary opacity-75">Morning Rounds</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-secondary" />
+                  <span className="font-medium">2:00 PM</span>
+                  <span className="text-primary opacity-75">Study Group - Cardiology</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="font-medium">4:30 PM</span>
+                  <span className="text-primary opacity-75">Quiz Review Session</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="w-2 h-2 rounded-full bg-yellow" />
+                  <span className="font-medium">6:00 PM</span>
+                  <span className="text-primary opacity-75">AI Tutor Session</span>
+                </div>
               </div>
             </div>
 
-            {/* Performance & Settings */}
-            <div>
-              <h2 className={`font-bold text-gray-900 dark:text-white flex items-center gap-2 ${
-                viewDensity === 'compact' ? 'text-lg mb-3' : viewDensity === 'comfortable' ? 'text-xl mb-4' : 'text-2xl mb-6'
-              }`}>
-                <BarChart3 className={viewDensity === 'compact' ? 'h-4 w-4' : 'h-5 w-5'} />
-                Performance & Settings
-              </h2>
-              <div className={`grid grid-cols-1 ${
-                viewDensity === 'compact' ? 'gap-2' : viewDensity === 'comfortable' ? 'gap-3' : 'gap-4'
-              }`}>
+            {/* Recent Activity */}
+            <div className="dashboard-tile">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-primary">Recent Activity</h2>
+                <Activity className="h-4 w-4 text-primary opacity-60" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="icon-box-green rounded p-1.5">
+                    <Award className="h-3 w-3" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-primary">Quiz Completed</div>
+                    <div className="text-xs text-primary opacity-75">Scored 92% in Anatomy</div>
+                  </div>
+                  <span className="text-xs text-primary opacity-50">2h ago</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="icon-box-blue rounded p-1.5">
+                    <BookOpen className="h-3 w-3" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-primary">Course Progress</div>
+                    <div className="text-xs text-primary opacity-75">Completed Module 3</div>
+                  </div>
+                  <span className="text-xs text-primary opacity-50">5h ago</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="icon-box-purple rounded p-1.5">
+                    <Users className="h-3 w-3" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-primary">Joined Study Group</div>
+                    <div className="text-xs text-primary opacity-75">Neurology Review</div>
+                  </div>
+                  <span className="text-xs text-primary opacity-50">1d ago</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Overview */}
+            <div className="dashboard-tile">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-bold text-primary">Performance</h2>
                 <Link href="/performance-analytics">
-                  <div className={`group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
-                    viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-                  }`}>
-                    <div className={`flex items-center ${
-                      viewDensity === 'compact' ? 'gap-2' : 'gap-3'
-                    }`}>
-                      <div className={`rounded-lg ${getColorClasses('green')} ${
-                        viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
-                      }`}>
-                        <BarChart3 className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className={`font-bold text-gray-900 dark:text-white ${
-                          viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
-                        }`}>
-                          Performance Analytics
-                        </h3>
-                        {viewDensity !== 'compact' && (
-                          <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 ${
-                            viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
-                          }`}>
-                            Detailed insights into your learning progress
-                          </p>
-                        )}
-                      </div>
+                  <BarChart3 className="h-4 w-4 text-primary opacity-60 hover:opacity-100" />
+                </Link>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-medium text-primary">Overall Progress</span>
+                    <span className="text-primary">{Math.round((stats.completed / stats.totalCourses) * 100)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-primary h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${(stats.completed / stats.totalCourses) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="font-medium text-primary">Quiz Average</span>
+                    <span className="text-primary">{Math.round(stats.avgScore)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-secondary h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${stats.avgScore}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Calendar & Community */}
+          <div className="space-y-4">
+            
+            {/* Mini Calendar */}
+            <div className="calendar-widget">
+              <h2 className="text-sm font-bold text-primary mb-3">{currentMonth}</h2>
+              <div className="grid grid-cols-7 gap-1 text-xs mb-2">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                  <div key={day} className="text-center font-medium text-primary opacity-60">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {calendarDays.map((day, index) => (
+                  <div
+                    key={index}
+                    className={`calendar-day ${
+                      day === currentDay ? 'today' : ''
+                    } ${
+                      day && eventsOnDays.includes(day) ? 'has-event' : ''
+                    }`}
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Global Medical Communities - International */}
+            <div className="dashboard-tile">
+              <h2 className="text-sm font-bold text-primary mb-3">Global Communities 🌍</h2>
+              <div className="space-y-2">
+                <Link href="/community/level/medical-students">
+                  <div className="flex items-center justify-between p-2 hover:bg-light rounded transition-colors">
+                    <div className="flex items-center gap-2">
+                      <School className="h-4 w-4 text-blue-500" />
+                      <span className="text-xs font-medium text-primary">Medical Students</span>
                     </div>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">45k global</span>
+                  </div>
+                </Link>
+                
+                <Link href="/community/level/residents">
+                  <div className="flex items-center justify-between p-2 hover:bg-light rounded transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4 text-purple-500" />
+                      <span className="text-xs font-medium text-primary">Residents/House Officers</span>
+                    </div>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">23k online</span>
+                  </div>
+                </Link>
+                
+                <Link href="/community/level/fellows">
+                  <div className="flex items-center justify-between p-2 hover:bg-light rounded transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Award className="h-4 w-4 text-yellow-500" />
+                      <span className="text-xs font-medium text-primary">Fellows/Registrars</span>
+                    </div>
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">12k members</span>
                   </div>
                 </Link>
 
-                <Link href="/settings">
-                  <div className={`group bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
-                    viewDensity === 'compact' ? 'p-3' : viewDensity === 'comfortable' ? 'p-4' : 'p-6'
-                  }`}>
-                    <div className={`flex items-center ${
-                      viewDensity === 'compact' ? 'gap-2' : 'gap-3'
-                    }`}>
-                      <div className={`rounded-lg ${getColorClasses('blue')} ${
-                        viewDensity === 'compact' ? 'p-2' : viewDensity === 'comfortable' ? 'p-2.5' : 'p-3'
-                      }`}>
-                        <UserCog className={viewDensity === 'compact' ? 'h-4 w-4' : viewDensity === 'comfortable' ? 'h-5 w-5' : 'h-6 w-6'} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className={`font-bold text-gray-900 dark:text-white ${
-                          viewDensity === 'compact' ? 'text-base' : viewDensity === 'comfortable' ? 'text-lg mb-1' : 'text-xl mb-2'
-                        }`}>
-                          Account Settings
-                        </h3>
-                        {viewDensity !== 'compact' && (
-                          <p className={`text-gray-700 dark:text-gray-300 line-clamp-2 ${
-                            viewDensity === 'comfortable' ? 'text-sm' : 'text-base'
-                          }`}>
-                            Manage your profile and preferences
-                          </p>
-                        )}
-                      </div>
+                <Link href="/community/level/attendings">
+                  <div className="flex items-center justify-between p-2 hover:bg-light rounded transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-green-500" />
+                      <span className="text-xs font-medium text-primary">Consultants/Attendings</span>
                     </div>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">8k experts</span>
+                  </div>
+                </Link>
+
+                <Link href="/community/country">
+                  <div className="flex items-center justify-between p-2 hover:bg-light rounded transition-colors">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-red-500" />
+                      <span className="text-xs font-medium text-primary">By Country/Region</span>
+                    </div>
+                    <ChevronRight className="h-3 w-3 text-primary opacity-50" />
+                  </div>
+                </Link>
+              </div>
+            </div>
+
+            {/* Life & Lifestyle - Real World Needs */}
+            <div className="dashboard-tile">
+              <h2 className="text-sm font-bold text-primary mb-3">Life & Lifestyle 🌎</h2>
+              <div className="grid grid-cols-3 gap-2">
+                <Link href="/housing">
+                  <div className="kardex-tile text-center bg-orange-50 hover:bg-orange-100">
+                    <Home className="h-4 w-4 text-orange-600 mx-auto mb-1" />
+                    <div className="text-xs text-orange-700 font-medium">Housing</div>
+                    <div className="text-xs text-orange-600">5 new</div>
+                  </div>
+                </Link>
+                
+                <Link href="/vacation-swap">
+                  <div className="kardex-tile text-center bg-blue-50 hover:bg-blue-100">
+                    <Plane className="h-4 w-4 text-blue-600 mx-auto mb-1" />
+                    <div className="text-xs text-blue-700 font-medium">Vacation</div>
+                    <div className="text-xs text-blue-600">Swap</div>
+                  </div>
+                </Link>
+                
+                <Link href="/meal-prep">
+                  <div className="kardex-tile text-center bg-green-50 hover:bg-green-100">
+                    <Utensils className="h-4 w-4 text-green-600 mx-auto mb-1" />
+                    <div className="text-xs text-green-700 font-medium">Meal</div>
+                    <div className="text-xs text-green-600">Share</div>
+                  </div>
+                </Link>
+                
+                <Link href="/fitness">
+                  <div className="kardex-tile text-center bg-purple-50 hover:bg-purple-100">
+                    <Dumbbell className="h-4 w-4 text-purple-600 mx-auto mb-1" />
+                    <div className="text-xs text-purple-700 font-medium">Gym</div>
+                    <div className="text-xs text-purple-600">Buddy</div>
+                  </div>
+                </Link>
+                
+                <Link href="/marketplace">
+                  <div className="kardex-tile text-center bg-yellow-50 hover:bg-yellow-100">
+                    <ShoppingCart className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
+                    <div className="text-xs text-yellow-700 font-medium">Market</div>
+                    <div className="text-xs text-yellow-600">Buy/Sell</div>
+                  </div>
+                </Link>
+                
+                <Link href="/dating">
+                  <div className="kardex-tile text-center bg-pink-50 hover:bg-pink-100">
+                    <HeartHandshake className="h-4 w-4 text-pink-600 mx-auto mb-1" />
+                    <div className="text-xs text-pink-700 font-medium">Dating</div>
+                    <div className="text-xs text-pink-600">Med</div>
                   </div>
                 </Link>
               </div>
@@ -701,16 +635,207 @@ export default function UserDashboard() {
           </div>
         </div>
 
-        {/* Production Status */}
-        {error && (
-          <div className="mt-8 text-center">
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
-              <p className="text-yellow-700 dark:text-yellow-300">
-                ⚠️ Some features may be limited. Dashboard running in safe mode.
-              </p>
+        {/* Research & Virtual Conferences Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          {/* Research Hub */}
+          <div className="dashboard-tile bg-gradient-to-br from-indigo-50 to-purple-50">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-primary">Research & Innovation 🔬</h2>
+              <div className="flex gap-2">
+                <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Beta</span>
+                <Lightbulb className="h-4 w-4 text-indigo-600" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Link href="/research/submit">
+                <div className="p-2 bg-white rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-indigo-600" />
+                    <div className="flex-1">
+                      <div className="text-xs font-medium text-primary">Submit Research</div>
+                      <div className="text-xs text-gray-600">Share your findings globally</div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              <Link href="/research/peer-review">
+                <div className="p-2 bg-white rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-purple-600" />
+                    <div className="flex-1">
+                      <div className="text-xs font-medium text-primary">Peer Review Network</div>
+                      <div className="text-xs text-gray-600">Collaborative review process</div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/research/trending">
+                  <div className="p-2 bg-white rounded text-center hover:bg-gray-50">
+                    <TrendingUp className="h-3 w-3 text-green-500 mx-auto mb-1" />
+                    <span className="text-xs">Trending Papers</span>
+                  </div>
+                </Link>
+                <Link href="/research/collaborate">
+                  <div className="p-2 bg-white rounded text-center hover:bg-gray-50">
+                    <HeartHandshake className="h-3 w-3 text-red-500 mx-auto mb-1" />
+                    <span className="text-xs">Find Collaborators</span>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* Virtual Conferences - Future Monetization */}
+          <div className="dashboard-tile bg-gradient-to-br from-green-50 to-blue-50">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-primary">Virtual Conferences 🌐</h2>
+              <div className="flex gap-2">
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Coming Soon</span>
+                <Video className="h-4 w-4 text-green-600" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="p-3 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                <div className="text-center">
+                  <Calendar className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                  <p className="text-xs font-medium text-primary">Book Virtual Conference Room</p>
+                  <p className="text-xs text-gray-600 mt-1">Host international medical conferences</p>
+                  <div className="mt-2 text-xs text-gray-500">
+                    • Up to 500 participants<br/>
+                    • Screen sharing & recording<br/>
+                    • Real-time translation<br/>
+                    • CME credit tracking
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2 bg-yellow-50 rounded text-center">
+                  <span className="text-xs font-medium text-yellow-700">🔜 Grand Rounds</span>
+                </div>
+                <div className="p-2 bg-purple-50 rounded text-center">
+                  <span className="text-xs font-medium text-purple-700">🔜 Case Studies</span>
+                </div>
+              </div>
+
+              <div className="p-2 bg-blue-50 rounded text-center">
+                <span className="text-xs text-blue-700">Premium feature • Pay-per-conference model</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Section - Global Teaching Platform & More Features */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+          
+          {/* Peer Teaching Videos - Global Platform */}
+          <div className="dashboard-tile bg-gradient-to-br from-purple-50 to-blue-50">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-primary">Global Peer Teaching 🌐</h2>
+              <Video className="h-4 w-4 text-purple-600" />
+            </div>
+            <div className="space-y-2">
+              <Link href="/teach/record">
+                <div className="p-2 bg-white rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-red-100 rounded">
+                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs font-medium text-primary">Record Teaching Video</div>
+                      <div className="text-xs text-gray-600">Share your knowledge globally</div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/videos/trending">
+                  <div className="p-2 bg-white rounded text-center hover:bg-gray-50">
+                    <TrendingUp className="h-3 w-3 text-orange-500 mx-auto mb-1" />
+                    <span className="text-xs">Trending</span>
+                  </div>
+                </Link>
+                <Link href="/videos/by-country">
+                  <div className="p-2 bg-white rounded text-center hover:bg-gray-50">
+                    <MapPin className="h-3 w-3 text-green-500 mx-auto mb-1" />
+                    <span className="text-xs">By Region</span>
+                  </div>
+                </Link>
+              </div>
+              
+              <div className="text-xs text-gray-600 text-center">
+                🎆 <span className="font-medium">12.3k</span> teaching videos from <span className="font-medium">89</span> countries
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Clinical Pearl */}
+          <div className="dashboard-tile bg-gradient-to-br from-blue-50 to-green-50">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-primary">Daily Clinical Pearl 💎</h2>
+              <Brain className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="p-3 bg-white rounded-lg">
+              <p className="text-sm text-primary font-medium mb-2">
+                "The absence of a leukocytosis does not rule out appendicitis. Up to 30% of patients with acute appendicitis have a normal WBC count."
+              </p>
+              <p className="text-xs text-gray-600">- Emergency Medicine</p>
+            </div>
+            <div className="flex justify-between items-center mt-3">
+              <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">Previous Pearls</button>
+              <button className="text-xs text-green-600 hover:text-green-700 font-medium">Share Globally</button>
+            </div>
+          </div>
+
+          {/* Quick Reference & International Resources */}
+          <div className="dashboard-tile">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-primary">International Resources 🌍</h2>
+              <FileText className="h-4 w-4 text-primary opacity-60" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Link href="/guidelines/who">
+                <div className="p-2 bg-blue-50 rounded text-center hover:bg-blue-100 transition-colors">
+                  <span className="text-xs font-medium text-blue-700">WHO</span>
+                </div>
+              </Link>
+              <Link href="/guidelines/nice">
+                <div className="p-2 bg-purple-50 rounded text-center hover:bg-purple-100 transition-colors">
+                  <span className="text-xs font-medium text-purple-700">NICE</span>
+                </div>
+              </Link>
+              <Link href="/guidelines/cdc">
+                <div className="p-2 bg-green-50 rounded text-center hover:bg-green-100 transition-colors">
+                  <span className="text-xs font-medium text-green-700">CDC</span>
+                </div>
+              </Link>
+              <Link href="/exams/usmle">
+                <div className="p-2 bg-red-50 rounded text-center hover:bg-red-100 transition-colors">
+                  <span className="text-xs font-medium text-red-700">USMLE</span>
+                </div>
+              </Link>
+              <Link href="/exams/plab">
+                <div className="p-2 bg-yellow-50 rounded text-center hover:bg-yellow-100 transition-colors">
+                  <span className="text-xs font-medium text-yellow-700">PLAB</span>
+                </div>
+              </Link>
+              <Link href="/exams/amc">
+                <div className="p-2 bg-pink-50 rounded text-center hover:bg-pink-100 transition-colors">
+                  <span className="text-xs font-medium text-pink-700">AMC</span>
+                </div>
+              </Link>
+            </div>
+            <div className="mt-2 p-2 bg-gray-50 rounded">
+              <div className="text-xs text-gray-600 text-center">
+                Resources from <span className="font-medium">120+</span> countries available
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

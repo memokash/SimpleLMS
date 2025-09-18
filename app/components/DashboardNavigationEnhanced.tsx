@@ -26,7 +26,13 @@ import {
   Shield,
   Menu,
   X,
-  LogOut
+  LogOut,
+  TrendingUp,
+  MessageCircle,
+  Smile,
+  Music,
+  Medal,
+  Activity
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { useRouter } from 'next/navigation';
@@ -61,7 +67,21 @@ const DashboardNavigationEnhanced = () => {
       label: 'Dashboard', 
       href: '/dashboard', 
       icon: Home,
-      color: 'bg-blue-600'
+      color: 'bg-blue-500'
+    },
+    { 
+      label: 'Practice Updates', 
+      href: '/practice-changing', 
+      icon: TrendingUp,
+      color: 'bg-red-600',
+      badge: 'NEW'
+    },
+    { 
+      label: 'Disease Surveillance', 
+      href: '/disease-surveillance', 
+      icon: Activity,
+      color: 'bg-red-500',
+      badge: 'ALERT'
     },
     
     // Learning Content
@@ -69,44 +89,96 @@ const DashboardNavigationEnhanced = () => {
       label: 'Quiz Library', 
       href: '/courses', 
       icon: BookOpen,
-      color: 'bg-indigo-600',
-      badge: 'Indexed'
+      color: 'bg-indigo-500',
+      badge: 'Updated'
     },
     { 
-      label: 'Search', 
-      href: '/search', 
-      icon: Search,
-      color: 'bg-green-600',
-      badge: 'Fast'
+      label: 'Upload Materials', 
+      href: '/upload-materials', 
+      icon: Zap,
+      color: 'bg-orange-500',
+      badge: 'New'
     },
     { 
       label: 'Qbank', 
       href: '/question-bank', 
       icon: Brain,
-      color: 'bg-purple-600',
+      color: 'bg-purple-500',
       badge: '10K+'
     },
     { 
       label: 'AI Tutor', 
       href: '/dashboard/etutor', 
       icon: Sparkles,
-      color: 'bg-emerald-600',
+      color: 'bg-emerald-500',
       badge: 'AI'
+    },
+    
+    // Clinical Tools
+    { 
+      label: 'Clinical Tools', 
+      href: '/rounding-tools', 
+      icon: Stethoscope,
+      color: 'bg-red-500'
+    },
+    { 
+      label: 'Case Studies', 
+      href: '/cases', 
+      icon: Heart,
+      color: 'bg-pink-500',
+      badge: 'Pro'
     },
     
     // Community
     { 
+      label: 'Community', 
+      href: '/community', 
+      icon: Heart,
+      color: 'bg-pink-500',
+      badge: 'New'
+    },
+    {
+      label: 'Debate Forum',
+      href: '/debate-forum',
+      icon: MessageCircle,
+      color: 'bg-red-500',
+      badge: 'Hot'
+    },
+    { 
+      label: 'Laugh Break', 
+      href: '/only-laughter', 
+      icon: Smile,
+      color: 'bg-yellow-400',
+      badge: '😂'
+    },
+    {
+      label: 'Comedy Sanctuary',
+      href: '/laughter-sanctuary',
+      icon: Music,
+      color: 'bg-purple-400',
+      badge: '🎭'
+    },
+    { 
       label: 'Study Groups', 
       href: '/study-groups', 
       icon: Users,
-      color: 'bg-blue-600'
+      color: 'bg-cyan-500'
     },
     { 
       label: 'Messages', 
       href: '/messages', 
       icon: MessageSquare,
-      color: 'bg-indigo-600',
+      color: 'bg-indigo-500',
       badge: '3'
+    },
+    
+    // Professional Development
+    { 
+      label: 'CME Credits', 
+      href: '/cme', 
+      icon: Medal,
+      color: 'bg-emerald-500',
+      badge: 'Pro'
     },
     
     // Resources
@@ -114,13 +186,13 @@ const DashboardNavigationEnhanced = () => {
       label: 'Library', 
       href: '/reading-resources', 
       icon: FileText,
-      color: 'bg-blue-600'
+      color: 'bg-blue-500'
     },
     { 
-      label: 'Rounding Tools', 
-      href: '/rounding-tools', 
-      icon: Stethoscope,
-      color: 'bg-purple-600'
+      label: 'Search', 
+      href: '/search', 
+      icon: Search,
+      color: 'bg-green-500'
     },
     
     // Progress & Profile
@@ -128,19 +200,25 @@ const DashboardNavigationEnhanced = () => {
       label: 'My Progress', 
       href: '/performance-analytics', 
       icon: BarChart3,
-      color: 'bg-green-600'
+      color: 'bg-green-500'
+    },
+    { 
+      label: 'Certifications', 
+      href: '/certifications', 
+      icon: GraduationCap,
+      color: 'bg-yellow-500'
     },
     { 
       label: 'Profile', 
       href: '/profile', 
       icon: User,
-      color: 'bg-blue-600'
+      color: 'bg-gray-500'
     },
     { 
       label: 'Settings', 
       href: '/settings', 
       icon: Settings,
-      color: 'bg-gray-600'
+      color: 'bg-gray-500'
     }
   ];
 
@@ -168,13 +246,12 @@ const DashboardNavigationEnhanced = () => {
       <aside className={`
         hidden md:flex flex-col fixed left-0 top-0 h-full z-30
         transition-all duration-300 
-        ${collapsed ? 'w-16' : 'w-64'}
-        bg-white dark:bg-gray-900
-        border-r border-gray-200 dark:border-gray-700
-        shadow-lg
+        ${collapsed ? 'w-16' : 'w-72'}
+        bg-white
+        shadow-sm
       `}>
         {/* Logo Area */}
-        <div className="h-20 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="h-20 flex items-center justify-between px-4 border-b border-gray-100">
           {!collapsed && (
             <div className="flex items-center space-x-3">
               <div className="relative">
@@ -182,16 +259,16 @@ const DashboardNavigationEnhanced = () => {
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </div>
               <div>
-                <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  MedEd LMS
+                <h2 className="text-xl font-bold text-[#07294d]">
+                  MedEd Pro
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Study Dashboard</p>
+                <p className="text-xs text-gray-600">Medical Excellence Platform</p>
               </div>
             </div>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-600"
           >
             {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
           </button>
@@ -205,42 +282,36 @@ const DashboardNavigationEnhanced = () => {
                 <Link
                   href={item.href}
                   className={`
-                    flex items-center space-x-3 px-3 py-3 rounded-xl
-                    transition-all duration-300 group relative no-underline
+                    flex items-center space-x-3 px-3 py-2.5 rounded-lg
+                    transition-all duration-200 group relative no-underline
                     ${isActive(item.href)
-                      ? 'bg-blue-600 dark:bg-blue-700 text-white shadow-md'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700'
+                      ? 'bg-[#f0f7ff] text-[#07294d]'
+                      : 'hover:bg-gray-50 text-gray-700'
                     }
                     ${collapsed ? 'justify-center' : ''}
                   `}
-                  style={{ 
-                    color: isActive(item.href) ? 'white' : (typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? 'rgb(255, 251, 0)' : '')
-                  }}
                 >
                   <div className={`
-                    p-2 rounded-lg transition-all duration-300
+                    p-1.5 rounded-lg transition-all duration-200
                     ${isActive(item.href) 
-                      ? 'bg-white/20' 
-                      : ''
+                      ? item.color + ' text-white' 
+                      : item.color + ' bg-opacity-10'
                     }
                   `}>
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className={`w-4 h-4 ${isActive(item.href) ? 'text-white' : ''}`} />
                   </div>
                   
                   {!collapsed && (
                     <>
-                      <span className="font-medium flex-1">{item.label}</span>
+                      <span className={`font-medium flex-1 ${isActive(item.href) ? 'font-semibold' : ''}`}>{item.label}</span>
                       {item.badge && (
                         <span className={`
-                          px-2 py-1 rounded-full text-xs font-bold
+                          px-2 py-0.5 rounded-full text-xs font-semibold
                           ${isActive(item.href)
-                            ? 'bg-white/20 text-white'
-                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700'
+                            ? item.color + ' text-white'
+                            : 'bg-gray-100 text-gray-600'
                           }
-                        `}
-                        style={{ 
-                          color: isActive(item.href) ? 'white' : (typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? 'rgb(255, 255, 0)' : '')
-                        }}>
+                        `}>
                           {item.badge}
                         </span>
                       )}
@@ -270,39 +341,39 @@ const DashboardNavigationEnhanced = () => {
         </nav>
 
         {/* User Section with Sign Out */}
-        <div className={`p-4 border-t border-gray-200 dark:border-gray-700 ${collapsed ? 'px-2' : ''}`}>
+        <div className={`p-4 border-t border-gray-100 ${collapsed ? 'px-2' : ''}`}>
           {!collapsed ? (
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-                    M
+              <div className="p-3 rounded-lg bg-white border border-gray-100">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-sm">
+                    MD
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">User</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Active</p>
+                    <p className="text-sm font-semibold text-[#07294d]">Dr. Medical</p>
+                    <p className="text-xs text-gray-600">Resident • PGY-2</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600 dark:text-gray-400">Status</span>
-                  <span className="font-bold text-green-500">Active</span>
+                <div className="flex items-center justify-between text-xs mt-3">
+                  <span className="text-gray-600">Next Shift</span>
+                  <span className="font-semibold text-blue-600">7:00 AM</span>
                 </div>
               </div>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center space-x-3 px-3 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
+                className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
                 <span className="font-medium">Sign Out</span>
               </button>
             </div>
           ) : (
             <button
               onClick={handleSignOut}
-              className="w-full flex justify-center p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
+              className="w-full flex justify-center p-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
               title="Sign Out"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4" />
             </button>
           )}
         </div>

@@ -1,163 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Medical Education Theme - Professional Design 
-   Note: Theme styles are now inline to avoid import issues */
+/* ========================================
+   EDUMATE THEME - Professional Education Design
+   Clean white tiles on subtle background
+   ======================================== */
 
-/* CRITICAL: Global Contrast Fixes - WCAG AAA Compliant */
-/* Ensures all text is readable on ALL backgrounds across ALL pages */
-
-/* === BASE TEXT COLORS === */
-
-/* Default body text - Enhanced contrast with lighter font */
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-weight: 300; /* Light weight for body text */
-  color: rgb(17, 24, 39); /* gray-900 for light mode */
-  background-color: rgb(255, 255, 255); /* white background */
-  letter-spacing: 0.01em; /* Slight spacing for readability */
+/* Color Variables */
+:root {
+  --primary: #07294D;     /* Dark navy blue */
+  --secondary: #0C8B51;   /* Teal green */
+  --text-primary: #151515;
+  --text-secondary: #303030;
+  --text-light: #8D8D8D;
+  --border: #DBDBDB;
+  --bg-main: #f0f7ff;    /* Subtle light blue background - same as dashboard */
+  --white: #ffffff;
+  
+  /* Course Card Colors */
+  --course-1: #07294D;
+  --course-2: #0C8B51;
+  --course-3: #2F7AD5;
+  --course-4: #27B8A7;
+  --course-5: #1EC1D9;
+  --course-6: #D94DA6;
+  --course-7: #EAB830;
+  --course-8: #753B76;
+  
+  /* Icon Background Colors */
+  --icon-blue: #3B82F6;
+  --icon-green: #10B981;
+  --icon-purple: #8B5CF6;
+  --icon-yellow: #F59E0B;
+  --icon-red: #EF4444;
+  --icon-pink: #EC4899;
+  --icon-indigo: #6366F1;
+  --icon-teal: #14B8A6;
 }
 
-.dark {
-  color: rgb(255, 251, 0); /* bright yellow for maximum contrast */
-  background-color: rgb(17, 24, 39); /* gray-900 background */
-}
-
-/* Remove underlines from all links */
-a {
-  text-decoration: none !important;
-}
-
-a:hover {
-  text-decoration: none !important;
-}
-
-
-
-
-
-
-
-/* Global overflow prevention */
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-
+/* Base Styles */
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* University-focused Design System */
-
-/* Smooth transitions with reduced motion support */
-@media (prefers-reduced-motion: no-preference) {
-  * {
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
+body {
+  font-family: 'Exo', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-main);
+  min-height: 100vh;
 }
 
-/* Clean Card Styles - Solid colors only */
-.card-base {
-  @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200;
-}
-
-/* Remove all gradients globally */
-.bg-gradient-to-r,
-.bg-gradient-to-l,
-.bg-gradient-to-t,
-.bg-gradient-to-b,
-.bg-gradient-to-br,
-.bg-gradient-to-bl,
-.bg-gradient-to-tr,
-.bg-gradient-to-tl {
-  background-image: none !important;
-  background: inherit !important;
-}
-
-.card-hover {
-  @apply hover:shadow-md hover:translate-y-[-2px] cursor-pointer;
-}
-
-.dark .card-hover:hover {
-  @apply bg-gray-700 border-gray-600;
-}
-
-.card-interactive {
-  @apply card-base card-hover;
-}
-
-/* Comprehensive dark mode text visibility */
-.dark .card-base:hover * {
-  color: rgb(254, 249, 195) !important; /* yellow-100 */
-}
-
-.dark .card-base:hover .text-gray-600,
-.dark .card-base:hover .text-gray-500,
-.dark .card-base:hover .text-gray-400 {
-  color: rgb(254, 240, 138) !important; /* yellow-200 */
-}
-
-/* Dark mode hover states for all interactive elements */
-.dark button:hover,
-.dark a:hover,
-.dark .clickable:hover {
-  color: rgb(254, 249, 195); /* yellow-100 on hover */
-}
-
-/* Enhanced text contrast for better readability */
-/* Light mode text colors */
-.text-gray-500 {
-  color: rgb(75, 85, 99) !important; /* gray-600 for better contrast */
-}
-
-.text-gray-600 {
-  color: rgb(55, 65, 81) !important; /* gray-700 for better contrast */
-}
-
-.text-gray-700 {
-  color: rgb(31, 41, 55) !important; /* gray-800 for better contrast */
-}
-
-/* Dark mode text colors - Bright yellow for maximum visibility */
-.dark .text-gray-200 {
-  color: rgb(255, 251, 0) !important; /* bright yellow */
-}
-
-.dark .text-gray-300 {
-  color: rgb(255, 255, 100) !important; /* bright yellow-white */
-}
-
-.dark .text-gray-400 {
-  color: rgb(255, 251, 0) !important; /* bright yellow */
-}
-
-.dark .text-gray-500 {
-  color: rgb(255, 235, 0) !important; /* slightly dimmer yellow */
-}
-
-.dark .text-gray-600 {
-  color: rgb(255, 255, 100) !important; /* bright yellow-white */
-}
-
-.dark .text-gray-700 {
-  color: rgb(255, 255, 150) !important; /* very bright yellow */
-}
-
-/* Typography system with lighter weights */
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 400; /* Regular weight for headings */
-  letter-spacing: -0.02em;
+  font-family: 'Exo', sans-serif;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
 h1 { font-size: 2.5rem; }
@@ -165,153 +76,676 @@ h2 { font-size: 2rem; }
 h3 { font-size: 1.75rem; }
 h4 { font-size: 1.5rem; }
 h5 { font-size: 1.25rem; }
-h6 { font-size: 1.125rem; }
+h6 { font-size: 1.1rem; }
 
-/* Dark mode headings and important text */
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: rgb(255, 255, 0) !important; /* pure bright yellow for headings */
-  font-weight: 300; /* Even lighter in dark mode */
+p {
+  color: var(--text-primary); /* Black text */
+  margin-bottom: 1rem;
 }
 
-.dark .text-gray-900 {
-  color: rgb(255, 255, 0) !important; /* pure bright yellow */
+a {
+  color: var(--primary);
+  text-decoration: none !important;
+  transition: color 0.3s ease;
 }
 
-/* Font weight utilities override */
-.font-bold {
-  font-weight: 500 !important; /* Medium instead of bold */
-}
-
-.font-semibold {
-  font-weight: 400 !important; /* Regular instead of semibold */
-}
-
-.font-medium {
-  font-weight: 400 !important; /* Regular for medium */
-}
-
-.font-normal {
-  font-weight: 300 !important; /* Light for normal */
+a:hover {
+  color: var(--secondary);
+  text-decoration: none !important;
 }
 
 
-/* High contrast text for better accessibility */
-.high-contrast-text {
-  color: #000000 !important;
-  font-weight: 600;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+
+
+
+
+
+/* Main Container - Edumate exact */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
-.dark .high-contrast-text {
-  color: #ffffff !important;
-  font-weight: 600;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+/* Row wrapper for grid spacing */
+.row-wrapper {
+  margin-left: -12px;
+  margin-right: -12px;
 }
 
-/* Landing page specific high contrast */
-.landing-text-dark {
-  color: #1a202c !important; /* Very dark gray for landing page */
+.row-wrapper > * {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* White Card/Tile - Ultra compact Kardex style */
+.edumate-card,
+.dashboard-tile {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 12px; /* Ultra compact */
+  box-shadow: 0 2px 8px rgba(7, 41, 77, 0.08);
+  transition: all 0.2s ease;
+  border: none; /* No border */
+}
+
+/* Kardex tile - very compact */
+.kardex-tile {
+  background-color: var(--white);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 1px 4px rgba(7, 41, 77, 0.06);
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.kardex-tile:hover {
+  box-shadow: 0 4px 12px rgba(7, 41, 77, 0.12);
+  transform: translateY(-1px);
+}
+
+.edumate-card:hover,
+.dashboard-tile:hover {
+  box-shadow: 0 4px 16px rgba(7, 41, 77, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Card with image variant */
+.edumate-card-2 {
+  background-color: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgba(7, 41, 77, 0.1);
+  transition: all 0.3s linear;
+}
+
+.edumate-card-2 .card-content {
+  padding: 25px 25px; /* Exact Edumate content padding */
+}
+
+/* Course Cards - Compact Style */
+.course-card {
+  padding: 16px; /* Smaller padding */
+  border-radius: 8px;
+  color: white;
+  transition: all 0.3s linear;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+/* Course card image dimensions */
+.course-card-image {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.course-card:nth-child(8n+1) { background-color: var(--course-1); }
+.course-card:nth-child(8n+2) { background-color: var(--course-2); }
+.course-card:nth-child(8n+3) { background-color: var(--course-3); }
+.course-card:nth-child(8n+4) { background-color: var(--course-4); }
+.course-card:nth-child(8n+5) { background-color: var(--course-5); }
+.course-card:nth-child(8n+6) { background-color: var(--course-6); }
+.course-card:nth-child(8n+7) { background-color: var(--course-7); }
+.course-card:nth-child(8n) { background-color: var(--course-8); }
+
+.course-card h3,
+.course-card h4,
+.course-card h5,
+.course-card p,
+.course-card span {
+  color: white !important;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons - Edumate Style */
+.btn,
+.main-btn {
+  display: inline-block;
+  padding: 0 30px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 16px;
   font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s linear;
+  text-decoration: none;
 }
 
-.landing-text-light {
-  color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+.btn-primary,
+.main-btn {
+  background-color: var(--primary);
+  color: var(--white);
 }
 
-/* Professional Gradients */
-.gradient-primary {
-  @apply bg-gradient-to-r from-blue-600 to-teal-600 dark:from-blue-500 dark:to-teal-500;
+.btn-primary:hover,
+.main-btn:hover {
+  background-color: var(--secondary);
+  transform: translateY(-2px);
+  color: var(--white);
 }
 
-.gradient-secondary {
-  @apply bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-500 dark:to-cyan-500;
+.btn-secondary,
+.main-btn-2 {
+  background-color: var(--secondary);
+  color: var(--white);
 }
 
-.gradient-accent {
-  @apply bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400;
+.btn-secondary:hover,
+.main-btn-2:hover {
+  background-color: var(--primary);
+  transform: translateY(-2px);
+  color: var(--white);
 }
 
-/* Text Gradients */
-.text-gradient-primary {
-  @apply bg-gradient-to-r from-blue-600 to-teal-600 dark:from-blue-400 dark:to-teal-400 bg-clip-text text-transparent font-bold;
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  line-height: 46px;
 }
 
-.text-gradient-secondary {
-  @apply bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-gray-100 bg-clip-text text-transparent font-bold;
+.btn-outline:hover {
+  background-color: var(--primary);
+  color: var(--white);
 }
 
-/* Button Styles - Improved dark mode contrast */
-.btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md;
+/* Forms - Edumate Style */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select,
+.form-input {
+  width: 100%;
+  height: 50px;
+  padding: 0 20px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'Exo', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--text-secondary);
+  background-color: var(--white);
+  transition: all 0.3s linear;
 }
 
-.dark .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white;
+textarea {
+  min-height: 120px;
+  padding: 15px 20px;
+  resize: vertical;
 }
 
-.btn-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-3 rounded-lg transition-colors duration-200 border border-gray-300;
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(12, 139, 81, 0.1);
 }
 
-.dark .btn-secondary {
-  @apply bg-gray-700 hover:bg-gray-600 text-white border-gray-600;
+/* Stats Cards - Ultra Compact */
+.stat-card {
+  background-color: var(--white);
+  border-radius: 6px;
+  padding: 8px; /* Ultra compact */
+  box-shadow: 0 1px 4px rgba(7, 41, 77, 0.06);
+  transition: all 0.2s ease;
+  text-align: center;
+  border: none;
 }
 
-.btn-accent {
-  @apply bg-amber-500 hover:bg-amber-600 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md;
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 2px 2px 30px rgba(7, 41, 77, 0.15);
 }
 
-.dark .btn-accent {
-  @apply bg-amber-500 hover:bg-amber-600 text-white;
+.stat-number {
+  font-size: 20px; /* Even smaller */
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0;
+  line-height: 1.2;
 }
 
-/* Focus States - Accessibility */
-.focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+.stat-label {
+  font-size: 11px; /* Tiny label */
+  color: var(--text-primary);
+  text-transform: uppercase;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
-.focus-visible-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-800;
+/* Tables */
+.edumate-table {
+  width: 100%;
+  background-color: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 2px 2px 20px rgba(7, 41, 77, 0.1);
 }
 
-/* Typography Utilities */
-.heading-xl {
-  @apply text-4xl lg:text-5xl font-bold tracking-tight;
+.edumate-table thead {
+  background-color: var(--primary);
 }
 
-.heading-lg {
-  @apply text-3xl lg:text-4xl font-bold tracking-tight;
+.edumate-table th {
+  padding: 15px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--white);
 }
 
-.heading-md {
-  @apply text-2xl lg:text-3xl font-semibold;
+.edumate-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary); /* Black text */
 }
 
-.heading-sm {
-  @apply text-xl lg:text-2xl font-semibold;
+.edumate-table tbody tr:hover {
+  background-color: rgba(7, 41, 77, 0.05);
 }
 
-.body-lg {
-  @apply text-lg leading-relaxed;
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
 }
 
-.body-base {
-  @apply text-base leading-relaxed;
+.badge-primary {
+  background-color: var(--primary);
+  color: var(--white);
 }
 
-/* Custom Scrollbar */
+.badge-success {
+  background-color: var(--secondary);
+  color: var(--white);
+}
+
+.badge-warning {
+  background-color: var(--course-7);
+  color: var(--white);
+}
+
+.badge-info {
+  background-color: var(--course-5);
+  color: var(--white);
+}
+
+/* Grid Layouts - Ultra compact spacing */
+.grid {
+  display: grid;
+  gap: 8px; /* Very small gap for Kardex style */
+}
+
+/* Kardex grid */
+.kardex-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Custom column for tighter spacing */
+.custom-col {
+  padding: 0 12px;
+}
+
+/* Section Spacing - Exact Edumate */
+.section {
+  padding-top: 110px;
+  padding-bottom: 80px;
+}
+
+.section-wrapper {
+  padding-top: 40px;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-title h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--primary);
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.section-title h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background-color: var(--secondary);
+}
+
+/* Utility Classes */
+.text-primary { color: var(--primary) !important; }
+.text-secondary { color: var(--secondary) !important; }
+.text-light { color: var(--text-light) !important; }
+.text-white { color: var(--white) !important; }
+
+.bg-primary { background-color: var(--primary) !important; }
+.bg-secondary { background-color: var(--secondary) !important; }
+.bg-light { background-color: var(--bg-main) !important; }
+.bg-white { background-color: var(--white) !important; }
+
+/* Edumate exact margins */
+.mt-8 { margin-top: 8px; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+.mt-30 { margin-top: 30px; }
+.mt-40 { margin-top: 40px; }
+.mt-45 { margin-top: 45px; }
+.mt-110 { margin-top: 110px; }
+
+.mb-8 { margin-bottom: 8px; }
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-30 { margin-bottom: 30px; }
+.mb-40 { margin-bottom: 40px; }
+
+.pt-10 { padding-top: 10px; }
+.pt-20 { padding-top: 20px; }
+.pt-25 { padding-top: 25px; }
+.pt-30 { padding-top: 30px; }
+.pt-40 { padding-top: 40px; }
+.pt-110 { padding-top: 110px; }
+
+.pb-25 { padding-bottom: 25px; }
+.pb-30 { padding-bottom: 30px; }
+.pb-35 { padding-bottom: 35px; }
+.pb-40 { padding-bottom: 40px; }
+
+.px-25 { padding-left: 25px; padding-right: 25px; }
+.px-40 { padding-left: 40px; padding-right: 40px; }
+.py-28 { padding-top: 28px; padding-bottom: 28px; }
+
+
+/* Loading State */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 dark:bg-gray-800 rounded;
+  background: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-400 dark:bg-gray-600 rounded hover:bg-gray-500 dark:hover:bg-gray-500;
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Responsive Design - Compact breakpoints */
+@media (max-width: 1199px) {
+  .edumate-card,
+  .dashboard-tile {
+    padding: 14px;
+  }
+  
+  .edumate-card-2 .card-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-cols-3 { grid-template-columns: repeat(2, 1fr); }
+  
+  .edumate-card,
+  .dashboard-tile {
+    padding: 12px;
+  }
+  
+  .section {
+    padding-top: 35px;
+    padding-bottom: 35px;
+  }
+  
+  .section-wrapper {
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .grid-cols-4,
+  .grid-cols-3,
+  .grid-cols-2 { 
+    grid-template-columns: repeat(1, 1fr); 
+  }
+  
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  .section {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .edumate-card,
+  .dashboard-tile {
+    padding: 10px;
+  }
+  
+  .stat-card {
+    padding: 10px;
+  }
+  
+  .stat-number {
+    font-size: 20px;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+}
+
+/* Focus States */
+*:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondary);
+}
+
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(12, 139, 81, 0.2);
+}
+
+/* Clean minimal dark mode - optional */
+.dark {
+  background-color: #1a202c;
+  color: #f7fafc;
+}
+
+.dark .edumate-card,
+.dark .dashboard-tile,
+.dark .stat-card {
+  background-color: #2d3748;
+  color: #f7fafc;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: var(--secondary);
+}
+
+.dark p {
+  color: #e2e8f0;
+}
+
+.dark .edumate-table {
+  background-color: #2d3748;
+}
+
+.dark .edumate-table thead {
+  background-color: var(--secondary);
+}
+
+.dark .edumate-table td {
+  color: #e2e8f0;
+  border-color: #4a5568;
+}
+
+/* Calendar Styles */
+.calendar-widget {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(7, 41, 77, 0.08);
+}
+
+.calendar-day {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  background-color: var(--bg-main);
+}
+
+.calendar-day.today {
+  background-color: var(--primary);
+  color: white;
+}
+
+.calendar-day.has-event {
+  position: relative;
+}
+
+.calendar-day.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: var(--secondary);
+  border-radius: 50%;
+}
+
+/* Profile Card */
+.profile-card {
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(7, 41, 77, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Icon Boxes with Colors */
+.icon-box-blue { background-color: var(--icon-blue) !important; color: white !important; }
+.icon-box-green { background-color: var(--icon-green) !important; color: white !important; }
+.icon-box-purple { background-color: var(--icon-purple) !important; color: white !important; }
+.icon-box-yellow { background-color: var(--icon-yellow) !important; color: white !important; }
+.icon-box-red { background-color: var(--icon-red) !important; color: white !important; }
+.icon-box-pink { background-color: var(--icon-pink) !important; color: white !important; }
+.icon-box-indigo { background-color: var(--icon-indigo) !important; color: white !important; }
+.icon-box-teal { background-color: var(--icon-teal) !important; color: white !important; }
+
+/* Remove underlines globally */
+* {
+  text-decoration: none !important;
+}
+
+button, a, span, h1, h2, h3, h4, h5, h6, p {
+  text-decoration: none !important;
+}
+
+/* Remove old gradient styles */
+.bg-gradient-to-r,
+.bg-gradient-to-l,
+.bg-gradient-to-t,
+.bg-gradient-to-b,
+.bg-gradient-to-br,
+.bg-gradient-to-bl,
+.bg-gradient-to-tr,
+.bg-gradient-to-tl,
+.gradient-primary,
+.gradient-secondary,
+.gradient-accent,
+.text-gradient-primary,
+.text-gradient-secondary {
+  background-image: none !important;
+  background: inherit !important;
 }
 
 /* Section Spacing */
@@ -328,29 +762,41 @@ h6 { font-size: 1.125rem; }
   @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
 }
 
-/* Badge Styles */
+/* Badge Styles - Edumat style */
 .badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  @apply inline-flex items-center px-3 py-1 text-xs font-medium;
+  border-radius: 0;
+}
+
+.badge-primary {
+  background-color: #07294D;
+  color: #fff;
+}
+
+.badge-secondary {
+  background-color: #0C8B51;
+  color: #fff;
 }
 
 .badge-blue {
-  @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300;
+  background-color: #07294D;
+  color: #fff;
 }
 
-.badge-teal {
-  @apply bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300;
+.badge-teal,
+.badge-green {
+  background-color: #0C8B51;
+  color: #fff;
 }
 
 .badge-amber {
-  @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300;
-}
-
-.badge-green {
-  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+  background-color: #F1F1F1;
+  color: #151515;
 }
 
 .badge-red {
-  @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300;
+  background-color: #dc2626;
+  color: #fff;
 }
 
 /* Simple Hover Effects */
@@ -463,6 +909,65 @@ h6 { font-size: 1.125rem; }
 
 .skip-to-content:focus {
   @apply left-2;
+}
+
+/* Clean Dashboard Tile - Pure white */
+.dashboard-tile {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #07294D;
+}
+
+/* Subtle glow effect on hover */
+.dashboard-tile::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, 
+    rgba(147, 197, 253, 0.15),
+    rgba(196, 224, 255, 0.15),
+    rgba(147, 197, 253, 0.15));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(20px);
+}
+
+.dashboard-tile:hover::after {
+  opacity: 1;
+}
+
+/* Subtle blue background for dashboard */
+.dashboard-bg {
+  background: #f0f7ff;
+  min-height: 100vh;
+}
+
+/* Stats cards with subtle animation */
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(147, 197, 253, 0.1);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
 }
 
 /* Remove excessive medical-themed styles */

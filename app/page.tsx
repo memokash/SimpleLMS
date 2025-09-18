@@ -302,9 +302,8 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-blue-600 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#f0f7ff] relative overflow-x-hidden">
       {/* Simple background pattern */}
-      <div className="fixed inset-0 z-0 bg-dots opacity-10 overflow-hidden"></div>
       
       {/* Removed complex animations */}
       <style jsx>{`
@@ -334,13 +333,13 @@ const HomePage = () => {
         ></div>
         
         {/* Modern Gradient Overlay */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-[#07294d]/20"></div>
         
         {/* Modern Floating Badges */}
-        <div className="hidden lg:block absolute top-20 right-10 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium text-sm border border-white/20 z-20">
+        <div className="hidden lg:block absolute top-20 right-10 bg-white/90 backdrop-blur-md text-[#07294d] px-6 py-3 rounded-full font-medium text-sm border border-white/40 z-20">
           ✨ 15,000+ Practice Questions
         </div>
-        <div className="hidden lg:block absolute bottom-20 left-10 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium text-sm border border-white/20 z-20">
+        <div className="hidden lg:block absolute bottom-20 left-10 bg-white/90 backdrop-blur-md text-[#07294d] px-6 py-3 rounded-full font-medium text-sm border border-white/40 z-20">
           🎓 Trusted by 10,000+ Students
         </div>
         
@@ -360,14 +359,14 @@ const HomePage = () => {
             <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center">
               <a 
                 href="/quiz" 
-                className="px-8 py-4 lg:px-10 lg:py-5 bg-white text-violet-600 font-bold rounded-2xl text-lg lg:text-xl hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3 min-h-[48px]"
+                className="px-8 py-4 lg:px-10 lg:py-5 bg-white text-[#07294d] font-bold rounded-2xl text-lg lg:text-xl hover:bg-gray-50 transition-all transform hover:scale-105 shadow-2xl flex items-center justify-center gap-3 min-h-[48px]"
               >
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 lg:w-6 lg:h-6" />
               </a>
               <button 
                 onClick={() => setShowAuthModal(true)}
-                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-white/30 bg-white/10 backdrop-blur-md text-white font-semibold rounded-2xl text-lg lg:text-xl hover:bg-white/20 transition-all shadow-2xl min-h-[48px]"
+                className="px-8 py-4 lg:px-10 lg:py-5 border-2 border-white/60 bg-white/20 backdrop-blur-md text-white font-semibold rounded-2xl text-lg lg:text-xl hover:bg-white/30 transition-all shadow-2xl min-h-[48px]"
               >
                 Sign Up Free
               </button>
@@ -400,7 +399,7 @@ const HomePage = () => {
       </section>
 
       {/* Modern Features Section */}
-      <section className="py-12 relative z-10 bg-white dark:bg-gray-900">
+      <section className="py-12 relative z-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
@@ -418,7 +417,7 @@ const HomePage = () => {
                 className="modern-card modern-card-hover p-4 text-center group cursor-pointer block"
               >
                 <div className="flex justify-center mb-6">
-                  <div className="p-4 rounded-2xl bg-indigo-100 dark:bg-indigo-900/20 group-hover:scale-110 transition-transform duration-200">
+                  <div className="p-4 rounded-2xl bg-[#f0f7ff] group-hover:scale-110 transition-transform duration-200">
                     <Icon className="w-8 h-8 text-violet-600 dark:text-violet-400" />
                   </div>
                 </div>
@@ -433,7 +432,7 @@ const HomePage = () => {
         </div>
       </section>
     
-      <section className="py-12 relative z-10 bg-gray-50 dark:bg-gray-800">
+      <section className="py-12 relative z-10 bg-[#f0f7ff]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
@@ -463,7 +462,7 @@ const HomePage = () => {
       </section>
 
       {/* Featured Quizzes Section */}
-      <section className="py-12 relative z-10 bg-indigo-600 dark:bg-indigo-800">
+      <section className="py-12 relative z-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-5xl font-black text-white mb-4">
@@ -517,7 +516,7 @@ const HomePage = () => {
                     className="modern-card modern-card-hover p-6 group flex flex-col"
                   >
                     <div className="sparkle-icon flex justify-center mb-4">
-                      <div className="p-4 rounded-2xl bg-purple-500 text-white shadow-lg group-hover:shadow-xl transition-shadow">
+                      <div className="p-4 rounded-2xl bg-[#07294d] text-white shadow-lg group-hover:shadow-xl transition-shadow">
                         <CategoryIcon className="w-8 h-8" />
                       </div>
                     </div>
@@ -530,7 +529,7 @@ const HomePage = () => {
                       <span className={`text-xs px-2 py-1 rounded-full font-bold border ${getDifficultyColor(quiz.difficulty)}`}>
                         {quiz.difficulty || 'Mixed'}
                       </span>
-                      <span className="text-xs px-2 py-1 rounded-full font-semibold bg-purple-100 text-purple-800 border border-purple-300">
+                      <span className="text-xs px-2 py-1 rounded-full font-semibold bg-[#f0f7ff] text-[#07294d] border border-[#07294d]/20">
                         {quiz.category || 'General'}
                       </span>
                     </div>
@@ -553,13 +552,13 @@ const HomePage = () => {
                     <div className="space-y-2">
                       <a 
                         href={`/quiz?id=${encodeURIComponent(quiz.id)}`}
-                        className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-xl font-medium hover:bg-indigo-700 transition-all text-center text-sm block shadow-lg hover:shadow-xl"
+                        className="w-full bg-[#07294d] text-white py-2.5 px-4 rounded-xl font-medium hover:bg-[#07294d]/90 transition-all text-center text-sm block shadow-lg hover:shadow-xl"
                       >
                         Take Full Quiz
                       </a>
                       <a 
                         href={`/quiz?id=${encodeURIComponent(quiz.id)}&limit=10`}
-                        className="w-full bg-white dark:bg-gray-800 text-violet-600 dark:text-violet-400 py-2.5 px-4 rounded-xl font-medium border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-center text-sm block"
+                        className="w-full bg-white text-[#07294d] py-2.5 px-4 rounded-xl font-medium border border-gray-200 hover:bg-gray-50 transition-all text-center text-sm block"
                       >
                         Quick 10 Questions
                       </a>
@@ -573,7 +572,7 @@ const HomePage = () => {
           <div className="text-center mt-12">
             <a 
               href="/quiz"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl text-lg hover:bg-indigo-700 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#07294d] text-white font-bold rounded-2xl text-lg hover:bg-[#07294d]/90 transition-all duration-200 shadow-xl hover:shadow-2xl transform hover:scale-105"
             >
               <BookOpen className="w-5 h-5" />
               Browse All Quizzes
@@ -583,7 +582,7 @@ const HomePage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 relative z-10 bg-blue-700 dark:bg-blue-900">
+      <section className="py-12 relative z-10 bg-[#07294d]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black text-white mb-4">
@@ -596,7 +595,7 @@ const HomePage = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-cyan-500 text-white">
+                <div className="p-4 rounded-2xl bg-[#0C8B51] text-white">
                   <BookOpen className="w-8 h-8" />
                 </div>
               </div>
@@ -605,7 +604,7 @@ const HomePage = () => {
             </div>
             <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-emerald-500 text-white">
+                <div className="p-4 rounded-2xl bg-[#27B8A7] text-white">
                   <TrendingUp className="w-8 h-8" />
                 </div>
               </div>
@@ -614,7 +613,7 @@ const HomePage = () => {
             </div>
             <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-purple-500 text-white">
+                <div className="p-4 rounded-2xl bg-[#2F7AD5] text-white">
                   <Users className="w-8 h-8" />
                 </div>
               </div>
@@ -623,7 +622,7 @@ const HomePage = () => {
             </div>
             <div className="text-center modern-card p-4 group hover-lift">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-yellow-400 text-blue-900">
+                <div className="p-4 rounded-2xl bg-[#EAB830] text-[#07294d]">
                   <Zap className="w-8 h-8" />
                 </div>
               </div>
@@ -636,11 +635,11 @@ const HomePage = () => {
 
 
       {/* Why Choose Us Section */}
-      <section className="py-12 relative z-10 bg-white dark:bg-gray-900">
+      <section className="py-12 relative z-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-16">
-            <p className="text-xl text-slate-900 max-w-4xl mx-auto bg-white rounded-2xl p-6 border border-purple-300 shadow-lg">
+            <p className="text-xl text-[#07294d] max-w-4xl mx-auto bg-white rounded-2xl p-6 border border-[#07294d]/20 shadow-lg">
               This is more than a quiz app. It's your all-in-one medical education companion — built by physicians to centralize your progress, connect you to a like-minded community, and provide seamless access across disciplines and training sites.
             </p>
           </div>
@@ -668,11 +667,11 @@ const HomePage = () => {
 
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-12 relative z-10 bg-gray-50 dark:bg-gray-800">
+      <section id="pricing" className="py-12 relative z-10 bg-[#f0f7ff]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="text-center mb-16">
-            <p className="text-xl text-slate-900 max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-blue-300 shadow-lg">
+            <p className="text-xl text-[#07294d] max-w-3xl mx-auto bg-white rounded-2xl p-6 border border-[#07294d]/20 shadow-lg">
               Access to the most comprehensive medical education question bank available. Start free and upgrade when ready.
             </p>
           </div>
@@ -681,7 +680,7 @@ const HomePage = () => {
             {/* Free Plan */}
             <div className="modern-card p-4 text-center min-h-[400px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-gray-500 text-white">
+                <div className="p-4 rounded-2xl bg-[#8D8D8D] text-white">
                   <BookOpen className="w-8 h-8" />
                 </div>
               </div>
@@ -708,7 +707,7 @@ const HomePage = () => {
               </ul>
               <a 
                 href="/quiz"
-                className="w-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 py-4 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 block text-center"
+                className="w-full bg-gray-200 text-gray-600 py-4 rounded-xl font-medium hover:bg-gray-300 transition-all duration-200 block text-center"
               >
                 Try Free Quiz
               </a>
@@ -716,11 +715,11 @@ const HomePage = () => {
 
             {/* Pro Plan - Popular */}
             <div className="modern-card p-4 text-center min-h-[400px] flex flex-col relative transform scale-105 border-2 border-violet-500">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#0C8B51] text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                 Most Popular
               </div>
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-indigo-600 text-white">
+                <div className="p-4 rounded-2xl bg-[#07294d] text-white">
                   <Award className="w-8 h-8" />
                 </div>
               </div>
@@ -751,7 +750,7 @@ const HomePage = () => {
               </ul>
               <button 
                 onClick={() => handleStripeCheckout('price_1RqE1PEbNlb7nCbs0las6NY5', 'Pro')}
-                className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-[#07294d] text-white py-4 rounded-xl font-semibold hover:bg-[#07294d]/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $19.99/month' : 'Sign Up to Subscribe'}
               </button>
@@ -760,7 +759,7 @@ const HomePage = () => {
             {/* Premium Plan */}
             <div className="modern-card p-4 text-center min-h-[400px] flex flex-col">
               <div className="sparkle-icon flex justify-center mb-4">
-                <div className="p-4 rounded-2xl bg-purple-600 text-white">
+                <div className="p-4 rounded-2xl bg-[#0C8B51] text-white">
                   <Star className="w-8 h-8" />
                 </div>
               </div>
@@ -791,7 +790,7 @@ const HomePage = () => {
               </ul>
               <button 
                 onClick={() => handleStripeCheckout('price_1RqE4NEbNlb7nCbsKLwEcd3a', 'Premium')}
-                className="w-full bg-amber-500 text-white py-4 rounded-2xl font-semibold hover:bg-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-[#EAB830] text-white py-4 rounded-2xl font-semibold hover:bg-[#EAB830]/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 {user ? 'Subscribe for $39.99/month' : 'Sign Up to Subscribe'}
               </button>
@@ -801,7 +800,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-indigo-700 py-12 relative z-10">
+      <section className="bg-[#07294d] py-12 relative z-10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-5xl font-black mb-6 text-white">
             Ready to Transform Your Medical Education?
@@ -812,13 +811,13 @@ const HomePage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="/quiz"
-              className="bg-white text-violet-600 px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-2xl"
+              className="bg-white text-[#07294d] px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-50 transition-all transform hover:scale-105 shadow-2xl"
             >
               Start Free Trial
             </a>
             <button 
               onClick={() => setShowAuthModal(true)}
-              className="border-4 border-indigo-600 bg-white text-indigo-900 px-10 py-5 rounded-3xl text-lg font-bold hover:bg-indigo-50 transition-all"
+              className="border-4 border-[#0C8B51] bg-white text-[#07294d] px-10 py-5 rounded-3xl text-lg font-bold hover:bg-[#f0f7ff] transition-all"
             >
               Create Account
             </button>
