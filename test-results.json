@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "totalTests": 7,
+    "passed": 3,
+    "failed": 4,
+    "successRate": 43,
+    "totalTime": 22689,
+    "timestamp": "2025-09-28T20:32:51.875Z"
+  },
+  "results": [
+    {
+      "testName": "File Structure Check",
+      "success": true,
+      "duration": 51,
+      "details": {
+        "package.json": true,
+        "next.config.js": true,
+        "tsconfig.json": true,
+        "tailwind.config.js": true,
+        "app/layout.tsx": true,
+        "app/page.tsx": true,
+        "lib/supabase/client.ts": true,
+        "lib/supabase/server.ts": true,
+        "lib/supabase/database.types.ts": true,
+        "app/components/AuthContext.tsx": true,
+        "middleware.ts": true
+      },
+      "timestamp": "2025-09-28T20:32:29.237Z"
+    },
+    {
+      "testName": "Environment Validation",
+      "success": false,
+      "duration": 1325,
+      "details": {
+        "error": "Environment validation failed:\nMissing required environment variable: NEXT_PUBLIC_SUPABASE_URL\nMissing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      },
+      "timestamp": "2025-09-28T20:32:30.566Z"
+    },
+    {
+      "testName": "Module Imports",
+      "success": false,
+      "duration": 14162,
+      "details": {
+        "Supabase Client": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts"
+        },
+        "Supabase Server": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\server.ts"
+        },
+        "Database Types": {
+          "importable": true,
+          "exports": [],
+          "hasDefault": false
+        },
+        "Auth Context": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx"
+        },
+        "Theme Context": {
+          "importable": true,
+          "exports": [
+            "ThemeProvider",
+            "useTheme"
+          ],
+          "hasDefault": false
+        },
+        "Course Service": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\lib\\supabase\\operations.ts\n- C:\\SimpleLMS\\lib\\courseService.ts"
+        },
+        "AI Service": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\lib\\supabase\\operations.ts\n- C:\\SimpleLMS\\lib\\contentService.ts\n- C:\\SimpleLMS\\lib\\aiService.ts"
+        },
+        "Quiz Index Service": {
+          "importable": true,
+          "exports": [
+            "default",
+            "getPopularQuizzes",
+            "getQuizIndex",
+            "getQuizzesByTier",
+            "getRecentQuizzes",
+            "searchQuizzes"
+          ],
+          "hasDefault": true
+        }
+      },
+      "timestamp": "2025-09-28T20:32:44.730Z"
+    },
+    {
+      "testName": "Supabase Configuration",
+      "success": false,
+      "duration": 0,
+      "details": {
+        "error": "No Supabase configuration found",
+        "hasUrl": false,
+        "hasKey": false,
+        "hasDatabaseUrl": false
+      },
+      "timestamp": "2025-09-28T20:32:44.730Z"
+    },
+    {
+      "testName": "Component Structure",
+      "success": false,
+      "duration": 7019,
+      "details": {
+        "AuthContext": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx"
+        },
+        "ThemeContext": {
+          "importable": true,
+          "hasDefault": false,
+          "namedExports": [
+            "ThemeProvider",
+            "useTheme"
+          ]
+        },
+        "UserDashboard": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx\n- C:\\SimpleLMS\\app\\components\\UserDashboard.tsx"
+        },
+        "CoursesDashboard": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx\n- C:\\SimpleLMS\\app\\components\\CoursesDashboard.tsx"
+        },
+        "QuizApp": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx\n- C:\\SimpleLMS\\app\\components\\QuizApp.tsx"
+        },
+        "Header": {
+          "importable": false,
+          "error": "Cannot find module '@supabase/ssr'\nRequire stack:\n- C:\\SimpleLMS\\lib\\supabase\\client.ts\n- C:\\SimpleLMS\\app\\components\\AuthContext.tsx\n- C:\\SimpleLMS\\app\\components\\Header.tsx"
+        },
+        "Footer": {
+          "importable": true,
+          "hasDefault": true,
+          "namedExports": []
+        }
+      },
+      "timestamp": "2025-09-28T20:32:51.750Z"
+    },
+    {
+      "testName": "API Structure",
+      "success": true,
+      "duration": 9,
+      "details": {
+        "api/ai/generate-quiz/route.ts": {
+          "exists": true,
+          "hasGET": false,
+          "hasPOST": false,
+          "lineCount": 310
+        },
+        "api/ai/enhance-quiz-explanations/route.ts": {
+          "exists": true,
+          "hasGET": false,
+          "hasPOST": true,
+          "lineCount": 132
+        },
+        "api/profile.api.ts": {
+          "exists": true,
+          "hasGET": false,
+          "hasPOST": false,
+          "lineCount": 53
+        },
+        "api/stripe/webhook/route.ts": {
+          "exists": true,
+          "hasGET": false,
+          "hasPOST": false,
+          "lineCount": 166
+        }
+      },
+      "timestamp": "2025-09-28T20:32:51.760Z"
+    },
+    {
+      "testName": "Database Types",
+      "success": true,
+      "duration": 108,
+      "details": {
+        "typesImported": true,
+        "hasDatabase": false,
+        "hasTables": false,
+        "exports": []
+      },
+      "timestamp": "2025-09-28T20:32:51.868Z"
+    }
+  ],
+  "environment": {
+    "hasSupabaseUrl": false,
+    "hasSupabaseKey": false,
+    "hasDatabaseUrl": false,
+    "hasAIKeys": false,
+    "hasStripeKeys": false
+  }
+}
